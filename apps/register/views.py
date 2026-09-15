@@ -3,6 +3,7 @@ from django.contrib.auth import login
 from django.contrib import messages
 from .forms import RegisterForm
 
+
 def register_view(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -10,7 +11,7 @@ def register_view(request):
             user = form.save()
             login(request, user)
             messages.success(request, 'Account created successfully!')
-            return redirect('home')
+            return redirect('home:home')
     else:
         form = RegisterForm()
-    return render(request, 'accounts/register.html', {'form': form})
+    return render(request, 'register/register.html', {'form': form})

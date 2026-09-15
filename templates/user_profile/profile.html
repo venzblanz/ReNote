@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Profile - ReNote</title>
+    <link rel="stylesheet" href="{% static 'css/user_profile/profile.css' %}">
+</head>
+<body>
+    <h1>My Profile</h1>
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color:green;">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label>Full name:</label><br>
+        <input type="text" name="full_name" value="{{ profile.full_name }}"><br>
+        <label>Bio:</label><br>
+        <textarea name="bio">{{ profile.bio }}</textarea><br>
+        <label>Profile image:</label><br>
+        <input type="file" name="profile_image"><br>
+        <button type="submit">Save</button>
+    </form>
+    <a href="{% url 'home:home' %}">Back to Home</a>
+</body>
+</html>
