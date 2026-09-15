@@ -12,6 +12,13 @@
             <p style="color:green;">{{ message }}</p>
         {% endfor %}
     {% endif %}
+
+    {% if profile.profile_image %}
+        <img src="{{ profile.profile_image.url }}" alt="Profile picture" width="150">
+    {% else %}
+        <p>No profile picture uploaded yet.</p>
+    {% endif %}
+
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <label>Full name:</label><br>

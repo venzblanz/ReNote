@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Settings - ReNote</title>
+    <link rel="stylesheet" href="{% static 'css/user_settings/settings.css' %}">
+</head>
+<body>
+    <h1>Settings</h1>
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color:green;">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <label>
+            <input type="checkbox" name="dark_mode" {% if settings_obj.dark_mode %}checked{% endif %}>
+            Dark mode
+        </label><br>
+        <label>
+            <input type="checkbox" name="email_notifications" {% if settings_obj.email_notifications %}checked{% endif %}>
+            Email notifications
+        </label><br>
+        <button type="submit">Save</button>
+    </form>
+    <a href="{% url 'home:home' %}">Back to Home</a>
+</body>
+</html>
