@@ -1,16 +1,65 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
-<head><title>Login - ReNote</title></head>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReNote — Log in</title>
+<link rel="stylesheet" href="{% static 'css/login/login.css' %}">
+</head>
 <body>
-    <h1>Login</h1>
-    {% if form.errors %}
-        <p style="color:red;">Invalid username or password.</p>
-    {% endif %}
-    <form method="post">
+
+  <div class="wheel-field"><div class="wheel"></div></div>
+  <div class="drift-card"></div>
+  <div class="drift-card"></div>
+  <div class="drift-card"></div>
+  <div class="drift-card"></div>
+
+  <main class="auth-shell">
+    <a href="{% url 'home:home' %}" class="logo">
+      <div class="mark">R</div>
+      <div class="brand">RE<span>*</span>N<span>*</span>OTE</div>
+    </a>
+
+    <div class="auth-card">
+      <h1>Welcome back</h1>
+      <p class="auth-sub">Pick up right where you left off.</p>
+
+      {% if form.non_field_errors %}
+        <div class="form-alert" role="alert">{{ form.non_field_errors.0 }}</div>
+      {% endif %}
+
+      <form method="post" novalidate>
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Login</button>
-    </form>
-    <p>Don't have an account? <a href="{% url 'register:register' %}">Register here</a></p>
+
+        <div class="field">
+          <label for="id_username">Username or email</label>
+          <input type="text" id="id_username" name="username" placeholder="yourname" autocomplete="username" required autofocus>
+        </div>
+
+        <div class="field">
+          <label for="id_password">Password</label>
+          <div class="password-field">
+            <input type="password" id="id_password" name="password" placeholder="••••••••" autocomplete="current-password" required>
+            <button type="button" class="toggle-pw" id="togglePw" aria-label="Show password" aria-pressed="false"></button>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label class="checkbox">
+            <input type="checkbox" name="remember">
+            <span>Remember me</span>
+          </label>
+          <a href="#" class="link-muted">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn-auth">Log in</button>
+      </form>
+
+      <p class="auth-switch">New to ReNote? <a href="{% url 'register:register' %}">Create an account</a></p>
+    </div>
+  </main>
+
+<script src="{% static 'js/login/login.js' %}"></script>
 </body>
 </html>

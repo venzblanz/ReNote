@@ -9,7 +9,7 @@ def profile_view(request):
     profile, created = Profile.objects.get_or_create(user=request.user)
 
     if request.method == 'POST':
-        profile.full_name = request.POST.get('full_name', '')
+        profile.profile_name = request.POST.get('profile_name', '')
         profile.bio = request.POST.get('bio', '')
         if request.FILES.get('profile_image'):
             profile.profile_image = request.FILES['profile_image']

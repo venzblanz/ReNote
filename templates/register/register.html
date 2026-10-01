@@ -1,13 +1,80 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
-<head><title>Register - ReNote</title></head>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReNote — Create your account</title>
+<link rel="stylesheet" href="{% static 'css/register/register.css' %}">
+</head>
 <body>
-    <h1>Register</h1>
-    <form method="post">
+
+  <div class="wheel-field"><div class="wheel"></div></div>
+  <div class="drift-card"></div>
+  <div class="drift-card"></div>
+  <div class="drift-card"></div>
+  <div class="drift-card"></div>
+
+  <main class="auth-shell">
+    <a href="{% url 'home:home' %}" class="logo">
+      <div class="mark">R</div>
+      <div class="brand">RE<span>*</span>N<span>*</span>OTE</div>
+    </a>
+
+    <div class="auth-card">
+      <h1>Start your library</h1>
+      <p class="auth-sub">Track everything you watch, read and rewatch — in one place.</p>
+
+      {% if form.non_field_errors %}
+        <div class="form-alert" role="alert">{{ form.non_field_errors.0 }}</div>
+      {% endif %}
+
+      <form method="post" novalidate>
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Register</button>
-    </form>
-    <p>Already have an account? <a href="{% url 'login:login' %}">Login here</a></p>
+
+        <div class="field">
+          <label for="id_username">Username</label>
+          <input type="text" id="id_username" name="username" placeholder="yourname" autocomplete="username" required>
+        </div>
+
+        <div class="field">
+          <label for="id_email">Email</label>
+          <input type="email" id="id_email" name="email" placeholder="you@example.com" autocomplete="email" required>
+        </div>
+
+        <div class="field">
+          <label for="id_password1">Password</label>
+          <div class="password-field">
+            <input type="password" id="id_password1" name="password1" placeholder="••••••••" autocomplete="new-password" required>
+            <button type="button" class="toggle-pw" data-target="id_password1" aria-label="Show password" aria-pressed="false"></button>
+          </div>
+          <div class="strength-meter" id="strengthMeter">
+            <div class="strength-bar"><span></span></div>
+            <span class="strength-label" id="strengthLabel">&nbsp;</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="id_password2">Confirm password</label>
+          <div class="password-field">
+            <input type="password" id="id_password2" name="password2" placeholder="••••••••" autocomplete="new-password" required>
+            <button type="button" class="toggle-pw" data-target="id_password2" aria-label="Show password" aria-pressed="false"></button>
+          </div>
+          <span class="field-hint" id="matchHint">&nbsp;</span>
+        </div>
+
+        <label class="checkbox terms-check">
+          <input type="checkbox" name="terms" required>
+          <span>I agree to the <a href="#" class="link-muted">Terms</a> and <a href="#" class="link-muted">Privacy Policy</a></span>
+        </label>
+
+        <button type="submit" class="btn-auth">Create account</button>
+      </form>
+
+      <p class="auth-switch">Already have an account? <a href="{% url 'login:login' %}">Log in</a></p>
+    </div>
+  </main>
+
+<script src="{% static 'js/register/register.js' %}"></script>
 </body>
 </html>

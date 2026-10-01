@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'apps.home',
     'apps.user_profile',
     'apps.user_settings',
+    'apps.media_catalog',
+    'apps.user_library_log'
 ]
 
 MIDDLEWARE = [

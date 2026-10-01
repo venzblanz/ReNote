@@ -1,34 +1,105 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Profile - ReNote</title>
-    <link rel="stylesheet" href="{% static 'css/user_profile/profile.css' %}">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReNote — {{ user.username }}'s profile</title>
+<link rel="stylesheet" href="{% static 'css/user_profile/profile.css' %}">
 </head>
 <body>
-    <h1>My Profile</h1>
-    {% if messages %}
-        {% for message in messages %}
-            <p style="color:green;">{{ message }}</p>
-        {% endfor %}
-    {% endif %}
+<nav class="nav">
+  <a href="{% url 'home:home' %}" class="logo">
+    <div class="mark">R</div>
+    <div class="brand">RE<span>*</span>N<span>*</span>OTE</div>
+  </a>
+  <div class="nav-links">
+    <a href="{% url 'home:home' %}">Home</a>
+    <a href="#">Library</a>
+    <a href="#" class="cta">+ Add Title</a>
+    <a href="#">Stats</a>
+  </div>
+  <div class="nav-right">
+    <div class="profile-menu" id="profileMenu">
+      <button class="avatar" id="profileTrigger" aria-haspopup="true" aria-expanded="false" aria-label="Account menu"></button>
+      <div class="profile-dropdown" id="profileDropdown">
+        <div class="profile-dropdown-header">
+          <div class="avatar avatar-sm"></div>
+          <div>
+            <div class="profile-dropdown-name">{{ user.username }}</div>
+            <div class="profile-dropdown-email">{{ user.email }}</div>
+          </div>
+        </div>
+        <a href="{% url 'user_profile:profile' %}" class="profile-dropdown-item active">
+          <span class="pd-icon pd-icon-profile"></span> Profile
+        </a>
+        <a href="{% url 'user_settings:settings' %}" class="profile-dropdown-item">
+          <span class="pd-icon pd-icon-settings"></span> Settings
+        </a>
+        <form method="post" action="{% url 'login:logout' %}" class="profile-dropdown-form">
+          {% csrf_token %}
+          <button type="submit" class="profile-dropdown-item profile-dropdown-logout">
+            <span class="pd-icon pd-icon-logout"></span> Logout
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</nav>
 
-    {% if profile.profile_image %}
-        <img src="{{ profile.profile_image.url }}" alt="Profile picture" width="150">
-    {% else %}
-        <p>No profile picture uploaded yet.</p>
-    {% endif %}
+<header class="profile-header">
+  <div class="profile-banner"></div>
+  <div class="profile-header-content">
+    <div class="profile-avatar-lg" id="profileAvatarLg"></div>
+    <div class="profile-identity">
+      <h1>{{ user.username }}</h1>
+      <p class="profile-handle">@{{ user.username }} · Joined {{ user.date_joined|date:"M Y"|default:"Jan 2026" }}</p>
+      <p class="profile-bio">{{ user.profile.bio|default:"No bio yet — tell other readers and watchers what you're into." }}</p>
+    </div>
+    <a href="{% url 'user_settings:settings' %}#profile" class="btn-edit-profile">Edit profile</a>
+  </div>
+</header>
 
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <label>Full name:</label><br>
-        <input type="text" name="full_name" value="{{ profile.full_name }}"><br>
-        <label>Bio:</label><br>
-        <textarea name="bio">{{ profile.bio }}</textarea><br>
-        <label>Profile image:</label><br>
-        <input type="file" name="profile_image"><br>
-        <button type="submit">Save</button>
-    </form>
-    <a href="{% url 'home:home' %}">Back to Home</a>
+<div class="layout">
+  <div>
+    <div class="stats-row" id="statsRow"></div>
+
+    <div class="tabs-row">
+      <h2 class="section-title">Library</h2>
+      <div class="tabs" id="filterTabs">
+        <button class="tab active" data-filter="all">All</button>
+        <button class="tab" data-filter="Anime">Anime</button>
+        <button class="tab" data-filter="Manga">Manga</button>
+        <button class="tab" data-filter="Movie">Movie</button>
+        <button class="tab" data-filter="Novel">Novel</button>
+        <button class="tab" data-filter="Light Novel">Light Novel</button>
+      </div>
+    </div>
+
+    <div class="library-grid" id="libraryGrid"></div>
+    <p class="empty-state" id="emptyState" hidden>Nothing here yet. Titles you finish will show up in this tab.</p>
+  </div>
+
+  <aside class="sidebar">
+    <div class="panel">
+      <h2 class="section-title">Favorite genres</h2>
+      <div class="genre-tags" id="genreTags"></div>
+    </div>
+
+    <div class="panel">
+      <h2 class="section-title">Recent activity</h2>
+      <ol class="leaderboard" id="activityList"></ol>
+    </div>
+  </aside>
+</div>
+
+<footer>
+  <a href="#">About</a>
+  <a href="#">Support</a>
+  <a href="#">Contact</a>
+  <a href="#">Privacy</a>
+</footer>
+
+<script src="{% static 'js/user_profile/profile.js' %}"></script>
 </body>
 </html>
