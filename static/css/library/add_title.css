@@ -1,0 +1,56 @@
+.search-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.media-type-select {
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 9px;
+  font-size: 0.88rem;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 9px;
+  font-size: 0.88rem;
+}
+.search-input::placeholder { color: var(--text-faint); }
+
+.card-year {
+  font-size: 0.72rem;
+  color: var(--text-faint);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.card-desc {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+  margin: 0 0 12px;
+}
+
+.add-form { margin: 0; }
+
+.btn-add {
+  width: 100%;
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--accent);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-add:hover { background: var(--accent-soft); }

@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReNote — Library</title>
+<link rel="stylesheet" href="{% static 'css/library/library.css' %}">
+</head>
+<body>
+<nav class="nav">
+  <a href="{% url 'home:home' %}" class="logo">
+    <div class="mark">R</div>
+    <div class="brand">RE<span>*</span>N<span>*</span>OTE</div>
+  </a>
+  <div class="nav-links">
+    <a href="{% url 'home:home' %}">Home</a>
+    <a href="{% url 'library:list' %}" class="active">Library</a>
+    <a href="{% url 'library:add' %}" class="cta">+ Add Title</a>
+    <a href="#">Stats</a>
+  </div>
+  <div class="nav-right">
+    <div class="profile-menu" id="profileMenu">
+      <button class="avatar" id="profileTrigger" aria-haspopup="true" aria-expanded="false" aria-label="Account menu"></button>
+      <div class="profile-dropdown" id="profileDropdown">
+        <div class="profile-dropdown-header">
+          <div class="avatar avatar-sm"></div>
+          <div>
+            <div class="profile-dropdown-name">{{ user.username }}</div>
+            <div class="profile-dropdown-email">{{ user.email }}</div>
+          </div>
+        </div>
+        <a href="{% url 'user_profile:profile' %}" class="profile-dropdown-item">
+          <span class="pd-icon pd-icon-profile"></span> Profile
+        </a>
+        <a href="{% url 'user_settings:settings' %}" class="profile-dropdown-item">
+          <span class="pd-icon pd-icon-settings"></span> Settings
+        </a>
+        <form method="post" action="{% url 'login:logout' %}" class="profile-dropdown-form">
+          {% csrf_token %}
+          <button type="submit" class="profile-dropdown-item profile-dropdown-logout">
+            <span class="pd-icon pd-icon-logout"></span> Logout
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="library-shell">
+  <div class="library-header">
+    <h1 class="page-title">Your library</h1>
+    <a href="{% url 'library:add' %}" class="btn-auth">+ Add title</a>
+  </div>
+
+  {% if messages %}
+    {% for message in messages %}
+      <p class="flash-message">{{ message }}</p>
+    {% endfor %}
+  {% endif %}
+
+  <div class="tabs" id="filterTabs">
+    <button type="button" class="tab active" data-filter="all">All</button>
+    <button type="button" class="tab" data-filter="anime">Anime</button>
+    <button type="button" class="tab" data-filter="manga">Manga</button>
+    <button type="button" class="tab" data-filter="movie">Movie</button>
+    <button type="button" class="tab" data-filter="novel">Novel</button>
+  </div>
+
+  {% if logs %}
+    <div class="library-grid" id="libraryGrid">
+      {% for log in logs %}
+        <div class="media-card" data-type="{{ log.media.media_type }}">
+          <div class="cover">
+            {% if log.media.media_image %}
+              <img src="{{ log.media.media_image }}" alt="{{ log.media.media_title }}">
+            {% else %}
+              <div class="cover-placeholder">{{ log.media.media_title }}</div>
+            {% endif %}
+            <span class="type-badge">{{ log.media.media_type|title }}</span>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">{{ log.media.media_title }}</h3>
+            <span class="status-pill status-{{ log.status|slugify }}">{{ log.status|title }}</span>
+            <div class="card-meta">
+              {% if log.personal_rate %}
+                <span class="stars">{{ log.personal_rate }}/5</span>
+              {% else %}
+                <span class="stars unrated">Not rated</span>
+              {% endif %}
+              {% if log.rewatch_count %}
+                <span class="rewatch">{{ log.rewatch_count }} rewatch{{ log.rewatch_count|pluralize }}</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="empty-state">Nothing here yet. <a href="{% url 'library:add' %}">Add your first title</a> to get started.</p>
+  {% endif %}
+</div>
+
+<script src="{% static 'js/library/library.js' %}"></script>
+</body>
+</html>

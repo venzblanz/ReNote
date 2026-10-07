@@ -26,6 +26,7 @@ urlpatterns = [
     path('register/', include('apps.register.urls')),
     path('profile/', include('apps.user_profile.urls')),
     path('settings/', include('apps.user_settings.urls')),
+    path('library/', include('apps.library.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

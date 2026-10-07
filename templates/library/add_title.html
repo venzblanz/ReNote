@@ -1,0 +1,115 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReNote — Add Title</title>
+<link rel="stylesheet" href="{% static 'css/library/library.css' %}">
+<link rel="stylesheet" href="{% static 'css/library/add_title.css' %}">
+</head>
+<body>
+<nav class="nav">
+  <a href="{% url 'home:home' %}" class="logo">
+    <div class="mark">R</div>
+    <div class="brand">RE<span>*</span>N<span>*</span>OTE</div>
+  </a>
+  <div class="nav-links">
+    <a href="{% url 'home:home' %}">Home</a>
+    <a href="{% url 'library:list' %}">Library</a>
+    <a href="{% url 'library:add' %}" class="cta active">+ Add Title</a>
+    <a href="#">Stats</a>
+  </div>
+  <div class="nav-right">
+    <div class="profile-menu" id="profileMenu">
+      <button class="avatar" id="profileTrigger" aria-haspopup="true" aria-expanded="false" aria-label="Account menu"></button>
+      <div class="profile-dropdown" id="profileDropdown">
+        <div class="profile-dropdown-header">
+          <div class="avatar avatar-sm"></div>
+          <div>
+            <div class="profile-dropdown-name">{{ user.username }}</div>
+            <div class="profile-dropdown-email">{{ user.email }}</div>
+          </div>
+        </div>
+        <a href="{% url 'user_profile:profile' %}" class="profile-dropdown-item">
+          <span class="pd-icon pd-icon-profile"></span> Profile
+        </a>
+        <a href="{% url 'user_settings:settings' %}" class="profile-dropdown-item">
+          <span class="pd-icon pd-icon-settings"></span> Settings
+        </a>
+        <form method="post" action="{% url 'login:logout' %}" class="profile-dropdown-form">
+          {% csrf_token %}
+          <button type="submit" class="profile-dropdown-item profile-dropdown-logout">
+            <span class="pd-icon pd-icon-logout"></span> Logout
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="library-shell">
+  <h1 class="page-title">Add a title</h1>
+
+  <form method="get" action="{% url 'library:add' %}" class="search-bar">
+    <select name="media_type" class="media-type-select">
+      <option value="anime" {% if media_type == 'anime' %}selected{% endif %}>Anime</option>
+      <option value="manga" {% if media_type == 'manga' %}selected{% endif %}>Manga</option>
+      <option value="movie" {% if media_type == 'movie' %}selected{% endif %}>Movie</option>
+      <option value="novel" {% if media_type == 'novel' %}selected{% endif %}>Novel</option>
+    </select>
+    <input type="text" name="q" value="{{ query }}" placeholder="Search by title…" class="search-input">
+    <button type="submit" class="btn-auth">Search</button>
+  </form>
+
+  {% if error %}
+    <p class="flash-message error">{{ error }}</p>
+  {% endif %}
+
+  {% if query %}
+    {% if results %}
+      <div class="results-grid">
+        {% for item in results %}
+          <div class="result-card">
+            <div class="cover">
+              {% if item.media_image %}
+                <img src="{{ item.media_image }}" alt="{{ item.media_title }}">
+              {% else %}
+                <div class="cover-placeholder">{{ item.media_title }}</div>
+              {% endif %}
+            </div>
+            <div class="card-body">
+              <h3 class="card-title">{{ item.media_title }}</h3>
+              {% if item.media_release_date %}
+                <span class="card-year">{{ item.media_release_date|date:"Y" }}</span>
+              {% endif %}
+              <p class="card-desc">{{ item.media_description|truncatewords:25|default:"No description available." }}</p>
+              <form method="post" action="{% url 'library:save' %}" class="add-form">
+                {% csrf_token %}
+                <input type="hidden" name="external_id" value="{{ item.external_id }}">
+                <input type="hidden" name="media_type" value="{{ item.media_type }}">
+                <input type="hidden" name="media_title" value="{{ item.media_title }}">
+                <input type="hidden" name="media_description" value="{{ item.media_description }}">
+                <input type="hidden" name="media_image" value="{{ item.media_image }}">
+                <input type="hidden" name="media_release_date" value="{{ item.media_release_date|date:'Y-m-d' }}">
+                <input type="hidden" name="media_rate" value="{{ item.media_rate|default:'' }}">
+                {% for g in item.genre %}
+                  <input type="hidden" name="genre" value="{{ g }}">
+                {% endfor %}
+                <button type="submit" class="btn-add">+ Add to library</button>
+              </form>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="empty-state">No results for "{{ query }}" in {{ media_type|title }}. Try a different search or media type.</p>
+    {% endif %}
+  {% else %}
+    <p class="empty-state">Pick a media type and search for something to add.</p>
+  {% endif %}
+</div>
+
+<script src="{% static 'js/library/library.js' %}"></script>
+</body>
+</html>
