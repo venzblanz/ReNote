@@ -623,8 +623,20 @@
 }
 .footer-brand {
   font-weight: 700;
-  color: #fff;
+  color: #C084FC;
   margin-right: 12px;
+  margin-left: 12px;
+}
+.footer-github-link a {
+  font-weight: 700;
+  color: var(--faint);
+  margin-right: 12px;
+  display: inline-block;
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+.footer-github-link a:hover {
+  color: #C084FC;
+  transform: translateX(3px) scale(1.02);
 }
 .footer-links {
   display: flex;
@@ -632,10 +644,12 @@
 }
 .footer-links a {
   color: var(--faint);
-  transition: color 0.2s ease;
+  display: inline-block;
+  transition: color 0.25s ease, transform 0.25s ease;
 }
 .footer-links a:hover {
   color: #C084FC;
+  transform: translateX(3px) scale(1.02);
 }
 
 /* ======================================================

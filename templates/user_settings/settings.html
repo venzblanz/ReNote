@@ -31,14 +31,14 @@
   <div class="dash-user-controls">
     <div class="profile-menu" id="profileMenu">
       <button class="user-profile-pill" id="profileTrigger" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
-        <div class="pill-avatar"></div>
+        <img src="{% static 'images/avatars/' %}{{ user_avatar }}" alt="{{ user.username }}" class="pill-avatar" onerror="this.onerror=null; this.src='{% static 'images/avatars/202156.png' %}';">
         <span class="pill-username">{{ user.username|default:"AnimeFan" }}</span>
         <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
       </button>
 
       <div class="profile-dropdown" id="profileDropdown">
         <div class="profile-dropdown-header">
-          <div class="avatar avatar-sm"></div>
+          <img src="{% static 'images/avatars/' %}{{ user_avatar }}" alt="{{ user.username }}" class="avatar avatar-sm" onerror="this.onerror=null; this.src='{% static 'images/avatars/202156.png' %}';">
           <div>
             <div class="profile-dropdown-name">{{ user.username }}</div>
             <div class="profile-dropdown-email">{{ user.email }}</div>
@@ -138,12 +138,25 @@
         <h2>Public Profile</h2>
         <p class="section-desc">Customize what other readers and viewers see when visiting your profile.</p>
 
-        <div class="avatar-upload">
-          <div class="profile-avatar-lg" id="avatarPreview"></div>
-          <div>
-            <label class="btn-secondary" for="avatarInput">Upload new photo</label>
-            <input type="file" id="avatarInput" name="profile_image" accept="image/*" hidden>
-            <button type="button" class="btn-text" id="removeAvatar">Remove photo</button>
+        <div class="avatar-picker-section">
+          <label class="field-label">Choose Your Avatar</label>
+          <div class="avatar-picker-header">
+            <img src="{% static 'images/avatars/' %}{{ user_avatar }}" alt="Active Avatar" class="profile-avatar-lg" id="avatarPreview" onerror="this.onerror=null; this.src='{% static 'images/avatars/202156.png' %}';">
+            <div class="avatar-current-info">
+              <span class="avatar-current-label">Active Avatar</span>
+              <span class="avatar-help-text">Click any of the presets below to select your avatar.</span>
+            </div>
+          </div>
+
+          <input type="hidden" name="profile_image" id="selectedAvatarInput" value="{{ user_avatar }}">
+
+          <div class="avatar-grid" id="avatarGrid">
+            {% for av in available_avatars %}
+              <button type="button" class="avatar-option-btn {% if av == user_avatar %}selected{% endif %}" data-avatar="{{ av }}" aria-label="Select avatar {{ forloop.counter }}" title="Avatar {{ forloop.counter }}">
+                <img src="{% static 'images/avatars/' %}{{ av }}" alt="Preset Avatar {{ forloop.counter }}" loading="lazy">
+                <span class="avatar-check-badge">✓</span>
+              </button>
+            {% endfor %}
           </div>
         </div>
 

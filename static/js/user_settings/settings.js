@@ -49,29 +49,28 @@ if (initialSection && document.querySelector(`.settings-nav-item[data-section="$
   showSection(initialSection);
 }
 
-// ---- avatar upload preview ----
-const avatarInput = document.getElementById("avatarInput");
+// ---- Preset Avatar Picker ----
+const avatarButtons = document.querySelectorAll(".avatar-option-btn");
+const selectedAvatarInput = document.getElementById("selectedAvatarInput");
 const avatarPreview = document.getElementById("avatarPreview");
-const removeAvatarBtn = document.getElementById("removeAvatar");
 
-if (avatarInput && avatarPreview) {
-  avatarInput.addEventListener("change", () => {
-    const file = avatarInput.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      avatarPreview.style.backgroundImage = `url(${e.target.result})`;
-      markDirty();
-    };
-    reader.readAsDataURL(file);
-  });
-}
-
-if (removeAvatarBtn && avatarPreview && avatarInput) {
-  removeAvatarBtn.addEventListener("click", () => {
-    avatarPreview.style.backgroundImage = "none";
-    avatarInput.value = "";
-    markDirty();
+if (avatarButtons.length && selectedAvatarInput) {
+  avatarButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const av = btn.dataset.avatar;
+      avatarButtons.forEach((b) => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      if (selectedAvatarInput.value !== av) {
+        selectedAvatarInput.value = av;
+        markDirty();
+      }
+      if (avatarPreview) {
+        const img = btn.querySelector("img");
+        if (img) {
+          avatarPreview.src = img.src;
+        }
+      }
+    });
   });
 }
 

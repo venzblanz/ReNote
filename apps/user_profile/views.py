@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Profile
+from .models import Profile, AVAILABLE_AVATARS
 from apps.user_library_log.models import UserLibraryLog
 
 
@@ -12,8 +12,9 @@ def profile_view(request):
     if request.method == 'POST':
         profile.profile_name = request.POST.get('profile_name', '').strip()
         profile.bio = request.POST.get('bio', '').strip()
-        if request.FILES.get('profile_image'):
-            profile.profile_image = request.FILES['profile_image']
+        selected_avatar = request.POST.get('profile_image', '').strip()
+        if selected_avatar and selected_avatar in AVAILABLE_AVATARS:
+            profile.profile_image = selected_avatar
         profile.save()
         messages.success(request, 'Profile updated!')
         return redirect('user_profile:profile')

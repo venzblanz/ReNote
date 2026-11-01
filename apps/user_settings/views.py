@@ -5,7 +5,7 @@ from django.contrib.auth import update_session_auth_hash, logout
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from .models import UserSettings
-from apps.user_profile.models import Profile
+from apps.user_profile.models import Profile, AVAILABLE_AVATARS
 from apps.accounts.models import User
 from apps.user_library_log.models import UserLibraryLog
 from apps.library.views import MEDIA_GENRES
@@ -72,8 +72,9 @@ def settings_view(request):
         profile.profile_name = request.POST.get('profile_name', '').strip()
         profile.bio = request.POST.get('bio', '').strip()[:200]
         profile.data_privacy_consent = request.POST.get('data_privacy_consent') == 'on'
-        if request.FILES.get('profile_image'):
-            profile.profile_image = request.FILES['profile_image']
+        selected_avatar = request.POST.get('profile_image', '').strip()
+        if selected_avatar and selected_avatar in AVAILABLE_AVATARS:
+            profile.profile_image = selected_avatar
         profile.save()
 
         # 5. User Settings Updates

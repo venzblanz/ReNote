@@ -29,14 +29,14 @@
   <div class="dash-user-controls">
     <div class="profile-menu" id="profileMenu">
       <button class="user-profile-pill" id="profileTrigger" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
-        <div class="pill-avatar"></div>
+        <img src="{% static 'images/avatars/' %}{{ user_avatar }}" alt="{{ user.username }}" class="pill-avatar" onerror="this.onerror=null; this.src='{% static 'images/avatars/202156.png' %}';">
         <span class="pill-username">{{ user.username|default:"AnimeFan" }}</span>
         <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
       </button>
 
       <div class="profile-dropdown" id="profileDropdown">
         <div class="profile-dropdown-header">
-          <div class="avatar avatar-sm"></div>
+          <img src="{% static 'images/avatars/' %}{{ user_avatar }}" alt="{{ user.username }}" class="avatar avatar-sm" onerror="this.onerror=null; this.src='{% static 'images/avatars/202156.png' %}';">
           <div>
             <div class="profile-dropdown-name">{{ user.username }}</div>
             <div class="profile-dropdown-email">{{ user.email }}</div>
