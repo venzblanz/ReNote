@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/gif" href="{% static 'images/renote_logo_icon.gif' %}">
+  <link rel="apple-touch-icon" href="{% static 'images/renote_logo_icon.gif' %}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 — Lost in the Celestial Void | ReNote</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/shared/base.css' %}?v={% now 'U' %}">
+  <link rel="stylesheet" href="{% static 'css/shared/error.css' %}?v={% now 'U' %}">
+</head>
+<body class="error-body">
+
+<main class="error-shell">
+  <div class="error-card">
+    <a href="{% url 'home:home' %}" class="error-brand" title="Return to ReNote Home">
+      <img src="{% static 'images/renote_logo_icon.gif' %}" alt="ReNote" width="38" height="38" style="width:38px;height:38px;object-fit:cover;border-radius:50%;flex-shrink:0;">
+      <span>ReNote</span>
+    </a>
+
+    <div class="error-visual">
+      <div class="error-orb-glow"></div>
+      <div class="error-orb-circle">
+        <!-- Celestial Moon / Radar Icon -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+          <path d="M2 12h20"></path>
+        </svg>
+      </div>
+    </div>
+
+    <div class="error-code">404</div>
+    <h1 class="error-title">Lost in the Celestial Void</h1>
+    <p class="error-desc">
+      The coordinates you navigated to don't exist in the ReNote universe. The page may have drifted out of orbit, been moved, or never existed.
+    </p>
+
+    <div class="error-actions">
+      <a href="{% url 'home:home' %}" class="btn-primary-glow">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        <span>Return to Dashboard</span>
+      </a>
+      <a href="{% url 'library:list' %}" class="btn-secondary-glow">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg>
+        <span>My Library</span>
+      </a>
+    </div>
+
+    <div class="error-quick-links">
+      <span>Need coordinates?</span>
+      <a href="{% url 'library:add' %}">Search Titles</a>
+      <span>·</span>
+      <a href="{% url 'home:home' %}#pickerModal">Pick for Me</a>
+      <span>·</span>
+      <a href="{% url 'user_profile:profile' %}">Profile</a>
+    </div>
+  </div>
+</main>
+
+</body>
+</html>

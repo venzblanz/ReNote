@@ -6,6 +6,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from apps.register import views as register_views
+from apps.home import views as home_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -17,6 +18,18 @@ urlpatterns = [
     path('profile/', include('apps.user_profile.urls')),
     path('settings/', include('apps.user_settings.urls')),
     path('library/', include('apps.library.urls')),
+
+    # Dedicated error preview routes (convenient in development)
+    path('404/', home_views.custom_404_view, name='preview_404'),
+    path('500/', home_views.custom_500_view, name='preview_500'),
+    path('403/', home_views.custom_403_view, name='preview_403'),
+    path('400/', home_views.custom_400_view, name='preview_400'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Production error handlers (activated when DEBUG = False)
+handler404 = 'apps.home.views.custom_404_view'
+handler500 = 'apps.home.views.custom_500_view'
+handler403 = 'apps.home.views.custom_403_view'
+handler400 = 'apps.home.views.custom_400_view'
