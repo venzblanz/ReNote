@@ -1040,16 +1040,17 @@ ANYMAIL = {
     'RESEND_API_KEY': os.environ.get('RESEND_API_KEY', ''),
     'BREVO_API_KEY': os.environ.get('BREVO_API_KEY', ''),
     'SENDGRID_API_KEY': os.environ.get('SENDGRID_API_KEY', ''),
+    'REQUESTS_TIMEOUT': EMAIL_TIMEOUT,
 }
 
-if os.environ.get('EMAIL_BACKEND'):
-    EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
-elif os.environ.get('RESEND_API_KEY'):
+if os.environ.get('RESEND_API_KEY'):
     EMAIL_BACKEND = 'anymail.backends.resend.EmailBackend'
 elif os.environ.get('BREVO_API_KEY'):
     EMAIL_BACKEND = 'anymail.backends.brevo.EmailBackend'
 elif os.environ.get('SENDGRID_API_KEY'):
     EMAIL_BACKEND = 'anymail.backends.sendgrid.EmailBackend'
+elif os.environ.get('EMAIL_BACKEND'):
+    EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
 elif DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 else:
@@ -1062,5 +1063,42 @@ EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() in ('true', '1',
 EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'False').lower() in ('true', '1', 'yes')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'ReNote <noreply@renote.app>')
+
+if os.environ.get('RESEND_API_KEY'):
+    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'onboarding@resend.dev')
+else:
+    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'ReNote <noreply@renote.app>')
 SERVER_EMAIL = os.environ.get('SERVER_EMAIL', DEFAULT_FROM_EMAIL)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] {levelname} {name}: {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'apps.login': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'anymail': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}

@@ -40,7 +40,8 @@ class PasswordResetTests(TestCase):
     def test_password_reset_handles_mail_exception_gracefully(self, mock_send):
         """
         When email delivery fails (e.g. SMTP connection timeout / blocked port),
-        the view must NOT crash with 500. It logs the error and redirects gracefully.
+        the view must NOT crash with 500. CustomPasswordResetForm catches it,
+        logs the error, and redirects gracefully to password_reset_done.
         """
         mock_send.side_effect = TimeoutError("Connection to SMTP port timed out")
 

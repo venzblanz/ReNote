@@ -1,6 +1,8 @@
 import logging
 from django import forms
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
+from django.core.mail import EmailMultiAlternatives
+from django.template import loader
 
 logger = logging.getLogger(__name__)
 
@@ -37,15 +39,18 @@ class CustomPasswordResetForm(PasswordResetForm):
         Send a password reset email with robust error logging so network/provider
         timeouts don't crash the web worker with an unhandled 500 server error.
         """
+        subject = loader.render_to_string(subject_template_name, context)
+        subject = "".join(subject.splitlines())
+        body = loader.render_to_string(email_template_name, context)
+
+        email_message = EmailMultiAlternatives(subject, body, from_email, [to_email])
+        if html_email_template_name is not None:
+            html_email = loader.render_to_string(html_email_template_name, context)
+            email_message.attach_alternative(html_email, "text/html")
+
         try:
-            super().send_mail(
-                subject_template_name,
-                email_template_name,
-                context,
-                from_email,
-                to_email,
-                html_email_template_name=html_email_template_name,
-            )
+            sent_count = email_message.send(fail_silently=False)
+            logger.info("Password reset email sent to %s (sent_count=%s)", to_email, sent_count)
         except Exception as exc:
             logger.error(
                 "Failed to send password reset email to %s: %s",
