@@ -1,147 +1,148 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <link rel="icon" type="image/gif" href="{% static 'images/renote_logo_icon.gif' %}">
-  <link rel="apple-touch-icon" href="{% static 'images/renote_logo_icon.gif' %}">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Privacy Policy — ReNote</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'css/shared/base.css' %}?v={% now 'U' %}">
-  <link rel="stylesheet" href="{% static 'css/shared/legal.css' %}?v={% now 'U' %}">
-</head>
-<body class="legal-body">
-
-<main class="legal-shell">
-  <header class="legal-top-nav">
-    <a href="{% url 'home:home' %}" class="legal-brand">
-      <img src="{% static 'images/renote_logo_icon.gif' %}" alt="ReNote" width="36" height="36" style="width:36px;height:36px;object-fit:cover;border-radius:50%;flex-shrink:0;">
-      <span>ReNote</span>
-    </a>
-    <a href="{% url 'register:register' %}" class="legal-back-btn">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-      <span>Back to Register</span>
-    </a>
-  </header>
-
-  <article class="legal-card">
-    <div class="legal-header-block">
-      <span class="legal-badge-pill">Data Protection & Privacy</span>
-      <h1 class="legal-title">Privacy Policy</h1>
-      <div class="legal-meta-row">
-        <span>Effective Date: November 2, 2026</span>
-        <span class="legal-meta-dot"></span>
-        <span>Version 1.2</span>
-        <span class="legal-meta-dot"></span>
-        <span>ReNote Media Platform</span>
-      </div>
-    </div>
-
-    <div class="legal-summary-box">
-      <div class="legal-summary-title">Summary in Plain English</div>
-      <p class="legal-summary-text">
-        At ReNote, your privacy is fundamental. We collect only the minimal data required to track your media, calculate your personal stats,
-        and generate recommendations. We do not sell your personal data, we do not run third-party advertising trackers, and you can
-        permanently erase all your data at any time via Settings.
-      </p>
-    </div>
-
-    <div class="legal-content">
-      <h2><span class="legal-section-num">1.</span> Introduction & Privacy Philosophy</h2>
-      <p>
-        ReNote ("we", "us", or "our") is designed to be a personal, clutter-free media logging dashboard.
-        We believe that privacy is not a luxury—it is a core feature. This Privacy Policy explains what information we collect,
-        how it is utilized, and the complete control you maintain over your personal data.
-      </p>
-
-      <h2><span class="legal-section-num">2.</span> Information We Collect</h2>
-      <p>We collect only the following information when you create an account and interact with the service:</p>
-      <ul>
-        <li><strong>Account Identifiers:</strong> Your chosen username and email address, used exclusively for account authentication and password recovery.</li>
-        <li><strong>Cryptographic Password Hashes:</strong> Passwords are never stored in plain text. They are hashed using industry-standard cryptographic algorithms (PBKDF2 with SHA-256) before ever touching the database.</li>
-        <li><strong>Profile Customization:</strong> Optional display name, biographical text, and your chosen preset avatar icon.</li>
-        <li><strong>Library Logs & Activity:</strong> Titles added to your collection, media types (anime, manga, movie, novel), watch/read progress statuses, personal star ratings (1 to 5), repeat rewatch counts, and timestamps.</li>
-        <li><strong>Essential Technical Data:</strong> Encrypted HTTP session cookies and CSRF protection tokens necessary to keep you securely signed in.</li>
-      </ul>
-
-      <h2><span class="legal-section-num">3.</span> What We Do NOT Collect</h2>
-      <p>To keep your footprint minimal and secure, ReNote explicitly does not collect:</p>
-      <ul>
-        <li>No financial, billing, or payment card information (the platform is free to use).</li>
-        <li>No third-party ad tracking pixels or cross-site tracking cookies.</li>
-        <li>No sale, rental, or sharing of personal data with data brokers or marketing agencies.</li>
-        <li>No precise device geolocation tracking.</li>
-      </ul>
-
-      <h2><span class="legal-section-num">4.</span> How We Use Your Information</h2>
-      <p>Your data is used strictly to power features you directly interact with:</p>
-      <ul>
-        <li>Authenticating your account and validating your sign-in sessions.</li>
-        <li>Displaying your personalized library cards, status filters, and cover collections.</li>
-        <li>Computing real-time analytics such as media type percentages (Anime, Manga, Movie, Novel), top genres, and repeat rewatch tallies.</li>
-        <li>Fueling the "Pick for Me" randomizer to help you choose what to watch or read next.</li>
-      </ul>
-
-      <h2><span class="legal-section-num">5.</span> Data Storage, Security & Encryption</h2>
-      <p>
-        We employ robust technical and organizational security controls to safeguard your data:
-      </p>
-      <ul>
-        <li>All web traffic between your browser and ReNote is encrypted in transit using standard Transport Layer Security (TLS/HTTPS).</li>
-        <li>Cross-Site Request Forgery (CSRF) protection is enforced across all state-changing forms and API actions.</li>
-        <li>Database credentials and application secrets are decoupled from application code and stored securely in environment variables.</li>
-      </ul>
-
-      <h2><span class="legal-section-num">6.</span> Third-Party Media APIs</h2>
-      <p>
-        When you search for a title or browse catalogs, ReNote queries public metadata APIs (such as Jikan/MyAnimeList and TMDb)
-        to fetch synopsis details, genres, and cover images. These catalog queries are performed server-side and never transmit your
-        username, email, or personal identity to external third parties.
-      </p>
-
-      <h2><span class="legal-section-num">7.</span> Your Rights & Data Autonomy (GDPR / CCPA)</h2>
-      <p>
-        Regardless of your geographic location, ReNote affords all users comprehensive data rights:
-      </p>
-      <ul>
-        <li><strong>Right to Access:</strong> You can review your entire library, ratings, and profile information at any time directly through your dashboard.</li>
-        <li><strong>Right to Rectification:</strong> You can modify your username, email, display name, bio, and avatar at any time in <a href="{% url 'user_settings:settings' %}">Settings</a>.</li>
-        <li><strong>Right to Erasure (Right to be Forgotten):</strong> You can permanently delete your account and all associated logs by visiting <strong>Settings &rarr; Danger Zone &rarr; Delete Account</strong>. When confirmed, all your data is instantly purged from our primary database with zero retention.</li>
-      </ul>
-
-      <h2><span class="legal-section-num">8.</span> Cookies & Local Storage</h2>
-      <p>
-        ReNote uses only functional, first-party cookies necessary for user authentication and session security.
-        We do not use tracking or advertising cookies.
-      </p>
-
-      <h2><span class="legal-section-num">9.</span> Updates to this Policy</h2>
-      <p>
-        We may occasionally update this Privacy Policy to reflect platform enhancements. When modifications occur, the effective date at the top of this document will be updated accordingly.
-      </p>
-
-      <h2><span class="legal-section-num">10.</span> Contact & Inquiries</h2>
-      <p>
-        If you have any questions or concerns regarding this Privacy Policy or how your data is handled, please reach out via GitHub at
-        <a href="https://github.com/venzblanz" target="_blank" rel="noopener noreferrer">github.com/venzblanz</a>.
-      </p>
-    </div>
-
-    <footer class="legal-footer-nav">
-      <div class="legal-tab-switch">
-        <span>Looking for our terms?</span>
-        <a href="{% url 'register:terms' %}">Read our Terms of Service &rarr;</a>
-      </div>
-      <a href="{% url 'register:register' %}" class="legal-cta-btn">
-        <span>Return to Registration</span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </a>
-    </footer>
-  </article>
-</main>
-
-</body>
-</html>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/gif" href="{% static 'images/renote_logo_icon.gif' %}">
+  <link rel="apple-touch-icon" href="{% static 'images/renote_logo_icon.gif' %}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — ReNote</title>
+  {% include 'shared/seo_meta.html' with meta_title="Privacy Policy — ReNote" meta_description="Privacy Policy and data practices for ReNote." %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/shared/base.css' %}?v={% now 'U' %}">
+  <link rel="stylesheet" href="{% static 'css/shared/legal.css' %}?v={% now 'U' %}">
+</head>
+<body class="legal-body">
+
+<main class="legal-shell">
+  <header class="legal-top-nav">
+    <a href="{% url 'home:home' %}" class="legal-brand">
+      <img src="{% static 'images/renote_logo_icon.gif' %}" alt="ReNote" width="36" height="36" style="width:36px;height:36px;object-fit:cover;border-radius:50%;flex-shrink:0;">
+      <span>ReNote</span>
+    </a>
+    <a href="{% url 'register:register' %}" class="legal-back-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      <span>Back to Register</span>
+    </a>
+  </header>
+
+  <article class="legal-card">
+    <div class="legal-header-block">
+      <span class="legal-badge-pill">Data Protection & Privacy</span>
+      <h1 class="legal-title">Privacy Policy</h1>
+      <div class="legal-meta-row">
+        <span>Effective Date: November 2, 2026</span>
+        <span class="legal-meta-dot"></span>
+        <span>Version 1.2</span>
+        <span class="legal-meta-dot"></span>
+        <span>ReNote Media Platform</span>
+      </div>
+    </div>
+
+    <div class="legal-summary-box">
+      <div class="legal-summary-title">Summary in Plain English</div>
+      <p class="legal-summary-text">
+        At ReNote, your privacy is fundamental. We collect only the minimal data required to track your media, calculate your personal stats,
+        and generate recommendations. We do not sell your personal data, we do not run third-party advertising trackers, and you can
+        permanently erase all your data at any time via Settings.
+      </p>
+    </div>
+
+    <div class="legal-content">
+      <h2><span class="legal-section-num">1.</span> Introduction & Privacy Philosophy</h2>
+      <p>
+        ReNote ("we", "us", or "our") is designed to be a personal, clutter-free media logging dashboard.
+        We believe that privacy is not a luxury—it is a core feature. This Privacy Policy explains what information we collect,
+        how it is utilized, and the complete control you maintain over your personal data.
+      </p>
+
+      <h2><span class="legal-section-num">2.</span> Information We Collect</h2>
+      <p>We collect only the following information when you create an account and interact with the service:</p>
+      <ul>
+        <li><strong>Account Identifiers:</strong> Your chosen username and email address, used exclusively for account authentication and password recovery.</li>
+        <li><strong>Cryptographic Password Hashes:</strong> Passwords are never stored in plain text. They are hashed using industry-standard cryptographic algorithms (PBKDF2 with SHA-256) before ever touching the database.</li>
+        <li><strong>Profile Customization:</strong> Optional display name, biographical text, and your chosen preset avatar icon.</li>
+        <li><strong>Library Logs & Activity:</strong> Titles added to your collection, media types (anime, manga, movie, novel), watch/read progress statuses, personal star ratings (1 to 5), repeat rewatch counts, and timestamps.</li>
+        <li><strong>Essential Technical Data:</strong> Encrypted HTTP session cookies and CSRF protection tokens necessary to keep you securely signed in.</li>
+      </ul>
+
+      <h2><span class="legal-section-num">3.</span> What We Do NOT Collect</h2>
+      <p>To keep your footprint minimal and secure, ReNote explicitly does not collect:</p>
+      <ul>
+        <li>No financial, billing, or payment card information (the platform is free to use).</li>
+        <li>No third-party ad tracking pixels or cross-site tracking cookies.</li>
+        <li>No sale, rental, or sharing of personal data with data brokers or marketing agencies.</li>
+        <li>No precise device geolocation tracking.</li>
+      </ul>
+
+      <h2><span class="legal-section-num">4.</span> How We Use Your Information</h2>
+      <p>Your data is used strictly to power features you directly interact with:</p>
+      <ul>
+        <li>Authenticating your account and validating your sign-in sessions.</li>
+        <li>Displaying your personalized library cards, status filters, and cover collections.</li>
+        <li>Computing real-time analytics such as media type percentages (Anime, Manga, Movie, Novel), top genres, and repeat rewatch tallies.</li>
+        <li>Fueling the "Pick for Me" randomizer to help you choose what to watch or read next.</li>
+      </ul>
+
+      <h2><span class="legal-section-num">5.</span> Data Storage, Security & Encryption</h2>
+      <p>
+        We employ robust technical and organizational security controls to safeguard your data:
+      </p>
+      <ul>
+        <li>All web traffic between your browser and ReNote is encrypted in transit using standard Transport Layer Security (TLS/HTTPS).</li>
+        <li>Cross-Site Request Forgery (CSRF) protection is enforced across all state-changing forms and API actions.</li>
+        <li>Database credentials and application secrets are decoupled from application code and stored securely in environment variables.</li>
+      </ul>
+
+      <h2><span class="legal-section-num">6.</span> Third-Party Media APIs</h2>
+      <p>
+        When you search for a title or browse catalogs, ReNote queries public metadata APIs (such as Jikan/MyAnimeList and TMDb)
+        to fetch synopsis details, genres, and cover images. These catalog queries are performed server-side and never transmit your
+        username, email, or personal identity to external third parties.
+      </p>
+
+      <h2><span class="legal-section-num">7.</span> Your Rights & Data Autonomy (GDPR / CCPA)</h2>
+      <p>
+        Regardless of your geographic location, ReNote affords all users comprehensive data rights:
+      </p>
+      <ul>
+        <li><strong>Right to Access:</strong> You can review your entire library, ratings, and profile information at any time directly through your dashboard.</li>
+        <li><strong>Right to Rectification:</strong> You can modify your username, email, display name, bio, and avatar at any time in <a href="{% url 'user_settings:settings' %}">Settings</a>.</li>
+        <li><strong>Right to Erasure (Right to be Forgotten):</strong> You can permanently delete your account and all associated logs by visiting <strong>Settings &rarr; Danger Zone &rarr; Delete Account</strong>. When confirmed, all your data is instantly purged from our primary database with zero retention.</li>
+      </ul>
+
+      <h2><span class="legal-section-num">8.</span> Cookies & Local Storage</h2>
+      <p>
+        ReNote uses only functional, first-party cookies necessary for user authentication and session security.
+        We do not use tracking or advertising cookies.
+      </p>
+
+      <h2><span class="legal-section-num">9.</span> Updates to this Policy</h2>
+      <p>
+        We may occasionally update this Privacy Policy to reflect platform enhancements. When modifications occur, the effective date at the top of this document will be updated accordingly.
+      </p>
+
+      <h2><span class="legal-section-num">10.</span> Contact & Inquiries</h2>
+      <p>
+        If you have any questions or concerns regarding this Privacy Policy or how your data is handled, please reach out via GitHub at
+        <a href="https://github.com/venzblanz" target="_blank" rel="noopener noreferrer">github.com/venzblanz</a>.
+      </p>
+    </div>
+
+    <footer class="legal-footer-nav">
+      <div class="legal-tab-switch">
+        <span>Looking for our terms?</span>
+        <a href="{% url 'register:terms' %}">Read our Terms of Service &rarr;</a>
+      </div>
+      <a href="{% url 'register:register' %}" class="legal-cta-btn">
+        <span>Return to Registration</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </footer>
+  </article>
+</main>
+
+</body>
+</html>

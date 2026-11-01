@@ -1,9 +1,40 @@
 import os
 import re
+import hashlib
+import logging
 from datetime import date, datetime
 from django.conf import settings
 from django.core.cache import cache
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util import Retry
+
+logger = logging.getLogger(__name__)
+
+USER_AGENT = "ReNote/1.0 (+https://renote.app; anime-media-tracker)"
+DEFAULT_TIMEOUT = (3.0, 5.0)  # (connect_timeout, read_timeout) in seconds
+
+
+def _get_http_session():
+    """Create a persistent requests session configured with connection pooling and retries."""
+    session = requests.Session()
+    retries = Retry(
+        total=2,
+        backoff_factor=0.3,
+        status_forcelist=[500, 502, 503, 504],
+        raise_on_status=False,
+    )
+    adapter = HTTPAdapter(max_retries=retries, pool_connections=10, pool_maxsize=20)
+    session.mount("https://", adapter)
+    session.mount("http://", adapter)
+    session.headers.update({
+        "User-Agent": USER_AGENT,
+        "Accept": "application/json",
+    })
+    return session
+
+
+_SESSION = _get_http_session()
 
 
 def _clean_html(text):
@@ -71,7 +102,7 @@ def search_anilist(query, media_type, genre=None):
 
     for page_num in (1, 2):
         try:
-            resp = requests.post(
+            resp = _SESSION.post(
                 "https://graphql.anilist.co",
                 json={
                     "query": gql_query,
@@ -82,8 +113,8 @@ def search_anilist(query, media_type, genre=None):
                         "page": page_num,
                     },
                 },
-                headers={"Content-Type": "application/json", "Accept": "application/json"},
-                timeout=6,
+                headers={"Content-Type": "application/json"},
+                timeout=DEFAULT_TIMEOUT,
             )
             if resp.status_code == 200:
                 p_data = resp.json().get("data", {}).get("Page", {})
@@ -91,9 +122,14 @@ def search_anilist(query, media_type, genre=None):
                 data.extend(media_list)
                 if not p_data.get("pageInfo", {}).get("hasNextPage", False):
                     break
-            else:
+            elif resp.status_code == 429:
+                logger.warning("AniList rate limit hit (429). Falling back to alternate provider.")
                 break
-        except Exception:
+            else:
+                logger.warning("AniList query failed with status %s", resp.status_code)
+                break
+        except Exception as e:
+            logger.warning("AniList request error: %s", e)
             break
 
     results = []
@@ -135,16 +171,25 @@ def search_anilist(query, media_type, genre=None):
 
 def search_kitsu(query, media_type):
     """Fallback search using Kitsu API (up to 20 results)."""
+    if not query or not query.strip():
+        return []
+
     endpoint = "anime" if media_type == "anime" else "manga"
     url = f"https://kitsu.io/api/edge/{endpoint}"
-    resp = requests.get(
-        url,
-        params={"filter[text]": query, "page[limit]": 20},
-        headers={"Accept": "application/vnd.api+json"},
-        timeout=6,
-    )
-    resp.raise_for_status()
-    data = resp.json().get("data", [])
+    try:
+        resp = _SESSION.get(
+            url,
+            params={"filter[text]": query, "page[limit]": 20},
+            headers={"Accept": "application/vnd.api+json"},
+            timeout=DEFAULT_TIMEOUT,
+        )
+        if resp.status_code != 200:
+            logger.warning("Kitsu returned status %s", resp.status_code)
+            return []
+        data = resp.json().get("data", [])
+    except Exception as e:
+        logger.warning("Kitsu request error: %s", e)
+        return []
 
     results = []
     for item in data:
@@ -186,10 +231,19 @@ def search_kitsu(query, media_type):
 
 def search_jikan(query, media_type):
     """Secondary fallback search using Jikan (MyAnimeList, up to 25 results)."""
+    if not query or not query.strip():
+        return []
+
     url = f"https://api.jikan.moe/v4/{media_type}"
-    resp = requests.get(url, params={"q": query, "limit": 25}, timeout=4.5)
-    resp.raise_for_status()
-    data = resp.json().get("data", [])
+    try:
+        resp = _SESSION.get(url, params={"q": query, "limit": 25}, timeout=DEFAULT_TIMEOUT)
+        if resp.status_code != 200:
+            logger.warning("Jikan returned status %s", resp.status_code)
+            return []
+        data = resp.json().get("data", [])
+    except Exception as e:
+        logger.warning("Jikan request error: %s", e)
+        return []
 
     results = []
     for item in data:
@@ -223,11 +277,7 @@ def search_free_movies(query, genre=None):
             if q_slug:
                 first_char = q_slug[0]
                 url = f"https://v3.sg.media-imdb.com/suggestion/{first_char}/{q_slug}.json"
-                headers = {
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                    "Accept": "application/json",
-                }
-                resp = requests.get(url, headers=headers, timeout=5)
+                resp = _SESSION.get(url, timeout=DEFAULT_TIMEOUT)
                 if resp.status_code == 200:
                     for item in resp.json().get("d", []):
                         qid = str(item.get("id", ""))
@@ -258,10 +308,10 @@ def search_free_movies(query, genre=None):
                             "media_rate": None,
                             "genre": movie_genres,
                         })
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("IMDb suggestion search failed: %s", e)
 
-    # 2. AniList Anime Movies (handles both query search and genre-based popularity exploration!)
+    # 2. AniList Anime Movies
     try:
         gql_query = """
         query ($search: String, $genre: String) {
@@ -279,11 +329,11 @@ def search_free_movies(query, genre=None):
         }
         """
         search_val = query.strip() if query and query.strip() else None
-        resp = requests.post(
+        resp = _SESSION.post(
             "https://graphql.anilist.co",
             json={"query": gql_query, "variables": {"search": search_val, "genre": genre_clean}},
-            headers={"Content-Type": "application/json", "Accept": "application/json"},
-            timeout=5,
+            headers={"Content-Type": "application/json"},
+            timeout=DEFAULT_TIMEOUT,
         )
         if resp.status_code == 200:
             data = resp.json().get("data", {}).get("Page", {}).get("media", [])
@@ -316,8 +366,8 @@ def search_free_movies(query, genre=None):
                     "media_rate": media_rate,
                     "genre": item.get("genres", []),
                 })
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("AniList movie exploration error: %s", e)
 
     return results[:50]
 
@@ -330,29 +380,31 @@ def search_tmdb(query, genre=None):
         return search_free_movies(query, genre=genre)
 
     try:
-        resp = requests.get(
+        resp = _SESSION.get(
             "https://api.themoviedb.org/3/search/movie",
             params={"api_key": api_key, "query": query},
-            timeout=6,
+            timeout=DEFAULT_TIMEOUT,
         )
-        resp.raise_for_status()
-        data = resp.json().get("results", [])
-
-        results = []
-        for item in data[:30]:
-            poster = item.get("poster_path")
-            results.append({
-                "external_id": str(item.get("id")),
-                "media_type": "movie",
-                "media_title": item.get("title") or "",
-                "media_description": _clean_html(item.get("overview")),
-                "media_image": f"https://image.tmdb.org/t/p/w500{poster}" if poster else "",
-                "media_release_date": _parse_date(item.get("release_date")),
-                "media_rate": item.get("vote_average"),
-                "genre": [],
-            })
-        return results if results else search_free_movies(query, genre=genre)
-    except Exception:
+        if resp.status_code == 200:
+            data = resp.json().get("results", [])
+            results = []
+            for item in data[:30]:
+                poster = item.get("poster_path")
+                results.append({
+                    "external_id": str(item.get("id")),
+                    "media_type": "movie",
+                    "media_title": item.get("title") or "",
+                    "media_description": _clean_html(item.get("overview")),
+                    "media_image": f"https://image.tmdb.org/t/p/w500{poster}" if poster else "",
+                    "media_release_date": _parse_date(item.get("release_date")),
+                    "media_rate": item.get("vote_average"),
+                    "genre": [],
+                })
+            return results if results else search_free_movies(query, genre=genre)
+        else:
+            return search_free_movies(query, genre=genre)
+    except Exception as e:
+        logger.warning("TMDB search error: %s", e)
         return search_free_movies(query, genre=genre)
 
 
@@ -365,10 +417,9 @@ def search_open_library(query, genre=None):
     if (not query or not query.strip()) and genre_clean:
         try:
             subj = genre_clean.lower().replace(" ", "_")
-            resp = requests.get(
+            resp = _SESSION.get(
                 f"https://openlibrary.org/subjects/{subj}.json?limit=50",
-                headers={"User-Agent": "ReNoteApp/1.0 (contact@renote.local)"},
-                timeout=6,
+                timeout=DEFAULT_TIMEOUT,
             )
             if resp.status_code == 200:
                 works = resp.json().get("works", [])
@@ -386,8 +437,8 @@ def search_open_library(query, genre=None):
                         "genre": [genre_clean],
                     })
                 return results
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("Open Library subjects query error: %s", e)
 
     search_term = (query or "").strip() or (genre_clean or "novel")
     params = {"q": search_term, "limit": 50}
@@ -395,11 +446,10 @@ def search_open_library(query, genre=None):
         params["subject"] = genre_clean
 
     try:
-        resp = requests.get(
+        resp = _SESSION.get(
             "https://openlibrary.org/search.json",
             params=params,
-            headers={"User-Agent": "ReNoteApp/1.0 (contact@renote.local)"},
-            timeout=7,
+            timeout=DEFAULT_TIMEOUT,
         )
         if resp.status_code == 200:
             data = resp.json().get("docs", [])
@@ -417,8 +467,8 @@ def search_open_library(query, genre=None):
                     "media_rate": None,
                     "genre": subjects,
                 })
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("Open Library search error: %s", e)
 
     return results
 
@@ -448,14 +498,16 @@ def search_local_catalog(query, media_type, genre=None):
                 "genre": genres,
             })
         return results
-    except Exception:
+    except Exception as e:
+        logger.warning("Local catalog fallback search error: %s", e)
         return []
 
 
 def search_media(query="", media_type="anime", genre=None):
     """
-    Search with in-memory caching and expanded pagination (up to 100 results).
+    Search with in-memory caching and resilient multi-provider fallbacks.
     Supports search by text query, genre filter, or both.
+    Never crashes on API downtime; gracefully cascades to available sources.
     """
     q = (query or "").strip().lower()
     mtype = (media_type or "anime").strip().lower()
@@ -466,7 +518,10 @@ def search_media(query="", media_type="anime", genre=None):
     if not q and not g:
         return []
 
-    cache_key = f"renote:search:{mtype}:{re.sub(r'\s+', '_', q)}:{re.sub(r'\s+', '_', g.lower())}"
+    # Safe cache key generation using SHA256 hash to support non-ASCII characters
+    query_hash = hashlib.sha256(f"{q}|{g.lower()}".encode("utf-8")).hexdigest()
+    cache_key = f"renote:search:{mtype}:{query_hash}"
+
     cached = cache.get(cache_key)
     if cached is not None:
         return cached
@@ -474,29 +529,42 @@ def search_media(query="", media_type="anime", genre=None):
     results = []
     try:
         if mtype in ("anime", "manga"):
+            # Cascade: AniList -> Kitsu -> Jikan -> Local DB
             try:
                 results = search_anilist(q, mtype, genre=g)
             except Exception as e:
+                logger.warning("AniList search exception: %s", e)
+
+            if not results and q:
+                logger.info("AniList returned 0 results for '%s', cascading to Kitsu...", q)
                 try:
                     results = search_kitsu(q, mtype)
-                except Exception:
-                    try:
-                        results = search_jikan(q, mtype)
-                    except Exception:
-                        raise e
+                except Exception as e:
+                    logger.warning("Kitsu search exception: %s", e)
+
+            if not results and q:
+                logger.info("Kitsu returned 0 results for '%s', cascading to Jikan...", q)
+                try:
+                    results = search_jikan(q, mtype)
+                except Exception as e:
+                    logger.warning("Jikan search exception: %s", e)
+
         elif mtype == "movie":
             results = search_tmdb(q, genre=g)
+
         elif mtype == "novel":
             results = search_open_library(q, genre=g)
 
-        # Cache valid results for 30 minutes; empty results for 60s
-        ttl = 1800 if results else 60
-        cache.set(cache_key, results, timeout=ttl)
-        return results
-
     except Exception as e:
+        logger.error("Unexpected search error for %s '%s': %s", mtype, q, e, exc_info=True)
+
+    # If external APIs were unreachable or returned nothing, search local database catalog
+    if not results:
         local_results = search_local_catalog(q, mtype, genre=g)
         if local_results:
-            cache.set(cache_key, local_results, timeout=300)
-            return local_results
-        raise e
+            results = local_results
+
+    # Cache valid results for 1 hour (3600s); empty results for 60s
+    ttl = 3600 if results else 60
+    cache.set(cache_key, results, timeout=ttl)
+    return results
