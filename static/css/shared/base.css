@@ -349,19 +349,22 @@ p { text-wrap: pretty; }
 @media (max-width: 820px) {
   .dash-header {
     flex-wrap: wrap;
-    gap: 14px;
-    padding: 14px 20px;
+    gap: 10px;
+    padding: 12px 16px;
   }
   .dash-nav-links {
     order: 3;
-    width: 100%;
+    width: calc(100% + 32px);
+    margin: 2px -16px 0;
+    padding: 4px 16px 8px;
     overflow-x: auto;
     overflow-y: hidden;
     gap: 8px;
-    padding: 2px 2px 6px;
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
     -webkit-overflow-scrolling: touch;
+    display: flex;
+    align-items: center;
   }
   .dash-nav-links::-webkit-scrollbar {
     display: none !important;
@@ -371,7 +374,7 @@ p { text-wrap: pretty; }
   .dash-nav-links a {
     flex-shrink: 0;
     padding: 5px 12px;
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
   }
 }
 
@@ -1043,6 +1046,65 @@ footer a:hover { color: var(--p-300); }
   .nav-links::-webkit-scrollbar { display: none; }
   .nav-links a { flex-shrink: 0; }
   .field-grid { grid-template-columns: 1fr; gap: 0; }
+}
+
+@media (max-width: 640px) {
+  .library-grid, .results-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+  .media-card, .result-card {
+    padding: 5px;
+    border-radius: 12px;
+  }
+  .cover {
+    border-radius: 8px;
+  }
+  .type-badge {
+    top: 5px;
+    left: 5px;
+    padding: 2px 7px;
+    font-size: 0.65rem;
+  }
+  .card-body {
+    padding: 8px 5px 6px;
+  }
+  .card-title {
+    font-size: 0.85rem;
+    line-height: 1.25;
+    height: 2.5em;
+    min-height: 2.5em;
+    max-height: 2.5em;
+    margin-bottom: 4px;
+  }
+  .card-title-link {
+    font-size: 0.85rem;
+    line-height: 1.25;
+  }
+  .status-pill {
+    font-size: 0.6875rem;
+    height: 18px;
+    min-height: 18px;
+    line-height: 18px;
+    margin-bottom: 4px;
+    gap: 5px;
+  }
+  .status-pill::before {
+    width: 5px;
+    height: 5px;
+  }
+  .card-meta {
+    padding: 6px 0 0;
+    font-size: 0.6875rem;
+    gap: 4px;
+  }
+  .stars, .card-meta .stars {
+    font-size: 0.6875rem;
+    letter-spacing: 0.5px;
+  }
+  .rewatch, .rewatch-zero {
+    font-size: 0.6875rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

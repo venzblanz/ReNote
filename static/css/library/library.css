@@ -269,9 +269,22 @@
 }
 
 @media (max-width: 680px) {
+  .library-shell {
+    padding: 20px 14px 60px;
+  }
+  .library-header {
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .page-title {
+    font-size: 1.65rem;
+  }
   .library-filter-bar {
     flex-direction: column;
     align-items: stretch;
+    margin-bottom: 12px;
+    gap: 12px;
   }
   .genre-filter-wrap {
     justify-content: space-between;
@@ -282,5 +295,79 @@
   }
   .genre-dropdown {
     width: 100%;
+  }
+  .tabs {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    padding-bottom: 2px;
+  }
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .tab {
+    flex-shrink: 0;
+  }
+  .genre-chips-container {
+    margin-bottom: 16px;
+  }
+  .library-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+  .media-card {
+    padding: 5px;
+    border-radius: 12px;
+  }
+  .cover {
+    border-radius: 8px;
+  }
+  .type-badge {
+    top: 5px;
+    left: 5px;
+    padding: 2px 7px;
+    font-size: 0.65rem;
+  }
+  .card-body {
+    padding: 8px 5px 6px;
+  }
+  .card-title {
+    font-size: 0.85rem;
+    line-height: 1.25;
+    height: 2.5em;
+    min-height: 2.5em;
+    max-height: 2.5em;
+    margin-bottom: 4px;
+  }
+  .card-title-link {
+    font-size: 0.85rem;
+    line-height: 1.25;
+  }
+  .status-pill {
+    font-size: 0.6875rem;
+    height: 18px;
+    min-height: 18px;
+    line-height: 18px;
+    margin-bottom: 4px;
+    gap: 5px;
+  }
+  .status-pill::before {
+    width: 5px;
+    height: 5px;
+  }
+  .card-body .card-meta {
+    padding: 6px 0 0;
+    font-size: 0.6875rem;
+    gap: 4px;
+  }
+  .card-meta .stars {
+    font-size: 0.6875rem;
+    letter-spacing: 0.5px;
+  }
+  .rewatch, .rewatch-zero {
+    font-size: 0.6875rem;
   }
 }

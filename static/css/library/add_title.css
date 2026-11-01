@@ -395,3 +395,54 @@
     width: 100%;
   }
 }
+@media (max-width: 640px) {
+  .results-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+  .result-card {
+    padding: 5px;
+    border-radius: 12px;
+  }
+  .result-card .cover {
+    border-radius: 8px;
+  }
+  .result-card .type-badge {
+    top: 5px;
+    left: 5px;
+    padding: 2px 7px;
+    font-size: 0.65rem;
+  }
+  .result-card .card-body {
+    padding: 8px 5px 6px;
+  }
+  .result-card .card-title {
+    font-size: 0.85rem;
+    line-height: 1.25;
+    height: 2.5em;
+    min-height: 2.5em;
+    max-height: 2.5em;
+    margin: 0 0 4px;
+  }
+  .result-card .card-meta {
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+  .result-card .card-year, .result-card .card-rating {
+    font-size: 0.6875rem;
+    padding: 1px 5px;
+  }
+  .result-card .card-desc {
+    font-size: 0.72rem;
+    line-height: 1.35;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    margin-bottom: 8px;
+  }
+  .result-card .btn-add {
+    height: 32px;
+    font-size: 0.75rem;
+    padding: 0 8px;
+    border-radius: 8px;
+  }
+}
