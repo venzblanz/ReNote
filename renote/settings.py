@@ -248,6 +248,7 @@ INSTALLED_APPS = [
 
 
     'django.contrib.staticfiles',
+    'anymail',
 
 
 
@@ -1028,66 +1029,38 @@ TMDB_API_KEY = os.environ.get('TMDB_API_KEY', '')
 
 
 # Email Configuration (Password Reset & Notifications)
+# Note for Render / Cloud deployments:
+# Render's Free tier blocks outbound SMTP ports (25, 465, 587), causing direct SMTP
+# connections to hang and trigger 500 timeouts. Anymail provides HTTP API backends
+# (over HTTPS port 443) for providers like Resend, Brevo, and SendGrid which work seamlessly.
 
+EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', 10))
 
+ANYMAIL = {
+    'RESEND_API_KEY': os.environ.get('RESEND_API_KEY', ''),
+    'BREVO_API_KEY': os.environ.get('BREVO_API_KEY', ''),
+    'SENDGRID_API_KEY': os.environ.get('SENDGRID_API_KEY', ''),
+}
 
-# In development (DEBUG=True), defaults to console backend unless overridden.
+if os.environ.get('EMAIL_BACKEND'):
+    EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
+elif os.environ.get('RESEND_API_KEY'):
+    EMAIL_BACKEND = 'anymail.backends.resend.EmailBackend'
+elif os.environ.get('BREVO_API_KEY'):
+    EMAIL_BACKEND = 'anymail.backends.brevo.EmailBackend'
+elif os.environ.get('SENDGRID_API_KEY'):
+    EMAIL_BACKEND = 'anymail.backends.sendgrid.EmailBackend'
+elif DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-
-
-# In production (DEBUG=False), uses SMTP backend.
-
-
-
-EMAIL_BACKEND = os.environ.get(
-
-
-
-    'EMAIL_BACKEND',
-
-
-
-    'django.core.mail.backends.console.EmailBackend' if DEBUG else 'django.core.mail.backends.smtp.EmailBackend'
-
-
-
-)
-
-
-
+# Standard SMTP configuration (used if EMAIL_BACKEND is set to smtp or on paid hosts)
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
-
-
-
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
-
-
-
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() in ('true', '1', 'yes')
-
-
-
 EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'False').lower() in ('true', '1', 'yes')
-
-
-
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
-
-
-
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-
-
-
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'ReNote <noreply@renote.app>')
-
-
-
 SERVER_EMAIL = os.environ.get('SERVER_EMAIL', DEFAULT_FROM_EMAIL)
-
-
-
-
-
-
-
