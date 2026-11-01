@@ -267,3 +267,67 @@ label.btn-secondary { cursor: pointer; }
   .settings-nav-item.active { box-shadow: inset 0 -2px 0 var(--accent), inset 0 0 0 1px var(--line-2); }
   .danger-card { flex-direction: column; align-items: flex-start; }
 }
+
+/* ---- SETTINGS FEEDBACK & MESSAGES ---- */
+.settings-messages {
+  margin-bottom: 24px;
+}
+.settings-messages .flash-message {
+  margin: 0 0 12px;
+  padding: 12px 18px;
+  border-radius: var(--r-2);
+  background: rgba(13, 13, 18, 0.85);
+  border: 1px solid var(--line-2);
+  font-size: 0.875rem;
+  color: var(--text);
+}
+.settings-messages .flash-message.error {
+  border-color: rgba(252, 129, 129, 0.4);
+  background: rgba(252, 129, 129, 0.08);
+  color: var(--bad);
+}
+.settings-messages .flash-message.success {
+  border-color: rgba(110, 231, 183, 0.4);
+  background: rgba(110, 231, 183, 0.08);
+  color: var(--ok);
+}
+
+/* Derived Genre Display */
+.derived-genre-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--r-2);
+  background: var(--s2);
+  border: 1px solid var(--line-2);
+}
+.genre-pill-highlight {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, var(--p-300), var(--p-500));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.genre-auto-badge {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  color: var(--p-300);
+}
+
+.field-hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.75rem;
+  color: var(--faint);
+  line-height: 1.4;
+}

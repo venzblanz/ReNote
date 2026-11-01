@@ -10,8 +10,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{% static 'css/shared/base.css' %}">
-<link rel="stylesheet" href="{% static 'css/user_settings/settings.css' %}">
+<link rel="stylesheet" href="{% static 'css/shared/base.css' %}?v={% now 'U' %}">
+<link rel="stylesheet" href="{% static 'css/user_settings/settings.css' %}?v={% now 'U' %}">
 </head>
 <body>
 <header class="dash-header">
@@ -64,6 +64,14 @@
 <div class="settings-shell">
   <h1 class="page-title">Settings</h1>
 
+  {% if messages %}
+    <div class="settings-messages">
+      {% for message in messages %}
+        <p class="flash-message {% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
   <div class="settings-layout">
     <nav class="settings-nav" id="settingsNav" aria-label="Settings sections">
       <button type="button" class="settings-nav-item active" data-section="account">Account</button>
@@ -73,20 +81,24 @@
       <button type="button" class="settings-nav-item danger" data-section="danger">Danger zone</button>
     </nav>
 
-    <form method="post" enctype="multipart/form-data" class="settings-content">
+    <!-- Main Settings Form -->
+    <form method="post" enctype="multipart/form-data" class="settings-content" id="settingsForm">
       {% csrf_token %}
 
+      <!-- Section: Account -->
       <div class="settings-section active" id="section-account" data-section="account">
-        <h2>Account</h2>
-        <p class="section-desc">Manage the login details tied to your ReNote account.</p>
+        <h2>Account Details</h2>
+        <p class="section-desc">Manage the primary login credentials and display properties tied to your ReNote account.</p>
 
         <div class="field">
           <label for="acc-username">Username</label>
-          <input type="text" id="acc-username" name="username" value="{{ user.username }}">
+          <input type="text" id="acc-username" name="username" value="{{ user.username }}" required autocomplete="username">
+          <small class="field-hint">Your unique @handle across the site.</small>
         </div>
         <div class="field">
-          <label for="acc-email">Email</label>
-          <input type="email" id="acc-email" name="email" value="{{ user.email }}">
+          <label for="acc-email">Email Address</label>
+          <input type="email" id="acc-email" name="email" value="{{ user.email }}" required autocomplete="email">
+          <small class="field-hint">Used for password resets and updates.</small>
         </div>
 
         <div class="divider"></div>
@@ -94,7 +106,7 @@
         <label class="toggle-row">
           <span>
             <strong>Dark mode</strong>
-            <small>Use a dark theme across ReNote.</small>
+            <small>Active dark violet-obsidian theme across all pages.</small>
           </span>
           <span class="toggle">
             <input type="checkbox" name="dark_mode" {% if settings_obj.dark_mode %}checked{% endif %}><i></i>
@@ -103,26 +115,28 @@
 
         <div class="divider"></div>
 
-        <h3>Change password</h3>
+        <h3>Change Password</h3>
+        <p class="section-desc">Leave these fields blank unless you wish to update your password.</p>
         <div class="field">
-          <label for="acc-current-pw">Current password</label>
-          <input type="password" id="acc-current-pw" name="current_password" placeholder="••••••••">
+          <label for="acc-current-pw">Current Password</label>
+          <input type="password" id="acc-current-pw" name="current_password" placeholder="••••••••" autocomplete="current-password">
         </div>
         <div class="field-grid">
           <div class="field">
-            <label for="acc-new-pw">New password</label>
-            <input type="password" id="acc-new-pw" name="new_password" placeholder="••••••••">
+            <label for="acc-new-pw">New Password</label>
+            <input type="password" id="acc-new-pw" name="new_password" placeholder="••••••••" autocomplete="new-password">
           </div>
           <div class="field">
-            <label for="acc-confirm-pw">Confirm new password</label>
-            <input type="password" id="acc-confirm-pw" name="confirm_password" placeholder="••••••••">
+            <label for="acc-confirm-pw">Confirm New Password</label>
+            <input type="password" id="acc-confirm-pw" name="confirm_password" placeholder="••••••••" autocomplete="new-password">
           </div>
         </div>
       </div>
 
+      <!-- Section: Profile -->
       <div class="settings-section" id="section-profile" data-section="profile">
-        <h2>Profile</h2>
-        <p class="section-desc">This is what other ReNote users see on your profile.</p>
+        <h2>Public Profile</h2>
+        <p class="section-desc">Customize what other readers and viewers see when visiting your profile.</p>
 
         <div class="avatar-upload">
           <div class="profile-avatar-lg" id="avatarPreview"></div>
@@ -134,93 +148,50 @@
         </div>
 
         <div class="field">
-          <label for="prof-display-name">Display name</label>
-          <input type="text" id="prof-display-name" name="profile_name" value="{{ profile.profile_name }}">
+          <label for="prof-display-name">Display Name</label>
+          <input type="text" id="prof-display-name" name="profile_name" value="{{ profile.profile_name|default:'' }}" placeholder="{{ user.username }}">
         </div>
         <div class="field">
           <label for="prof-bio">Bio</label>
-          <textarea id="prof-bio" name="bio" rows="4" placeholder="Tell people what you're into…">{{ profile.bio }}</textarea>
+          <textarea id="prof-bio" name="bio" rows="4" maxlength="200" placeholder="Tell people what genres, anime, and novels you're into…">{{ profile.bio|default:'' }}</textarea>
           <span class="char-count" id="bioCount">0 / 200</span>
         </div>
+
         <div class="field">
-          <label for="prof-favorite-genre">Favorite genre</label>
-          <select id="prof-favorite-genre" name="favorite_genre">
-            <option>Shounen</option>
-            <option>Sci-Fi</option>
-            <option>Slice of Life</option>
-            <option>Fantasy</option>
-            <option>Psychological</option>
-            <option>Romance</option>
-          </select>
+          <label>Favorite Genre (Derived from your Library)</label>
+          <div class="derived-genre-box">
+            <span class="genre-pill-highlight">{{ favorite_genre }}</span>
+            <span class="genre-auto-badge">Auto-Calculated from Stats</span>
+          </div>
+          <small class="field-hint">Your favorite genre is dynamically computed based on which genre appears most in your library titles.</small>
         </div>
       </div>
 
+      <!-- Section: Notifications -->
       <div class="settings-section" id="section-notifications" data-section="notifications">
-        <h2>Notifications</h2>
-        <p class="section-desc">Choose what ReNote should keep you posted about.</p>
+        <h2>Notifications & Alerts</h2>
+        <p class="section-desc">Control which updates and reminders ReNote sends to your email.</p>
 
         <label class="toggle-row">
           <span>
-            <strong>New episode / chapter alerts</strong>
-            <small>Get notified when something in your library has a new release.</small>
-          </span>
-          <span class="toggle"><input type="checkbox" checked><i></i></span>
-        </label>
-        <label class="toggle-row">
-          <span>
-            <strong>Weekly recap</strong>
-            <small>A short summary of what you watched, read and rated this week.</small>
+            <strong>Email Notifications & Weekly Recap</strong>
+            <small>Receive periodic updates on your reading/watching stats and important account notifications.</small>
           </span>
           <span class="toggle">
             <input type="checkbox" name="email_notification" {% if settings_obj.email_notification %}checked{% endif %}><i></i>
           </span>
         </label>
-        <label class="toggle-row">
-          <span>
-            <strong>Recommendations</strong>
-            <small>Occasional picks based on your library and ratings.</small>
-          </span>
-          <span class="toggle"><input type="checkbox"><i></i></span>
-        </label>
-        <label class="toggle-row">
-          <span>
-            <strong>Product updates</strong>
-            <small>News about new ReNote features.</small>
-          </span>
-          <span class="toggle"><input type="checkbox"><i></i></span>
-        </label>
       </div>
 
+      <!-- Section: Privacy -->
       <div class="settings-section" id="section-privacy" data-section="privacy">
-        <h2>Privacy</h2>
-        <p class="section-desc">Control who can see your library and activity.</p>
+        <h2>Privacy & Data</h2>
+        <p class="section-desc">Control your data storage consents and privacy preferences.</p>
 
-        <div class="field">
-          <label for="priv-visibility">Profile visibility</label>
-          <select id="priv-visibility" name="visibility">
-            <option>Public — anyone can view your profile</option>
-            <option>Followers only</option>
-            <option>Private — only you</option>
-          </select>
-        </div>
         <label class="toggle-row">
           <span>
-            <strong>Show activity on profile</strong>
-            <small>Let others see what you're currently watching or reading.</small>
-          </span>
-          <span class="toggle"><input type="checkbox" checked><i></i></span>
-        </label>
-        <label class="toggle-row">
-          <span>
-            <strong>Show ratings publicly</strong>
-            <small>Display your star ratings on shared library items.</small>
-          </span>
-          <span class="toggle"><input type="checkbox" checked><i></i></span>
-        </label>
-        <label class="toggle-row">
-          <span>
-            <strong>Data privacy consent</strong>
-            <small>You agree to ReNote storing your activity and library data.</small>
+            <strong>Data Privacy & Activity Consent</strong>
+            <small>Consent to storing your library logs, ratings, rewatch counts, and notes securely in your account database.</small>
           </span>
           <span class="toggle">
             <input type="checkbox" name="data_privacy_consent" {% if profile.data_privacy_consent %}checked{% endif %}><i></i>
@@ -228,27 +199,29 @@
         </label>
       </div>
 
+      <!-- Section: Danger Zone -->
       <div class="settings-section" id="section-danger" data-section="danger">
-        <h2>Danger zone</h2>
-        <p class="section-desc">These actions are permanent and can't be undone.</p>
+        <h2>Danger Zone</h2>
+        <p class="section-desc">Manage account deactivation or permanent deletion.</p>
 
         <div class="danger-card">
           <div>
-            <strong>Deactivate account</strong>
-            <small>Temporarily hide your profile and library. You can reactivate anytime by logging back in.</small>
+            <strong>Deactivate Account</strong>
+            <small>Temporarily disable your profile. You can log back in at any time to reactivate your account.</small>
           </div>
-          <button type="button" class="btn-secondary">Deactivate</button>
+          <button type="button" class="btn-secondary" id="deactivateBtn">Deactivate</button>
         </div>
 
         <div class="danger-card">
           <div>
-            <strong>Delete account</strong>
-            <small>Permanently delete your account, library and all activity. This cannot be undone.</small>
+            <strong>Delete Account</strong>
+            <small>Permanently delete your account, library logs, notes, ratings, and stats. This cannot be undone.</small>
           </div>
           <button type="button" class="btn-danger" id="openDeleteModal">Delete account</button>
         </div>
       </div>
 
+      <!-- Save Bar -->
       <div class="save-bar" id="saveBar">
         <span>You have unsaved changes</span>
         <div class="save-bar-actions">
@@ -256,25 +229,33 @@
           <button type="submit" class="btn-auth" id="saveChanges">Save changes</button>
         </div>
       </div>
-
     </form>
   </div>
 </div>
 
+<!-- Hidden Standalone Deactivate Form -->
+<form method="post" action="{% url 'user_settings:deactivate' %}" id="deactivateAccountForm" style="display:none;">
+  {% csrf_token %}
+</form>
+
+<!-- Delete Account Modal -->
 <div class="modal-overlay" id="deleteModal">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
     <h2 id="deleteModalTitle">Delete your account?</h2>
-    <p>This will permanently remove your library, ratings and activity. Type <strong>DELETE</strong> to confirm.</p>
-    <input type="text" id="deleteConfirmInput" class="modal-input" placeholder="Type DELETE">
-    <div class="modal-actions">
-      <button type="button" class="btn-secondary" id="cancelDelete">Cancel</button>
-      <button type="button" class="btn-danger" id="confirmDelete" disabled>Delete permanently</button>
-    </div>
+    <p>This will permanently delete your account, all library items, personal notes, ratings, and stats. Type <strong>DELETE</strong> below to confirm.</p>
+    <form method="post" action="{% url 'user_settings:delete' %}" id="deleteAccountForm">
+      {% csrf_token %}
+      <input type="text" id="deleteConfirmInput" name="confirm_delete" class="modal-input" placeholder="Type DELETE" autocomplete="off">
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="cancelDelete">Cancel</button>
+        <button type="submit" class="btn-danger" id="confirmDelete" disabled>Delete permanently</button>
+      </div>
+    </form>
   </div>
 </div>
 
 <div class="toast" id="toast">Changes saved</div>
 
-<script src="{% static 'js/user_settings/settings.js' %}"></script>
+<script src="{% static 'js/user_settings/settings.js' %}?v={% now 'U' %}"></script>
 </body>
 </html>
