@@ -7,17 +7,60 @@ from apps.user_library_log.models import UserLibraryLog
 from .api import search_media
 import json
 
+MEDIA_GENRES = {
+    'all': [
+        'Action', 'Adventure', 'Comedy', 'Drama', 'Fantasy', 'Horror',
+        'Mystery', 'Psychological', 'Romance', 'Sci-Fi', 'Slice of Life',
+        'Supernatural', 'Thriller',
+    ],
+    'anime': [
+        'Action', 'Adventure', 'Comedy', 'Drama', 'Ecchi', 'Fantasy', 'Horror',
+        'Mahou Shoujo', 'Mecha', 'Music', 'Mystery', 'Psychological',
+        'Romance', 'Sci-Fi', 'Slice of Life', 'Sports', 'Supernatural', 'Thriller',
+    ],
+    'manga': [
+        'Action', 'Adventure', 'Comedy', 'Drama', 'Ecchi', 'Fantasy', 'Horror',
+        'Mystery', 'Psychological', 'Romance', 'Sci-Fi', 'Slice of Life',
+        'Sports', 'Supernatural', 'Thriller',
+    ],
+    'movie': [
+        'Action', 'Adventure', 'Animation', 'Comedy', 'Crime', 'Documentary',
+        'Drama', 'Family', 'Fantasy', 'Horror', 'Music', 'Mystery',
+        'Romance', 'Sci-Fi', 'Thriller', 'War',
+    ],
+    'novel': [
+        'Action', 'Adventure', 'Fantasy', 'Historical', 'Horror',
+        'Mystery', 'Non-Fiction', 'Romance', 'Sci-Fi', 'Thriller',
+    ],
+}
+
 
 @login_required
 def library_view(request):
-    logs = UserLibraryLog.objects.filter(user=request.user).select_related('media')
-    return render(request, 'library/library.html', {'logs': logs})
+    logs = (
+        UserLibraryLog.objects
+        .filter(user=request.user)
+        .select_related('media')
+        .order_by('-date_added')
+    )
+    return render(request, 'library/library.html', {
+        'logs': logs,
+        'media_genres': MEDIA_GENRES,
+        'media_genres_json': json.dumps(MEDIA_GENRES),
+    })
 
 
 @login_required
 def add_title_view(request):
-    media_type = request.GET.get('media_type', 'anime')
+    media_type = request.GET.get('media_type', 'anime').strip().lower()
+    if media_type not in ('anime', 'manga', 'movie', 'novel'):
+        media_type = 'anime'
+
     query = request.GET.get('q', '').strip()
+    genre = request.GET.get('genre', '').strip()
+    if genre.lower() == 'all':
+        genre = ''
+
     is_json = (
         request.GET.get('format') == 'json'
         or request.headers.get('x-requested-with') == 'XMLHttpRequest'
@@ -26,9 +69,9 @@ def add_title_view(request):
     results = []
     error = None
 
-    if query:
+    if query or genre:
         try:
-            results = search_media(query, media_type)
+            results = search_media(query, media_type, genre=genre)
         except Exception:
             error = "Couldn't reach the search service right now. Try again in a moment."
 
@@ -50,6 +93,7 @@ def add_title_view(request):
         return JsonResponse({
             'results': serialized,
             'query': query,
+            'genre': genre,
             'media_type': media_type,
             'error': error,
         })
@@ -58,6 +102,10 @@ def add_title_view(request):
         'results': results,
         'media_type': media_type,
         'query': query,
+        'genre': genre,
+        'media_genres': MEDIA_GENRES,
+        'media_genres_json': json.dumps(MEDIA_GENRES),
+        'available_genres': MEDIA_GENRES.get(media_type, MEDIA_GENRES['anime']),
         'error': error,
     })
 

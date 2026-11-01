@@ -19,7 +19,7 @@
 
 <header class="dash-header">
   <a href="{% url 'home:home' %}" class="dash-brand-block">
-    <img src="{% static 'images/renote_logo_icon.gif' %}" alt="ReNote" class="brand-logo-icon">
+    <img src="{% static 'images/renote_logo_icon.gif' %}" alt="ReNote" class="brand-logo-icon" width="38" height="38" style="width:38px;height:38px;min-width:38px;min-height:38px;object-fit:cover;border-radius:50%;flex-shrink:0;">
     <span class="brand-name">ReNote</span>
   </a>
 
@@ -68,26 +68,41 @@
   <h1 class="page-title">Add a title</h1>
 
   <form method="get" action="{% url 'library:add' %}" class="search-bar" id="searchForm">
-    <select name="media_type" id="mediaTypeSelect" class="media-type-select">
+    <select name="media_type" id="mediaTypeSelect" class="media-type-select" aria-label="Media type">
       <option value="anime" {% if media_type == 'anime' %}selected{% endif %}>Anime</option>
       <option value="manga" {% if media_type == 'manga' %}selected{% endif %}>Manga</option>
       <option value="movie" {% if media_type == 'movie' %}selected{% endif %}>Movie</option>
       <option value="novel" {% if media_type == 'novel' %}selected{% endif %}>Novel</option>
     </select>
+    <select name="genre" id="genreSelect" class="media-genre-select" aria-label="Genre">
+      <option value="all">All Genres</option>
+      {% for g in available_genres %}
+        <option value="{{ g }}" {% if genre|lower == g|lower %}selected{% endif %}>{{ g }}</option>
+      {% endfor %}
+    </select>
     <div class="search-input-wrapper">
       <input type="text" name="q" id="searchInput" value="{{ query }}" placeholder="Search by title…" class="search-input" autocomplete="off">
-      <button type="button" class="search-clear-btn" id="searchClearBtn" aria-label="Clear search" {% if not query %}hidden{% endif %}>✕</button>
+      <button type="button" class="search-clear-btn" id="searchClearBtn" aria-label="Clear search" {% if not query and not genre %}hidden{% endif %}>✕</button>
       <div class="search-spinner" id="searchSpinner" hidden></div>
     </div>
     <button type="submit" class="btn-auth">Search</button>
   </form>
+
+  <div class="genre-chips-container" id="searchGenreChipsContainer">
+    <div class="genre-chips-row" id="searchGenreChipsRow">
+      <button type="button" class="genre-chip {% if not genre or genre|lower == 'all' %}active{% endif %}" data-genre="all">All</button>
+      {% for g in available_genres %}
+        <button type="button" class="genre-chip {% if genre|lower == g|lower %}active{% endif %}" data-genre="{{ g }}">{{ g }}</button>
+      {% endfor %}
+    </div>
+  </div>
 
   <div id="resultsContainer">
     {% if error %}
       <p class="flash-message error">{{ error }}</p>
     {% endif %}
 
-    {% if query %}
+    {% if query or genre %}
       {% if results %}
         <div class="results-grid">
           {% for item in results %}
@@ -140,6 +155,7 @@
 <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
 <script src="{% static 'js/library/library.js' %}?v={% now 'U' %}"></script>
+<script id="mediaGenresData" type="application/json">{{ media_genres_json|safe }}</script>
 <script src="{% static 'js/library/add_title.js' %}?v={% now 'U' %}"></script>
 </body>
 </html>

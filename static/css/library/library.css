@@ -88,3 +88,149 @@
 .card-title-link:hover {
   color: var(--p-400, #A855F7);
 }
+
+/* ======================================================
+   LIBRARY FILTER CONTROLS & GENRE CHIPS
+   ====================================================== */
+.library-filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.genre-filter-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.genre-filter-label {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.genre-select-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.genre-dropdown {
+  appearance: none;
+  -webkit-appearance: none;
+  height: 38px;
+  padding: 0 34px 0 14px;
+  border-radius: var(--r-2);
+  border: 1px solid var(--line-2);
+  background-color: var(--s2);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease);
+}
+
+.genre-dropdown:hover {
+  background-color: var(--s3);
+  border-color: rgba(168, 85, 247, 0.4);
+}
+
+.genre-dropdown:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  background-color: var(--s3);
+}
+
+.select-chevron {
+  position: absolute;
+  right: 12px;
+  pointer-events: none;
+  color: var(--dim);
+  transition: transform var(--t-fast) var(--ease);
+}
+
+.genre-select-wrap:focus-within .select-chevron {
+  color: var(--accent-bright);
+}
+
+.genre-chips-container {
+  width: 100%;
+  margin-bottom: 28px;
+}
+
+.genre-chips-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 2px 2px 6px;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+.genre-chips-row::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.genre-chip {
+  flex-shrink: 0;
+  height: 30px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--dim);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.genre-chip:hover {
+  color: #fff;
+  background: rgba(168, 85, 247, 0.12);
+  border-color: rgba(168, 85, 247, 0.35);
+  transform: translateY(-1px);
+}
+
+.genre-chip:active {
+  transform: scale(0.96);
+}
+
+.genre-chip.active {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.28), rgba(124, 58, 237, 0.38));
+  border-color: rgba(168, 85, 247, 0.65);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 0 14px rgba(168, 85, 247, 0.32);
+}
+
+@media (max-width: 680px) {
+  .library-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .genre-filter-wrap {
+    justify-content: space-between;
+    width: 100%;
+  }
+  .genre-select-wrap {
+    flex: 1;
+  }
+  .genre-dropdown {
+    width: 100%;
+  }
+}

@@ -1,6 +1,6 @@
 /**
  * ReNote — Add Title Live Search & Library Actions
- * Asynchronous search and in-place save without page refresh.
+ * Asynchronous live search with Media Type + Genre exploration and in-place save.
  */
 
 (function () {
@@ -10,18 +10,32 @@
   const searchForm = document.getElementById('searchForm');
   const searchInput = document.getElementById('searchInput');
   const mediaTypeSelect = document.getElementById('mediaTypeSelect');
+  const genreSelect = document.getElementById('genreSelect');
+  const searchGenreChipsRow = document.getElementById('searchGenreChipsRow');
   const searchSpinner = document.getElementById('searchSpinner');
   const searchClearBtn = document.getElementById('searchClearBtn');
   const resultsContainer = document.getElementById('resultsContainer');
   const toastContainer = document.getElementById('toastContainer');
+  const mediaGenresDataEl = document.getElementById('mediaGenresData');
 
   if (!searchForm || !searchInput || !resultsContainer) return;
+
+  // Load genres mapping
+  let mediaGenres = {};
+  if (mediaGenresDataEl) {
+    try {
+      mediaGenres = JSON.parse(mediaGenresDataEl.textContent || '{}');
+    } catch (e) {
+      console.warn('Failed to parse media genres', e);
+    }
+  }
 
   // State
   let debounceTimer = null;
   let activeAbortController = null;
   let lastSearchedQuery = (searchInput.value || '').trim();
   let lastSearchedType = mediaTypeSelect ? mediaTypeSelect.value : 'anime';
+  let lastSearchedGenre = genreSelect ? genreSelect.value : 'all';
 
   // Get CSRF Token helper
   function getCsrfToken() {
@@ -56,7 +70,7 @@
     return words.slice(0, count).join(' ') + '…';
   }
 
-  // Capitalize media type helper
+  // Capitalize helper
   function capitalize(str) {
     if (!str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -69,7 +83,7 @@
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
 
-    const icon = type === 'success' ? '✓' : (type === 'error' ? '✕' : 'ℹ');
+    const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ';
     toast.innerHTML = `
       <span class="toast-icon">${icon}</span>
       <span class="toast-msg">${escapeHtml(message)}</span>
@@ -77,7 +91,6 @@
 
     toastContainer.appendChild(toast);
 
-    // Animation frames
     requestAnimationFrame(() => {
       toast.classList.add('visible');
     });
@@ -92,7 +105,7 @@
   function renderSkeleton() {
     return `
       <div class="results-grid">
-        ${[1, 2, 3, 4].map(() => `
+        ${[1, 2, 3, 4, 5, 6].map(() => `
           <div class="result-card skeleton-card">
             <div class="skeleton-cover"></div>
             <div class="card-body">
@@ -111,7 +124,7 @@
   function renderCard(item, csrfToken) {
     const title = item.media_title || 'Untitled';
     const escapedTitle = escapeHtml(title);
-    const mediaType = item.media_type || 'anime';
+    const mediaType = item.media_type || (mediaTypeSelect ? mediaTypeSelect.value : 'anime');
     const year = item.media_year
       ? `<span class="card-year">${escapeHtml(item.media_year)}</span>`
       : '';
@@ -124,9 +137,9 @@
       ? `<img src="${escapeHtml(item.media_image)}" alt="${escapedTitle}" loading="lazy">`
       : `<div class="cover-placeholder">${escapedTitle}</div>`;
 
-    const genreInputs = (item.genre || []).map(g =>
-      `<input type="hidden" name="genre" value="${escapeHtml(g)}">`
-    ).join('\n');
+    const genreInputs = (item.genre || [])
+      .map((g) => `<input type="hidden" name="genre" value="${escapeHtml(g)}">`)
+      .join('\n');
 
     return `
       <div class="result-card">
@@ -157,8 +170,43 @@
     `;
   }
 
+  // Update dynamic genre dropdown options and chips when media type changes
+  function updateGenreOptions(mediaType, selectedGenre = 'all') {
+    const genresList = mediaGenres[mediaType] || mediaGenres['anime'] || [];
+
+    // Dropdown
+    if (genreSelect) {
+      genreSelect.innerHTML = '<option value="all">All Genres</option>';
+      genresList.forEach((g) => {
+        const opt = document.createElement('option');
+        opt.value = g;
+        opt.textContent = g;
+        if (g.toLowerCase() === (selectedGenre || '').toLowerCase()) {
+          opt.selected = true;
+        }
+        genreSelect.appendChild(opt);
+      });
+      if (selectedGenre && selectedGenre.toLowerCase() !== 'all') {
+        genreSelect.value = selectedGenre;
+      }
+    }
+
+    // Chips
+    if (searchGenreChipsRow) {
+      searchGenreChipsRow.innerHTML = `<button type="button" class="genre-chip ${!selectedGenre || selectedGenre.toLowerCase() === 'all' ? 'active' : ''}" data-genre="all">All</button>`;
+      genresList.forEach((g) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `genre-chip ${selectedGenre && selectedGenre.toLowerCase() === g.toLowerCase() ? 'active' : ''}`;
+        btn.dataset.genre = g;
+        btn.textContent = g;
+        searchGenreChipsRow.appendChild(btn);
+      });
+    }
+  }
+
   // Update URL without page reload
-  function updateUrl(query, mediaType, push = false) {
+  function updateUrl(query, mediaType, genre, push = false) {
     const url = new URL(window.location.href);
     if (query) {
       url.searchParams.set('q', query);
@@ -167,39 +215,59 @@
     }
     url.searchParams.set('media_type', mediaType);
 
-    if (push) {
-      window.history.pushState({ q: query, media_type: mediaType }, '', url.toString());
+    if (genre && genre.toLowerCase() !== 'all') {
+      url.searchParams.set('genre', genre);
     } else {
-      window.history.replaceState({ q: query, media_type: mediaType }, '', url.toString());
+      url.searchParams.delete('genre');
+    }
+
+    if (push) {
+      window.history.pushState({ q: query, media_type: mediaType, genre: genre }, '', url.toString());
+    } else {
+      window.history.replaceState({ q: query, media_type: mediaType, genre: genre }, '', url.toString());
     }
   }
 
   // Perform Live Search
-  async function performSearch(query, mediaType, options = { pushUrl: false }) {
-    // If empty query, reset to welcoming empty state
-    if (!query) {
+  async function performSearch(query, mediaType, genre = 'all', options = { pushUrl: false }) {
+    const cleanQuery = (query || '').trim();
+    const cleanGenre = (genre || 'all').trim();
+    const isGenreActive = cleanGenre && cleanGenre.toLowerCase() !== 'all';
+
+    // If both query and genre are empty/all, show welcoming empty state
+    if (!cleanQuery && !isGenreActive) {
       if (activeAbortController) {
         activeAbortController.abort();
         activeAbortController = null;
       }
       if (searchSpinner) searchSpinner.hidden = true;
       if (searchClearBtn) searchClearBtn.hidden = true;
-      resultsContainer.innerHTML = '<p class="empty-state">Pick a media type and search for something to add.</p>';
+      resultsContainer.innerHTML =
+        '<p class="empty-state">Pick a media type and search by title, or pick a genre above to explore titles.</p>';
       lastSearchedQuery = '';
       lastSearchedType = mediaType;
-      updateUrl('', mediaType, options.pushUrl);
+      lastSearchedGenre = 'all';
+      updateUrl('', mediaType, 'all', options.pushUrl);
       return;
     }
 
-    if (searchClearBtn) searchClearBtn.hidden = false;
+    if (searchClearBtn) {
+      searchClearBtn.hidden = !cleanQuery;
+    }
 
     // Avoid duplicate requests
-    if (query === lastSearchedQuery && mediaType === lastSearchedType && !options.force) {
+    if (
+      cleanQuery === lastSearchedQuery &&
+      mediaType === lastSearchedType &&
+      cleanGenre.toLowerCase() === lastSearchedGenre.toLowerCase() &&
+      !options.force
+    ) {
       return;
     }
 
-    lastSearchedQuery = query;
+    lastSearchedQuery = cleanQuery;
     lastSearchedType = mediaType;
+    lastSearchedGenre = cleanGenre;
 
     // Cancel in-flight search
     if (activeAbortController) {
@@ -211,10 +279,13 @@
     if (searchSpinner) searchSpinner.hidden = false;
     resultsContainer.innerHTML = renderSkeleton();
 
-    updateUrl(query, mediaType, options.pushUrl);
+    updateUrl(cleanQuery, mediaType, cleanGenre, options.pushUrl);
 
     try {
-      const endpoint = `${searchForm.action || '/library/add/'}?media_type=${encodeURIComponent(mediaType)}&q=${encodeURIComponent(query)}&format=json`;
+      const genreParam = isGenreActive ? `&genre=${encodeURIComponent(cleanGenre)}` : '';
+      const queryParam = cleanQuery ? `&q=${encodeURIComponent(cleanQuery)}` : '';
+      const endpoint = `${searchForm.action || '/library/add/'}?media_type=${encodeURIComponent(mediaType)}${queryParam}${genreParam}&format=json`;
+
       const res = await fetch(endpoint, {
         signal: activeAbortController.signal,
         headers: {
@@ -233,16 +304,22 @@
       if (data.error) {
         resultsContainer.innerHTML = `<p class="flash-message error">${escapeHtml(data.error)}</p>`;
       } else if (!data.results || data.results.length === 0) {
+        const filterDesc = [
+          cleanQuery ? `"${cleanQuery}"` : '',
+          isGenreActive ? `in genre ${cleanGenre}` : '',
+          `in ${capitalize(mediaType)}`,
+        ]
+          .filter(Boolean)
+          .join(' ');
         resultsContainer.innerHTML = `
-          <p class="empty-state">No results for "${escapeHtml(query)}" in ${capitalize(mediaType)}. Try a different search or media type.</p>
+          <p class="empty-state">No results found for ${escapeHtml(filterDesc)}. Try a different search term or genre.</p>
         `;
       } else {
-        const cardsHtml = data.results.map(item => renderCard(item, csrfToken)).join('');
+        const cardsHtml = data.results.map((item) => renderCard(item, csrfToken)).join('');
         resultsContainer.innerHTML = `<div class="results-grid">${cardsHtml}</div>`;
       }
     } catch (err) {
       if (err.name === 'AbortError') {
-        // Aborted because a newer search was initiated; ignore
         return;
       }
       console.error('Search error:', err);
@@ -258,6 +335,7 @@
   searchInput.addEventListener('input', () => {
     const query = searchInput.value.trim();
     const mediaType = mediaTypeSelect ? mediaTypeSelect.value : 'anime';
+    const genre = genreSelect ? genreSelect.value : 'all';
 
     if (searchClearBtn) {
       searchClearBtn.hidden = !query;
@@ -265,18 +343,56 @@
 
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
-      performSearch(query, mediaType, { pushUrl: false });
+      performSearch(query, mediaType, genre, { pushUrl: false });
     }, 350);
   });
 
   // Event: Media Type select change
   if (mediaTypeSelect) {
     mediaTypeSelect.addEventListener('change', () => {
-      const query = searchInput.value.trim();
       const mediaType = mediaTypeSelect.value;
-      if (query) {
-        performSearch(query, mediaType, { pushUrl: true, force: true });
+      // Repopulate genre options for this type and reset genre to 'all'
+      updateGenreOptions(mediaType, 'all');
+      const query = searchInput.value.trim();
+      performSearch(query, mediaType, 'all', { pushUrl: true, force: true });
+    });
+  }
+
+  // Event: Genre Select change
+  if (genreSelect) {
+    genreSelect.addEventListener('change', () => {
+      const genre = genreSelect.value;
+      // Sync chips active state
+      if (searchGenreChipsRow) {
+        searchGenreChipsRow.querySelectorAll('.genre-chip').forEach((c) => {
+          c.classList.toggle('active', (c.dataset.genre || '').toLowerCase() === genre.toLowerCase());
+        });
       }
+      const query = searchInput.value.trim();
+      const mediaType = mediaTypeSelect ? mediaTypeSelect.value : 'anime';
+      performSearch(query, mediaType, genre, { pushUrl: true, force: true });
+    });
+  }
+
+  // Event: Genre Chip click
+  if (searchGenreChipsRow) {
+    searchGenreChipsRow.addEventListener('click', (e) => {
+      const chip = e.target.closest('.genre-chip');
+      if (!chip) return;
+      const genre = chip.dataset.genre || 'all';
+
+      // Sync select dropdown
+      if (genreSelect) {
+        genreSelect.value = genre;
+      }
+      // Sync chip active classes
+      searchGenreChipsRow.querySelectorAll('.genre-chip').forEach((c) => {
+        c.classList.toggle('active', (c.dataset.genre || '').toLowerCase() === genre.toLowerCase());
+      });
+
+      const query = searchInput.value.trim();
+      const mediaType = mediaTypeSelect ? mediaTypeSelect.value : 'anime';
+      performSearch(query, mediaType, genre, { pushUrl: true, force: true });
     });
   }
 
@@ -286,7 +402,8 @@
     clearTimeout(debounceTimer);
     const query = searchInput.value.trim();
     const mediaType = mediaTypeSelect ? mediaTypeSelect.value : 'anime';
-    performSearch(query, mediaType, { pushUrl: true, force: true });
+    const genre = genreSelect ? genreSelect.value : 'all';
+    performSearch(query, mediaType, genre, { pushUrl: true, force: true });
   });
 
   // Event: Clear button click
@@ -295,7 +412,9 @@
       searchInput.value = '';
       searchInput.focus();
       searchClearBtn.hidden = true;
-      performSearch('', mediaTypeSelect ? mediaTypeSelect.value : 'anime', { pushUrl: true });
+      const mediaType = mediaTypeSelect ? mediaTypeSelect.value : 'anime';
+      const genre = genreSelect ? genreSelect.value : 'all';
+      performSearch('', mediaType, genre, { pushUrl: true, force: true });
     });
   }
 
@@ -359,15 +478,17 @@
     const url = new URL(window.location.href);
     const q = url.searchParams.get('q') || '';
     const mediaType = url.searchParams.get('media_type') || 'anime';
+    const genre = url.searchParams.get('genre') || 'all';
 
     searchInput.value = q;
     if (mediaTypeSelect) mediaTypeSelect.value = mediaType;
+    updateGenreOptions(mediaType, genre);
     if (searchClearBtn) searchClearBtn.hidden = !q;
 
-    performSearch(q, mediaType, { pushUrl: false, force: true });
+    performSearch(q, mediaType, genre, { pushUrl: false, force: true });
   });
 
-  // Initial check: if initial query is present, ensure clear button is visible
+  // Initial check: if query or genre is present, ensure clear button is accurate
   if (searchInput.value.trim() && searchClearBtn) {
     searchClearBtn.hidden = false;
   }
