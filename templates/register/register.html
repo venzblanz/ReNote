@@ -67,7 +67,7 @@
 
         <label class="checkbox terms-check">
           <input type="checkbox" name="terms" required>
-          <span>I agree to the <a href="#" class="link-muted">Terms</a> and <a href="#" class="link-muted">Privacy Policy</a></span>
+          <span>I agree to the <a href="{% url 'register:terms' %}" class="link-muted" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();">Terms</a> and <a href="{% url 'register:privacy' %}" class="link-muted" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();">Privacy Policy</a></span>
         </label>
 
         <button type="submit" class="btn-auth">Create account</button>

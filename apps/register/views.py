@@ -15,3 +15,11 @@ def register_view(request):
     else:
         form = RegisterForm()
     return render(request, 'register/register.html', {'form': form})
+
+
+def terms_view(request):
+    return render(request, 'register/terms.html')
+
+
+def privacy_view(request):
+    return render(request, 'register/privacy.html')
