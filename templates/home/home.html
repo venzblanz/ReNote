@@ -222,7 +222,7 @@
                 </a>
                 <div class="card-body">
                   <h3 class="card-title">
-                    <a href="{% url 'library:detail' log.media.id %}" class="card-title-link">{{ log.media.media_title }}</a>
+                    <a href="{% url 'library:detail' log.media.id %}" class="card-title-link" title="{{ log.media.media_title }}">{{ log.media.media_title }}</a>
                   </h3>
                   <span class="status-pill status-{{ log.status|slugify }}">{{ log.status|title }}</span>
                   <div class="card-meta">

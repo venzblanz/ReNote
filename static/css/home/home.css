@@ -801,21 +801,42 @@
   color: var(--p-200);
   font-size: 0.9rem;
 }
+.media-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .card-body {
   padding: 12px 8px 8px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  flex: 1 1 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
+
 .card-title {
   margin: 0 0 8px;
   font-family: var(--font-display);
   font-size: 1.05rem;
   font-weight: 650;
-  line-height: 1.25;
+  line-height: 1.35;
   letter-spacing: -0.02em;
   color: #fff;
+  height: 2.7em;
+  min-height: 2.7em;
+  max-height: 2.7em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+  width: 100%;
 }
+
 .status-pill {
   display: inline-flex;
   align-items: center;
@@ -823,6 +844,12 @@
   font-size: 0.75rem;
   color: var(--dim);
   letter-spacing: 0.02em;
+  min-height: 20px;
+  height: 20px;
+  line-height: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-bottom: 8px;
 }
 .status-pill::before {
   content: "";
@@ -852,18 +879,23 @@
   justify-content: space-between;
   align-items: center;
   align-self: stretch;
-  padding: 12px 0 0;
+  width: 100%;
+  margin-top: auto;
+  padding: 10px 0 0;
   font-size: 0.75rem;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
-  margin-top: 8px;
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 .card-meta .stars {
   color: #FCD34D;
   font-weight: 600;
+  letter-spacing: 1px;
 }
 .card-meta .stars.unrated {
   color: var(--faint);
   font-weight: 400;
+  letter-spacing: 0;
 }
 .card-meta .rewatch {
   color: #C084FC;
@@ -910,10 +942,19 @@
   display: block;
   text-decoration: none;
   cursor: pointer;
+  flex-shrink: 0;
+  width: 100%;
 }
 .card-title-link {
   color: inherit;
   text-decoration: none;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+  line-height: 1.35;
   transition: color 0.2s ease;
 }
 .card-title-link:hover {

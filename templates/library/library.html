@@ -118,17 +118,19 @@
           </a>
           <div class="card-body">
             <h3 class="card-title">
-              <a href="{% url 'library:detail' log.media.id %}" class="card-title-link">{{ log.media.media_title }}</a>
+              <a href="{% url 'library:detail' log.media.id %}" class="card-title-link" title="{{ log.media.media_title }}">{{ log.media.media_title }}</a>
             </h3>
             <span class="status-pill status-{{ log.status|slugify }}">{{ log.status|title }}</span>
             <div class="card-meta">
               {% if log.personal_rate %}
                 <span class="stars">★ {{ log.personal_rate }}/5</span>
               {% else %}
-                <span class="stars unrated">Not rated</span>
+                <span class="stars unrated">Unrated</span>
               {% endif %}
               {% if log.rewatch_count %}
                 <span class="rewatch">{{ log.rewatch_count }} rewatch{{ log.rewatch_count|pluralize }}</span>
+              {% else %}
+                <span class="rewatch-zero">0 rewatches</span>
               {% endif %}
             </div>
           </div>
