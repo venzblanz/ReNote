@@ -1,0 +1,55 @@
+/* Add title — search bar */
+.search-bar {
+  position: relative;
+  display: grid;
+  grid-template-columns: 156px minmax(0, 1fr) auto;
+  gap: 6px;
+  max-width: 800px;
+  margin: 32px 0 48px;
+  padding: 6px;
+  border-radius: var(--r-3);
+  border: 1px solid var(--line-2);
+  background: rgba(13,13,18,0.80);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 0 1px rgba(139,92,246,0.06);
+}
+.search-bar .media-type-select,
+.search-bar .search-input {
+  height: 46px;
+  border-color: transparent;
+  background-color: var(--s2);
+}
+.search-bar .media-type-select:hover,
+.search-bar .search-input:hover { background-color: var(--s3); }
+.search-bar .search-input:focus,
+.search-bar .media-type-select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  background: var(--s3);
+}
+.search-bar .btn-auth { height: 46px; padding: 0 28px; }
+
+.results-grid { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+.result-card .card-body { flex: 1; }
+.result-card { display: flex; flex-direction: column; }
+.card-year { margin: -2px 0 10px; font-size: 0.75rem; color: var(--p-400); font-weight: 500; }
+.card-desc {
+  margin: 0 0 16px;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--dim);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.add-form { margin-top: auto; align-self: stretch; }
+.btn-add { width: 100%; }
+
+@media (max-width: 560px) {
+  .search-bar { grid-template-columns: 1fr auto; }
+  .search-bar .media-type-select { grid-column: 1 / -1; }
+}

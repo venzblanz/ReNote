@@ -4,24 +4,53 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ReNote — Home</title>
+<title>ReNote — Anime Media Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/shared/base.css' %}">
 <link rel="stylesheet" href="{% static 'css/home/home.css' %}">
 </head>
-<body>
-<nav class="nav">
-    <div class="logo">
-      <div class="mark">R</div>
-      <div class="brand">RENOTE</div>
+<body class="dash-body">
+
+<div class="dash-canvas">
+
+  <!-- ==================== TOP NAVIGATION ==================== -->
+  <header class="dash-header">
+    <div class="dash-brand-block">
+      <div class="brand-badge">
+        <!-- Anime emblem in purple gradient -->
+        <svg viewBox="0 0 24 24" class="brand-svg-icon" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+        </svg>
+      </div>
+      <a href="{% url 'home:home' %}" class="brand-name">ReNote</a>
     </div>
-    <div class="nav-links">
-      <a href="#" class="active">Home</a>
-      <a href="{% url 'library:list' %}">Library</a>
-      <a href="{% url 'library:add' %}" class="cta">+ Add Title</a>
-      <a href="#">Stats</a>
-    </div>
-    <div class="nav-right">
+
+    <nav class="dash-nav-links">
+      <a href="{% url 'home:home' %}" class="active">Top 100</a>
+      <a href="#pick" id="navRandomBtn">Random</a>
+      <a href="{% url 'library:list' %}">Catalog</a>
+      <a href="{% url 'library:add' %}">Wiki</a>
+      <a href="{% url 'library:add' %}" class="nav-cta-add">+ Add Title</a>
+    </nav>
+
+    <div class="dash-user-controls">
+      <button type="button" class="ctrl-pill-btn" aria-label="Notifications" title="Notifications">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+      </button>
+
+      <button type="button" class="ctrl-pill-btn" aria-label="Messages" title="Discussions">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      </button>
+
       <div class="profile-menu" id="profileMenu">
-        <button class="avatar" id="profileTrigger" aria-haspopup="true" aria-expanded="false" aria-label="Account menu"></button>
+        <button class="user-profile-pill" id="profileTrigger" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
+          <div class="pill-avatar"></div>
+          <span class="pill-username">{{ user.username|default:"AnimeFan" }}</span>
+          <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+
         <div class="profile-dropdown" id="profileDropdown">
           <div class="profile-dropdown-header">
             <div class="avatar avatar-sm"></div>
@@ -45,79 +74,272 @@
         </div>
       </div>
     </div>
-  </nav>
+  </header>
 
-  <section class="hero">
-    <div class="wheel-field"><div class="wheel"></div></div>
-    <div class="hero-card"></div>
-    <div class="hero-card"></div>
-    <div class="hero-card"></div>
-    <div class="hero-card"></div>
+  <!-- ==================== HERO SPOTLIGHT SHOWCASE ==================== -->
+  <section class="hero-spotlight">
+    <!-- Cinematic Anime Background Art -->
+    <div class="spotlight-backdrop" id="spotlightBackdrop"></div>
 
-    <h1>Decide what to watch or read next.<br>
-      <span class="highlight">Let RE*N*OTE pick for me.</span>
-    </h1>
-
-    <div class="picker">
-      <div class="field">
-        <label for="mood">Mood</label>
-        <select id="mood">
-          <option>Adventurous, Intense, Relaxed</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="genre">Genre</label>
-        <select id="genre">
-          <option>Action, Sci-Fi, Romance, Fantasy</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="mediaType">Media Type</label>
-        <select id="mediaType">
-          <option>Anime, Movie, Manga, Novel, Light Novel…</option>
-        </select>
-      </div>
-      <button class="btn-pick" id="pickBtn">Pick for me</button>
+    <!-- Center Giant Glowing Purple Moon / Celestial Orb -->
+    <div class="purple-orb-wrapper">
+      <div class="celestial-purple-orb"></div>
+      <div class="orb-aura-particles"></div>
     </div>
-    <p class="pick-result" id="pickResult"></p>
+
+    <!-- Standing Anime Hero Character Figure -->
+    <div class="character-figure-wrapper" id="characterWrapper">
+      <img src="{% static 'images/hero_character_purple.jpg' %}" alt="Anime Hero" class="character-figure-img" id="characterImg">
+    </div>
+
+    <!-- Left Column: Spotlight Info -->
+    <div class="spotlight-info">
+      <h1 class="spotlight-title" id="spotlightTitle">Solo Leveling</h1>
+      <p class="spotlight-jp-title" id="spotlightJp">俺だけレベルアップな件 (Ore dake Reberuappu na Ken)</p>
+      
+      <p class="spotlight-synopsis" id="spotlightDesc">
+        In a world where hunters must battle deadly monsters to protect humanity, Sung Jin-woo, an underdog hunter ridiculed as the weakest of all mankind, awakens to an extraordinary system that unlocks an infinite path to level up alone into the supreme Shadow Monarch.
+      </p>
+
+      <!-- Action buttons -->
+      <div class="spotlight-cta-row">
+        <button type="button" class="btn-pill-primary" id="heroPickBtn">
+          <span>New Season</span>
+        </button>
+        <button type="button" class="btn-pill-ghost" id="openPickerBtn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <span>Watch trailer</span>
+        </button>
+      </div>
+
+      <!-- Rating & stats row -->
+      <div class="spotlight-stats-row">
+        <div class="stat-col">
+          <span class="stat-col-label">IMDB RATING</span>
+          <div class="stat-col-val">
+            <span class="stars-gold">★★★★★</span>
+            <span class="val-num" id="spotlightRating">4.9</span>
+          </div>
+        </div>
+        <div class="stat-col">
+          <span class="stat-col-label">RATING</span>
+          <div class="stat-col-val stat-rate-interactive" id="rateBtn" title="Click to rate">
+            <span class="star-icon">★</span>
+            <span id="rateLabel">Rate</span>
+          </div>
+        </div>
+        <div class="stat-col">
+          <span class="stat-col-label">POPULARITY</span>
+          <div class="stat-col-val">
+            <span class="trend-icon">📈</span>
+            <span id="spotlightPop">475K</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Genre Pills -->
+      <div class="genre-pills-row" id="spotlightGenres">
+        <span class="genre-pill">Animation</span>
+        <span class="genre-pill">Action</span>
+        <span class="genre-pill">Adventure</span>
+        <span class="genre-pill">Dark Fantasy</span>
+      </div>
+
+      <!-- Additional Details -->
+      <p class="spotlight-mini-lead" id="spotlightTagline">
+        From the weakest hunter in the world to the supreme Shadow Monarch reigning over darkness.
+      </p>
+
+      <div class="spotlight-credits">
+        <div class="credit-row"><span class="credit-label">Creator</span> <span class="credit-val" id="spotlightCreator">Chugong / DUBU (REDICE Studio)</span></div>
+        <div class="credit-row"><span class="credit-label">Stars</span> <span class="credit-val" id="spotlightStars">Taito Ban, Genta Nakamura, Reina Ueda</span></div>
+      </div>
+    </div>
+
+    <!-- Right Side: Floating Search Bar & Mini Preview Cards -->
+    <div class="spotlight-floating-dock">
+      <!-- Search Bar -->
+      <form method="get" action="{% url 'library:add' %}" class="dock-search-form">
+        <div class="dock-search-pill">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" name="q" placeholder="Search..." class="dock-search-input">
+        </div>
+      </form>
+
+      <!-- Mini Preview Cards (Interactive Switcher) -->
+      <div class="dock-mini-cards">
+        <div class="dock-card active" data-index="0" id="miniCard0" title="Switch to Solo Leveling">
+          <div class="dock-card-img" style="background-image: url('{% static 'images/hero_character_purple.jpg' %}');"></div>
+          <div class="dock-card-overlay"></div>
+          <span class="dock-card-badge">★</span>
+          <div class="dock-card-text">
+            <h4>Solo Leveling</h4>
+            <p>俺だけレベルアップな件</p>
+          </div>
+        </div>
+
+        <div class="dock-card" data-index="1" id="miniCard1" title="Switch to Gojo Satoru">
+          <div class="dock-card-img" style="background-image: url('{% static 'images/gojo_purple.jpg' %}');"></div>
+          <div class="dock-card-overlay"></div>
+          <span class="dock-card-badge">★</span>
+          <div class="dock-card-text">
+            <h4>Jujutsu Kaisen</h4>
+            <p>呪術廻戦 (Hollow Purple)</p>
+          </div>
+        </div>
+
+        <div class="dock-card" data-index="2" id="miniCard2" title="Switch to Naruto Uzumaki">
+          <div class="dock-card-img" style="background-image: url('{% static 'images/naruto_purple.jpg' %}');"></div>
+          <div class="dock-card-overlay"></div>
+          <span class="dock-card-badge">★</span>
+          <div class="dock-card-text">
+            <h4>Naruto Uzumaki</h4>
+            <p>うずまきナルト (Sage Mode)</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vertical Slider Indicator on the far right -->
+    <div class="vertical-slider-indicator">
+      <span class="slider-cur-num" id="sliderNum">01</span>
+      <div class="slider-track-line">
+        <div class="slider-pip" id="sliderPip"></div>
+      </div>
+      <span class="slider-total-num">03</span>
+    </div>
   </section>
 
-  <div class="layout">
-    <div>
-      <h2 class="section-title">Your library overview</h2>
-      <div class="library-grid" id="libraryGrid"></div>
+  <!-- ==================== "PICK FOR ME" INTERACTIVE MODAL ==================== -->
+  <div class="picker-modal-backdrop" id="pickerModal">
+    <div class="picker-dialog">
+      <div class="picker-dialog-header">
+        <div class="dialog-title-group">
+          <span class="dialog-badge">Interactive Chooser</span>
+          <h2>Decide What to Watch or Read Next</h2>
+          <p>Filter by mood, genre, and media format to discover your next title.</p>
+        </div>
+        <button type="button" class="dialog-close-btn" id="closePickerBtn">&times;</button>
+      </div>
+
+      <div class="picker-form-row">
+        <div class="field">
+          <label for="modalMood">Mood</label>
+          <select id="modalMood">
+            <option>Adventurous, Intense, Relaxed</option>
+            <option>Dark & Psychological</option>
+            <option>Emotional & Tearjerker</option>
+            <option>Hype & Shounen Energy</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="modalGenre">Genre</label>
+          <select id="modalGenre">
+            <option>Action, Sci-Fi, Romance, Fantasy</option>
+            <option>Action & Supernatural</option>
+            <option>Isekai & Fantasy</option>
+            <option>Psychological & Thriller</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="modalMediaType">Media Type</label>
+          <select id="modalMediaType">
+            <option>Anime</option>
+            <option>Manga</option>
+            <option>Movie</option>
+            <option>Novel / Light Novel</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="picker-roll-zone">
+        <button type="button" class="btn-pill-primary" id="spinPickBtn">
+          <span>Pick for Me</span>
+        </button>
+        <div class="pick-live-result" id="modalPickResult">
+          <!-- Live roll output -->
+        </div>
+      </div>
     </div>
-
-    <aside class="sidebar">
-      <div class="panel">
-        <h2 class="section-title">Stats overview</h2>
-        <div class="chart-placeholder">
-          <div class="chart-icon"></div>
-          <span>Media type breakdown — chart coming soon</span>
-        </div>
-      </div>
-
-      <div class="panel">
-        <h2 class="section-title">Top genres</h2>
-        <div class="chart-placeholder">
-          <div class="chart-icon bars"></div>
-          <span>Genre frequency — chart coming soon</span>
-        </div>
-      </div>
-
-      <div class="panel">
-        <h2 class="section-title">Rewatch leaderboard</h2>
-        <ol class="leaderboard" id="leaderboard"></ol>
-      </div>
-    </aside>
   </div>
 
-  <footer>
-    <a href="#">About</a>
-    <a href="#">Support</a>
-    <a href="#">Contact</a>
-    <a href="#">Privacy</a>
+  <!-- ==================== INTEGRATED LIBRARY SECTION ==================== -->
+  <section class="dash-library-section" id="librarySection">
+    <div class="section-header-row">
+      <div>
+        <span class="section-eyebrow">YOUR COLLECTION</span>
+        <h2 class="dash-section-title">Your library overview</h2>
+      </div>
+      <div class="library-filter-tabs" id="filterTabs">
+        <button type="button" class="tab-pill active" data-filter="all">All</button>
+        <button type="button" class="tab-pill" data-filter="Anime">Anime</button>
+        <button type="button" class="tab-pill" data-filter="Manga">Manga</button>
+        <button type="button" class="tab-pill" data-filter="Movie">Movie</button>
+        <button type="button" class="tab-pill" data-filter="Novel">Novel</button>
+      </div>
+    </div>
+
+    <div class="dash-layout-grid">
+      <!-- Media Cards Grid -->
+      <div class="library-grid" id="libraryGrid"></div>
+
+      <!-- Sidebar -->
+      <aside class="dash-sidebar">
+        <div class="dash-panel">
+          <h3 class="panel-heading">Stats overview</h3>
+          <div class="chart-box">
+            <div class="chart-donut-purple"></div>
+            <div class="chart-legend">
+              <div><span class="dot purple-500"></span> Anime (62%)</div>
+              <div><span class="dot purple-400"></span> Manga (24%)</div>
+              <div><span class="dot purple-300"></span> Movies (14%)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dash-panel">
+          <h3 class="panel-heading">Top genres</h3>
+          <div class="genre-bars">
+            <div class="gbar-item">
+              <div class="gbar-meta"><span>Action & Shounen</span><span>88%</span></div>
+              <div class="gbar-track"><div class="gbar-fill" style="width: 88%;"></div></div>
+            </div>
+            <div class="gbar-item">
+              <div class="gbar-meta"><span>Supernatural & Dark</span><span>72%</span></div>
+              <div class="gbar-track"><div class="gbar-fill" style="width: 72%;"></div></div>
+            </div>
+            <div class="gbar-item">
+              <div class="gbar-meta"><span>Sci-Fi & Cyberpunk</span><span>45%</span></div>
+              <div class="gbar-track"><div class="gbar-fill" style="width: 45%;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dash-panel">
+          <h3 class="panel-heading">Rewatch leaderboard</h3>
+          <ol class="leaderboard" id="leaderboard"></ol>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ==================== DASHBOARD FOOTER ==================== -->
+  <footer class="dash-footer">
+    <div class="footer-left">
+      <span class="footer-brand">ReNote</span>
+      <span class="footer-copy">Decide what to watch next. Made for anime lovers.</span>
+    </div>
+    <div class="footer-links">
+      <a href="{% url 'home:home' %}">Top 100</a>
+      <a href="{% url 'library:list' %}">Library</a>
+      <a href="{% url 'library:add' %}">Search</a>
+      <a href="#">Support</a>
+      <a href="#">Privacy</a>
+    </div>
   </footer>
+
+</div>
+
 <script src="{% static 'js/home/home.js' %}"></script>
 </body>
 </html>

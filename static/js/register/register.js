@@ -17,11 +17,11 @@ const strengthLabel = document.getElementById("strengthLabel");
 const matchHint = document.getElementById("matchHint");
 
 const levels = [
-  { min: 0, width: "8%",   color: "#f87171", label: "Too short" },
-  { min: 1, width: "35%",  color: "#f87171", label: "Weak" },
-  { min: 2, width: "60%",  color: "#fbbf24", label: "Getting there" },
-  { min: 3, width: "82%",  color: "#8b5cf6", label: "Binge-ready" },
-  { min: 4, width: "100%", color: "#4ade80", label: "Marathon-proof" },
+  { min: 0, width: "8%",   color: "#D9857B", label: "Too short" },
+  { min: 1, width: "35%",  color: "#D9857B", label: "Weak" },
+  { min: 2, width: "60%",  color: "#C9A66B", label: "Getting there" },
+  { min: 3, width: "82%",  color: "#F4F4F0", label: "Binge-ready" },
+  { min: 4, width: "100%", color: "#8FB79A", label: "Marathon-proof" },
 ];
 
 function scorePassword(value) {
@@ -37,11 +37,11 @@ function scorePassword(value) {
 pw1.addEventListener("input", () => {
   const score = scorePassword(pw1.value);
   if (score === -1) {
-    strengthBar.style.width = "0%";
+    strengthBar.style.transform = "scaleX(0)";
     strengthLabel.textContent = "\u00A0";
   } else {
     const level = levels[score];
-    strengthBar.style.width = level.width;
+    strengthBar.style.transform = `scaleX(${parseInt(level.width, 10) / 100})`;
     strengthBar.style.background = level.color;
     strengthLabel.textContent = level.label;
   }

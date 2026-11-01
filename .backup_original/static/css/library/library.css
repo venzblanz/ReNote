@@ -1,0 +1,72 @@
+/* Library & Add-title shared shell */
+.library-shell {
+  padding: clamp(40px, 6vw, 72px) var(--gutter) clamp(56px, 8vw, 96px);
+}
+.library-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+.library-shell > .tabs { margin-bottom: 32px; }
+
+.flash-message {
+  margin: 0 0 20px;
+  padding: 12px 16px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-2);
+  background: var(--s1);
+  font-size: 0.875rem;
+}
+.flash-message.error {
+  border-color: rgba(252, 129, 129, 0.3);
+  background: rgba(252, 129, 129, 0.07);
+  color: var(--bad);
+}
+
+.cover-placeholder {
+  display: flex;
+  align-items: flex-end;
+  width: 100%; height: 100%;
+  padding: 14px;
+  background: linear-gradient(160deg, #3d2d5c, #120d1e);
+  color: var(--p-200);
+}
+
+.card-body { padding: 12px 8px 8px; display: flex; flex-direction: column; align-items: flex-start; }
+.card-title {
+  margin: 0 0 8px;
+  font-size: 1.125rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: var(--text);
+}
+
+/* Status pills — purple-aware */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.75rem;
+  color: var(--dim);
+  letter-spacing: 0.02em;
+}
+.status-pill::before {
+  content: "";
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--faint);
+  flex-shrink: 0;
+}
+.status-watching::before, .status-reading::before { background: var(--p-400); box-shadow: 0 0 6px rgba(139,92,246,0.5); }
+.status-completed::before { background: var(--ok); box-shadow: 0 0 6px rgba(110,231,183,0.3); }
+.status-plan-to-watch::before, .status-plan-to-read::before {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--p-500);
+}
+.status-dropped::before { background: var(--bad); }
+
+.card-body .card-meta { align-self: stretch; padding: 12px 0 0; }
+.rewatch { color: var(--p-400); font-size: 0.75rem; }

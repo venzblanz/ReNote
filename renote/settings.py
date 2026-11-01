@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-=6z@&gqo9j#o%dot44cv7h_!)d!0^-h56mb+tp(5aafd8s_im6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -85,10 +85,10 @@ import os
 import dj_database_url
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(BASE_DIR / '.env')
 
 DATABASES = {
-    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL', f'sqlite:///{BASE_DIR}/db.sqlite3'))
 }
 
 
@@ -142,3 +142,4 @@ LOGOUT_REDIRECT_URL = 'login:login'
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+TMDB_API_KEY = os.environ.get('TMDB_API_KEY', '')

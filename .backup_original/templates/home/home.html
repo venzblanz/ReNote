@@ -1,0 +1,122 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReNote — Home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/shared/base.css' %}">
+<link rel="stylesheet" href="{% static 'css/home/home.css' %}">
+</head>
+<body>
+<nav class="nav">
+    <div class="logo">
+      <div class="mark">R</div>
+      <div class="brand">ReNote</div>
+    </div>
+    <div class="nav-links">
+      <a href="#" class="active">Home</a>
+      <a href="{% url 'library:list' %}">Library</a>
+      <a href="{% url 'library:add' %}" class="cta">Add title</a>
+      <a href="#">Stats</a>
+    </div>
+    <div class="nav-right">
+      <div class="profile-menu" id="profileMenu">
+        <button class="avatar" id="profileTrigger" aria-haspopup="true" aria-expanded="false" aria-label="Account menu"></button>
+        <div class="profile-dropdown" id="profileDropdown">
+          <div class="profile-dropdown-header">
+            <div class="avatar avatar-sm"></div>
+            <div>
+              <div class="profile-dropdown-name">{{ user.username }}</div>
+              <div class="profile-dropdown-email">{{ user.email }}</div>
+            </div>
+          </div>
+          <a href="{% url 'user_profile:profile' %}" class="profile-dropdown-item">
+            <span class="pd-icon pd-icon-profile"></span> Profile
+          </a>
+          <a href="{% url 'user_settings:settings' %}" class="profile-dropdown-item">
+            <span class="pd-icon pd-icon-settings"></span> Settings
+          </a>
+          <form method="post" action="{% url 'login:logout' %}" class="profile-dropdown-form">
+            {% csrf_token %}
+            <button type="submit" class="profile-dropdown-item profile-dropdown-logout">
+              <span class="pd-icon pd-icon-logout"></span> Logout
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero">
+
+    <h1>Decide what to watch or read next.<br>
+      <span class="highlight">Let ReNote pick for me.</span>
+    </h1>
+
+    <div class="picker">
+      <div class="field">
+        <label for="mood">Mood</label>
+        <select id="mood">
+          <option>Adventurous, Intense, Relaxed</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="genre">Genre</label>
+        <select id="genre">
+          <option>Action, Sci-Fi, Romance, Fantasy</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="mediaType">Media Type</label>
+        <select id="mediaType">
+          <option>Anime, Movie, Manga, Novel, Light Novel…</option>
+        </select>
+      </div>
+      <button class="btn-pick" id="pickBtn">Pick for me</button>
+    </div>
+    <p class="pick-result" id="pickResult" aria-live="polite"></p>
+  </section>
+
+  <div class="layout">
+    <div>
+      <h2 class="section-title">Your library overview</h2>
+      <div class="library-grid" id="libraryGrid"></div>
+    </div>
+
+    <aside class="sidebar">
+      <div class="panel">
+        <h2 class="section-title">Stats overview</h2>
+        <div class="chart-placeholder">
+          <div class="chart-icon"></div>
+          <span>Media type breakdown — chart coming soon</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 class="section-title">Top genres</h2>
+        <div class="chart-placeholder">
+          <div class="chart-icon bars"></div>
+          <span>Genre frequency — chart coming soon</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 class="section-title">Rewatch leaderboard</h2>
+        <ol class="leaderboard" id="leaderboard"></ol>
+      </div>
+    </aside>
+  </div>
+
+  <footer>
+    <a href="#">About</a>
+    <a href="#">Support</a>
+    <a href="#">Contact</a>
+    <a href="#">Privacy</a>
+  </footer>
+<script src="{% static 'js/home/home.js' %}"></script>
+</body>
+</html>

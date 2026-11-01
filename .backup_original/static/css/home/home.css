@@ -1,0 +1,182 @@
+/* ---------- HERO: immersive anime portal ---------- */
+.hero {
+  position: relative;
+  isolation: isolate;
+  padding: clamp(72px, 12vw, 148px) var(--gutter) clamp(64px, 8vw, 108px);
+  border-bottom: 1px solid var(--line-2);
+  overflow: hidden;
+}
+
+/* Radial purple bloom behind heading */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(ellipse 70% 70% at 12% -10%, rgba(109,40,217,0.22), transparent 65%),
+    radial-gradient(ellipse 40% 50% at 80% 50%,  rgba(139,92,246,0.08), transparent 70%);
+}
+
+/* Dot grid — purple tint */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    radial-gradient(circle, rgba(139,92,246,0.18) 1px, transparent 1px);
+  background-size: 32px 32px;
+  -webkit-mask-image: radial-gradient(ellipse 90% 80% at 15% 5%, #000 0%, transparent 68%);
+  mask-image: radial-gradient(ellipse 90% 80% at 15% 5%, #000 0%, transparent 68%);
+}
+
+.hero h1 {
+  max-width: 18ch;
+  font-size: clamp(2.75rem, 7vw, 5.75rem);
+  line-height: 1.04;
+  letter-spacing: -0.045em;
+}
+.hero h1 .highlight {
+  display: block;
+  background: linear-gradient(90deg, var(--p-300) 0%, var(--p-500) 60%, var(--p-400) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 22px rgba(139,92,246,0.35));
+}
+
+/* ---- PICKER ---- */
+.picker {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  gap: 6px;
+  max-width: 980px;
+  margin-top: clamp(40px, 5vw, 60px);
+  padding: 6px;
+  border-radius: var(--r-3);
+  background: rgba(13,13,18,0.80);
+  border: 1px solid var(--line-2);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(139,92,246,0.08);
+}
+.picker .field {
+  min-width: 0;
+  margin: 0;
+  padding: 10px 14px 8px;
+  border-radius: var(--r-2);
+  background: var(--s2);
+  transition: background-color var(--t-micro) var(--ease), box-shadow var(--t-fast) var(--ease);
+}
+.picker .field:hover,
+.picker .field:focus-within {
+  background: var(--s3);
+  box-shadow: 0 0 0 1px var(--accent-border);
+}
+.picker .field label {
+  margin-bottom: 2px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--p-400);
+}
+.picker .field select {
+  height: 28px;
+  padding: 0 22px 0 0 !important;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  background-position: right 0 center;
+  font-size: 0.9375rem;
+  outline-offset: 6px;
+}
+.btn-pick { height: auto; min-height: 60px; padding: 0 36px; font-size: 1rem; }
+
+/* ---- PICK RESULT ---- */
+.pick-result {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 7rem;
+  margin: 44px 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.75rem);
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  color: var(--dim);
+}
+.pick-result:empty::before {
+  content: "Your pick appears here.";
+  opacity: 0.4;
+}
+.pick-result .pick-label {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--p-400);
+}
+.pick-result strong {
+  font-weight: 400;
+  color: var(--text);
+  filter: drop-shadow(0 0 14px rgba(139,92,246,0.2));
+}
+.pick-result .pick-type {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  letter-spacing: 0;
+  color: var(--dim);
+}
+.pick-result.is-spinning strong {
+  color: var(--p-300);
+  animation: text-flicker 90ms linear infinite;
+}
+@keyframes text-flicker {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.6; }
+}
+
+/* ---- STATS CHARTS ---- */
+.chart-placeholder {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px;
+  border: 1px dashed var(--line-2);
+  border-radius: var(--r-3);
+  color: var(--faint);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  background: radial-gradient(ellipse at 30% 50%, rgba(139,92,246,0.04), transparent 70%);
+}
+.chart-icon {
+  position: relative;
+  width: 44px; height: 44px;
+  flex-shrink: 0;
+  border: 1.5px solid var(--line-2);
+  border-top-color: var(--p-500);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(139,92,246,0.15);
+}
+.chart-icon.bars {
+  border: 0;
+  border-radius: 0;
+  background:
+    linear-gradient(var(--p-500), var(--p-500)) 4px 100% / 6px 55% no-repeat,
+    linear-gradient(var(--p-400), var(--p-400)) 16px 100% / 6px 85% no-repeat,
+    linear-gradient(var(--line-2), var(--line-2)) 28px 100% / 6px 40% no-repeat;
+  border-bottom: 1px solid var(--line-2);
+  box-shadow: none;
+}
+
+@media (max-width: 880px) {
+  .picker { grid-template-columns: 1fr 1fr; }
+  .btn-pick { grid-column: 1 / -1; min-height: 48px; }
+}
+@media (max-width: 520px) {
+  .picker { grid-template-columns: 1fr; }
+}
