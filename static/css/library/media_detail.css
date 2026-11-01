@@ -1,10 +1,19 @@
 
+html {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  position: relative;
+}
+
 .detail-page-wrapper {
   position: relative;
   min-height: 100vh;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
   background: var(--bg, #07070A);
   color: var(--text, #F0EDFF);
-  overflow-x: hidden;
 }
 
 .detail-backdrop-banner {
@@ -717,43 +726,69 @@
 
 @media (max-width: 900px) {
   .detail-showcase-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 28px;
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
   }
 
   .detail-poster-col {
     max-width: 240px;
     margin: 0 auto;
     width: 100%;
+    box-sizing: border-box;
   }
 
   .detail-backdrop-banner {
-    height: 320px;
+    height: 280px;
+    transform: none !important;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100vw;
+    overflow: hidden;
   }
 }
 
 @media (max-width: 640px) {
   .detail-shell {
     padding: 16px 14px 60px;
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
+    overflow-x: hidden;
   }
 
   .detail-backdrop-banner {
-    height: 200px;
+    height: 180px;
+    transform: none !important;
+    width: 100%;
+    max-width: 100vw;
+    overflow: hidden;
   }
 
   .detail-top-nav {
     margin-bottom: 16px;
     gap: 8px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .btn-back-link {
     padding: 6px 14px;
     font-size: 0.8rem;
+    flex-shrink: 0;
   }
 
   .detail-breadcrumbs {
     font-size: 0.75rem;
+    white-space: normal;
+    word-break: break-word;
+    max-width: 100%;
+    line-height: 1.4;
   }
 
   .detail-showcase-grid {
@@ -761,24 +796,31 @@
     flex-direction: column;
     align-items: center;
     gap: 16px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
   }
 
   .detail-poster-col {
     width: 100%;
-    max-width: 320px;
+    max-width: 280px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 12px;
+    box-sizing: border-box;
+    min-width: 0;
   }
 
   .detail-poster-card {
-    width: 150px;
-    max-width: 150px;
+    width: 140px;
+    max-width: 140px;
     aspect-ratio: 2 / 3;
     border-radius: 12px;
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.65), 0 0 20px rgba(168, 85, 247, 0.25);
     margin: 0 auto;
+    box-sizing: border-box;
   }
 
   .detail-format-badge {
@@ -790,14 +832,16 @@
 
   .quick-actions-bar {
     width: 100%;
-    max-width: 280px;
+    max-width: 260px;
     gap: 8px;
+    box-sizing: border-box;
   }
 
   .btn-favorite-toggle {
     padding: 8px 12px;
     font-size: 0.78rem;
     border-radius: 10px;
+    box-sizing: border-box;
   }
 
   .heart-icon {
@@ -808,6 +852,7 @@
   .rewatch-stepper-box {
     padding: 6px 10px;
     border-radius: 10px;
+    box-sizing: border-box;
   }
 
   .stepper-header {
@@ -832,24 +877,34 @@
 
   .detail-info-col {
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
     gap: 18px;
+    box-sizing: border-box;
   }
 
   .detail-title-group {
     align-items: center;
     text-align: center;
     gap: 8px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .media-detail-title {
     font-size: 1.45rem;
     line-height: 1.25;
     text-align: center;
+    word-break: break-word;
+    max-width: 100%;
   }
 
   .detail-meta-pills {
     justify-content: center;
     gap: 6px;
+    max-width: 100%;
+    flex-wrap: wrap;
   }
 
   .meta-chip {
@@ -860,6 +915,8 @@
   .detail-genre-tags {
     justify-content: center;
     gap: 6px;
+    max-width: 100%;
+    flex-wrap: wrap;
   }
 
   .genre-tag-pill {
@@ -870,6 +927,9 @@
   .detail-synopsis-box {
     padding: 16px 14px;
     border-radius: 16px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .box-heading {
@@ -880,20 +940,32 @@
   .synopsis-text {
     font-size: 0.85rem;
     line-height: 1.6;
+    word-break: break-word;
   }
 
   .personal-journal-panel {
     padding: 18px 14px;
     border-radius: 18px;
     gap: 16px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .journal-header {
     padding-bottom: 12px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .journal-title-group {
+    max-width: 100%;
   }
 
   .journal-title-group h2 {
     font-size: 1.15rem;
+    word-break: break-word;
   }
 
   .journal-title-group p {
@@ -902,6 +974,9 @@
 
   .journal-field-group {
     gap: 8px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .journal-field-label {
@@ -911,16 +986,25 @@
   .status-pill-grid {
     gap: 6px;
     justify-content: center;
+    width: 100%;
+    max-width: 100%;
+    flex-wrap: wrap;
+    box-sizing: border-box;
   }
 
   .btn-status-toggle {
     padding: 7px 12px;
     font-size: 0.75rem;
+    box-sizing: border-box;
   }
 
   .rating-interactive-row {
     justify-content: center;
     gap: 10px;
+    width: 100%;
+    max-width: 100%;
+    flex-wrap: wrap;
+    box-sizing: border-box;
   }
 
   .star-btn svg {
@@ -938,10 +1022,13 @@
   }
 
   .journal-note-textarea {
+    width: 100%;
+    max-width: 100%;
     min-height: 90px;
     padding: 10px 12px;
     font-size: 0.85rem;
     border-radius: 12px;
+    box-sizing: border-box;
   }
 
   .btn-save-note {
@@ -956,10 +1043,14 @@
     border-radius: 16px;
     text-align: center;
     gap: 14px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .callout-text h3 {
     font-size: 1rem;
+    word-break: break-word;
   }
 
   .callout-text p {
