@@ -10,8 +10,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{% static 'css/shared/base.css' %}">
-<link rel="stylesheet" href="{% static 'css/user_profile/profile.css' %}">
+<link rel="stylesheet" href="{% static 'css/shared/base.css' %}?v={% now 'U' %}">
+<link rel="stylesheet" href="{% static 'css/user_profile/profile.css' %}?v={% now 'U' %}">
 </head>
 <body>
 <header class="dash-header">
@@ -66,54 +66,149 @@
   <div class="profile-header-content">
     <div class="profile-avatar-lg" id="profileAvatarLg"></div>
     <div class="profile-identity">
-      <h1>{{ user.username }}</h1>
-      <p class="profile-handle">@{{ user.username }} · Joined {{ user.date_joined|date:"M Y"|default:"Jan 2026" }}</p>
-      <p class="profile-bio">{{ user.profile.bio|default:"No bio yet — tell other readers and watchers what you're into." }}</p>
+      <h1>{{ profile.profile_name|default:user.username }}</h1>
+      <p class="profile-handle">@{{ user.username }} · Joined {{ user.date_created|date:"M Y"|default:"Recently" }}</p>
+      <p class="profile-bio">{{ profile.bio|default:"No bio yet — tell other readers and watchers what you're into." }}</p>
     </div>
-    <a href="{% url 'user_settings:settings' %}#profile" class="btn-edit-profile">Edit profile</a>
+    <a href="{% url 'user_settings:settings' %}#profile" class="btn-auth btn-edit-profile">Edit profile</a>
   </div>
 </header>
 
-<div class="layout">
-  <div>
-    <div class="stats-row" id="statsRow"></div>
+{% if messages %}
+  <div class="profile-messages-wrap">
+    {% for message in messages %}
+      <p class="flash-message">{{ message }}</p>
+    {% endfor %}
+  </div>
+{% endif %}
 
-    <div class="tabs-row">
-      <h2 class="section-title">Library</h2>
-      <div class="tabs" id="filterTabs">
-        <button class="tab active" data-filter="all">All</button>
-        <button class="tab" data-filter="Anime">Anime</button>
-        <button class="tab" data-filter="Manga">Manga</button>
-        <button class="tab" data-filter="Movie">Movie</button>
-        <button class="tab" data-filter="Novel">Novel</button>
-        <button class="tab" data-filter="Light Novel">Light Novel</button>
+<div class="layout profile-layout">
+  <div class="profile-main-col">
+    <!-- Real-time Stats Grid -->
+    <div class="stats-row" id="statsRow">
+      <div class="stat-card">
+        <div class="stat-value">{{ total_titles }}</div>
+        <div class="stat-label">Total Titles</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ anime_count }}</div>
+        <div class="stat-label">Anime Logged</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ manga_count }}</div>
+        <div class="stat-label">Manga Logged</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ movie_count }}</div>
+        <div class="stat-label">Movies Logged</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ total_rewatches }}</div>
+        <div class="stat-label">Total Rewatches</div>
+      </div>
+      <div class="stat-card highlight-stat">
+        <div class="stat-value fav-genre-val">{{ favorite_genre }}</div>
+        <div class="stat-label">Favorite Genre (Top Pick)</div>
       </div>
     </div>
 
-    <div class="library-grid" id="libraryGrid"></div>
-    <p class="empty-state" id="emptyState" hidden>Nothing here yet. Titles you finish will show up in this tab.</p>
+    <!-- Favorite Showcase (Hall of Fame) -->
+    <div class="favorites-section">
+      <div class="section-header-row">
+        <div>
+          <h2 class="section-title">Favorite & Top Picks</h2>
+          <p class="section-subtitle">Titles marked as favorite or rated highest in your collection</p>
+        </div>
+        <a href="{% url 'library:list' %}" class="view-all-link">Open My Library →</a>
+      </div>
+
+      {% if favorite_logs %}
+        <div class="favorites-grid">
+          {% for log in favorite_logs %}
+            <a href="{% url 'library:detail' log.media.id %}" class="fav-card" title="View {{ log.media.media_title }}">
+              <div class="fav-cover">
+                {% if log.media.media_image %}
+                  <img src="{{ log.media.media_image }}" alt="{{ log.media.media_title }}" loading="lazy" onerror="this.onerror=null; this.src='{% static 'images/moon.png' %}';">
+                {% else %}
+                  <div class="cover-placeholder">{{ log.media.media_title }}</div>
+                {% endif %}
+                <span class="fav-badge">{% if log.is_favorite %}★ Fav{% elif log.personal_rate %}★ {{ log.personal_rate }}/5{% else %}{{ log.media.media_type|title }}{% endif %}</span>
+              </div>
+              <div class="fav-info">
+                <h4 class="fav-title">{{ log.media.media_title }}</h4>
+                <div class="fav-meta">
+                  <span class="fav-type">{{ log.media.media_type|title }}</span>
+                  {% if log.rewatch_count %}
+                    <span class="fav-rewatch">{{ log.rewatch_count }} rewatch{{ log.rewatch_count|pluralize }}</span>
+                  {% endif %}
+                </div>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="profile-empty-panel">
+          <p>No favorites starred yet. Open any title in your library and click <strong>★ Favorite</strong> to showcase it here!</p>
+          <a href="{% url 'library:list' %}" class="btn-auth btn-sm">Go to Library</a>
+        </div>
+      {% endif %}
+    </div>
   </div>
 
-  <aside class="sidebar">
+  <aside class="sidebar profile-sidebar">
+    <!-- Favorite Genres Breakdown -->
     <div class="panel">
-      <h2 class="section-title">Favorite genres</h2>
-      <div class="genre-tags" id="genreTags"></div>
+      <h2 class="section-title">Top Genres</h2>
+      {% if top_genres %}
+        <div class="genre-tags">
+          {% for g in top_genres %}
+            <span class="genre-tag">
+              <span class="genre-tag-name">{{ g.name }}</span>
+              <span class="genre-tag-badge">{{ g.count }}</span>
+            </span>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="empty-subtext">No genres logged yet. Start adding titles to see your taste profile!</p>
+      {% endif %}
     </div>
 
+    <!-- Recent Activity -->
     <div class="panel">
-      <h2 class="section-title">Recent activity</h2>
-      <ol class="leaderboard" id="activityList"></ol>
+      <h2 class="section-title">Recent Activity</h2>
+      {% if recent_activity %}
+        <ol class="leaderboard profile-activity-list">
+          {% for log in recent_activity %}
+            <li>
+              <span class="lb-rank">{{ forloop.counter }}.</span>
+              <div class="lb-title">
+                <a href="{% url 'library:detail' log.media.id %}" class="lb-title-link">{{ log.media.media_title }}</a>
+                <span class="lb-subtitle">{{ log.media.media_type|title }} • <span class="status-inline status-{{ log.status|slugify }}">{{ log.status|title }}</span></span>
+              </div>
+              {% if log.rewatch_count %}
+                <span class="lb-count">{{ log.rewatch_count }} rewatch{{ log.rewatch_count|pluralize }}</span>
+              {% elif log.personal_rate %}
+                <span class="lb-count">★ {{ log.personal_rate }}/5</span>
+              {% else %}
+                <span class="lb-count lb-date">{{ log.date_added|date:"M d" }}</span>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ol>
+      {% else %}
+        <p class="empty-subtext">No activity yet. <a href="{% url 'library:add' %}">Add your first title</a> to begin logging.</p>
+      {% endif %}
     </div>
   </aside>
 </div>
 
 <footer>
-  <a href="#">About</a>
-  <a href="#">Support</a>
-  <a href="#">Contact</a>
-  <a href="#">Privacy</a>
+  <a href="{% url 'home:home' %}">Dashboard</a>
+  <a href="{% url 'library:list' %}">My Library</a>
+  <a href="{% url 'library:add' %}">Catalog Search</a>
+  <a href="{% url 'user_settings:settings' %}">Settings</a>
 </footer>
 
-<script src="{% static 'js/user_profile/profile.js' %}"></script>
+<script src="{% static 'js/user_profile/profile.js' %}?v={% now 'U' %}"></script>
 </body>
 </html>
