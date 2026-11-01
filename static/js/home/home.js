@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     {
       title: "ReNote",
       jpTitle: "月夜のメディアカタログ (Celestial Moon Collection)",
-      desc: "Stories come alive when the world goes quiet. Renote was built around the Violet Hour—that fleeting twilight when reality fades into imagination—and the Moon, humanity’s oldest keeper of time and memory. Just as the moon reflects light in the dark, Renote is your personal night-sky archive: a place to re-note, track, and revisit every anime, novel, manga, and film that left a mark on you.",
+      desc: "Every story that moves you deserves a place in the night sky. ReNote reflects your journey through fiction, giving you a personal sanctuary to record, track, and relive the anime, manga, novels, and films that left their mark.",
       image: "/static/images/moon.png",
       rating: "5.0",
       genres: ["Anime", "Manga", "Movie", "Novel"],
