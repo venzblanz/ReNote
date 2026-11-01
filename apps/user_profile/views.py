@@ -4,7 +4,6 @@ from django.contrib import messages
 from .models import Profile, AVAILABLE_AVATARS
 from apps.user_library_log.models import UserLibraryLog
 
-
 @login_required
 def profile_view(request):
     profile, created = Profile.objects.get_or_create(user=request.user)

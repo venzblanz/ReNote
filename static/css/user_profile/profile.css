@@ -1,4 +1,4 @@
-/* ---- PROFILE BANNER ---- */
+
 .profile-banner {
   position: relative;
   height: clamp(140px, 18vw, 220px);
@@ -6,7 +6,7 @@
   background: linear-gradient(160deg, #1a0d2e 0%, #0d0d12 100%);
   overflow: hidden;
 }
-/* Glowing mesh pattern in banner */
+
 .profile-banner::before {
   content: "";
   position: absolute;
@@ -19,7 +19,7 @@
   -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 100%);
   mask-image: linear-gradient(180deg, #000 0%, transparent 100%);
 }
-/* Purple glow spot */
+
 .profile-banner::after {
   content: "";
   position: absolute;
@@ -70,7 +70,6 @@
 .profile-bio { margin: 14px 0 0; max-width: 60ch; color: var(--dim); line-height: 1.65; }
 .btn-edit-profile { margin-bottom: 6px; }
 
-/* ---- STATS GRID ---- */
 .stats-row {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -114,7 +113,6 @@
 }
 .tabs-row .section-title { margin: 0; font-size: 2rem; }
 
-/* ---- SIDEBAR ---- */
 .genre-tags { display: flex; flex-wrap: wrap; gap: 8px; }
 .genre-tag {
   padding: 5px 13px;
@@ -138,7 +136,6 @@
   .btn-edit-profile { margin: 56px 0 0 auto; }
 }
 
-/* ---- HIGHLIGHT STAT (Favorite Genre) ---- */
 .stat-card.highlight-stat {
   background: linear-gradient(135deg, rgba(168, 85, 247, 0.12), rgba(13, 13, 18, 0.9));
   border-left: 2px solid var(--accent);
@@ -153,17 +150,14 @@
   word-break: break-word;
 }
 
-/* Messages */
 .profile-messages-wrap {
   padding: 16px var(--gutter) 0;
 }
 
-/* Layout */
 .profile-layout {
   padding: clamp(32px, 5vw, 56px) var(--gutter) clamp(48px, 6vw, 72px);
 }
 
-/* ---- FAVORITES SHOWCASE ---- */
 .favorites-section {
   margin-top: 10px;
 }
@@ -297,7 +291,6 @@
   font-size: 0.8125rem;
 }
 
-/* Sidebar genre badge */
 .genre-tag-name {
   color: var(--text);
 }
@@ -312,7 +305,6 @@
   color: var(--p-300);
 }
 
-/* Sidebar activity list */
 .lb-title-link {
   color: inherit;
   text-decoration: none;

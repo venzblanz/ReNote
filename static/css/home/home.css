@@ -1,9 +1,4 @@
-/* =====================================================================
-   ReNote — Anime Media Dashboard (Purple Gradient Edition)
-   Matching the Dribbble Reference Design Aesthetic
-   ===================================================================== */
 
-/* Outer body canvas background */
 .dash-body {
   margin: 0;
   min-height: 100dvh;
@@ -17,7 +12,6 @@
   font-family: var(--font-body);
 }
 
-/* Master Dashboard Main Flow (Full-Width, Non-Floating) */
 .dash-canvas {
   width: 100%;
   max-width: 100%;
@@ -30,9 +24,6 @@
   position: relative;
 }
 
-/* ======================================================
-   HERO SPOTLIGHT SHOWCASE (MATCHING REFERENCE IMAGE)
-   ====================================================== */
 .hero-spotlight {
   position: relative;
   min-height: 620px;
@@ -45,7 +36,6 @@
   overflow: hidden;
 }
 
-/* Hero Moon Centerpiece (Replaceable with any media in static/images) */
 .hero-moon-stage {
   position: absolute;
   right: 20%;
@@ -89,7 +79,6 @@
   100% { opacity: 1; transform: scale(1.08); }
 }
 
-/* Left Column: Spotlight Info */
 .spotlight-info {
   position: relative;
   z-index: 5;
@@ -123,7 +112,6 @@
   overflow: hidden;
 }
 
-/* Action CTA Buttons */
 .spotlight-cta-row {
   display: flex;
   align-items: center;
@@ -173,7 +161,6 @@
   color: #D8B4FE;
 }
 
-/* Rating & Stats Row */
 .spotlight-stats-row {
   display: flex;
   gap: 36px;
@@ -222,7 +209,6 @@
   font-size: 0.9rem;
 }
 
-/* Genre Pills Row */
 .genre-pills-row {
   display: flex;
   flex-wrap: wrap;
@@ -240,7 +226,6 @@
   letter-spacing: 0.02em;
 }
 
-/* Mini Lead & Credits */
 .spotlight-mini-lead {
   font-size: 0.8125rem;
   color: rgba(240, 237, 255, 0.6);
@@ -266,7 +251,6 @@
   color: rgba(255, 255, 255, 0.75);
 }
 
-/* Right Side: Floating Dock (Search + Mini Cards) */
 .spotlight-floating-dock {
   position: absolute;
   right: var(--gutter, 44px);
@@ -312,10 +296,6 @@
   color: rgba(240, 237, 255, 0.45);
 }
 
-
-/* ======================================================
-   "PICK FOR ME" INTERACTIVE MODAL / DRAWER
-   ====================================================== */
 .picker-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -445,9 +425,6 @@
   to   { opacity: 1; }
 }
 
-/* ======================================================
-   INTEGRATED USER LIBRARY SECTION
-   ====================================================== */
 .dash-library-section {
   padding: 48px 0 56px;
   border-top: 1px solid rgba(168, 85, 247, 0.12);
@@ -521,7 +498,6 @@
   gap: 40px;
 }
 
-/* Sidebar in dashboard */
 .dash-sidebar {
   display: flex;
   flex-direction: column;
@@ -540,7 +516,6 @@
   color: #fff;
 }
 
-/* Chart donut representation */
 .chart-box {
   display: flex;
   align-items: center;
@@ -583,7 +558,6 @@
 .dot.purple-400 { background: #7C3AED; }
 .dot.purple-300 { background: #C084FC; }
 
-/* Genre progress bars */
 .genre-bars {
   display: flex;
   flex-direction: column;
@@ -608,9 +582,6 @@
   background: linear-gradient(90deg, #7C3AED, #C084FC);
 }
 
-/* ======================================================
-   FOOTER
-   ====================================================== */
 .dash-footer {
   display: flex;
   align-items: center;
@@ -652,9 +623,6 @@
   transform: translateX(3px) scale(1.02);
 }
 
-/* ======================================================
-   RESPONSIVE BREAKPOINTS
-   ====================================================== */
 @media (max-width: 1080px) {
   .hero-spotlight {
     display: flex;
@@ -736,7 +704,6 @@
   }
 }
 
-/* Empty library state & real library styles */
 .empty-library-state {
   display: flex;
   flex-direction: column;
@@ -799,7 +766,6 @@
   font-size: 0.75rem;
 }
 
-/* Card styling for Home Library Overview */
 .library-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -915,7 +881,6 @@
   color: #C084FC;
 }
 
-/* Show All in Library Button */
 .library-show-all-row {
   display: flex;
   justify-content: center;
@@ -950,8 +915,6 @@
   transform: scale(0.97);
 }
 
-
-/* Clickable card links */
 .card-cover-link {
   display: block;
   text-decoration: none;

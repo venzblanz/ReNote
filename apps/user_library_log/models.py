@@ -2,7 +2,6 @@ from django.db import models
 from apps.accounts.models import User
 from apps.media_catalog.models import Media
 
-
 class UserLibraryLog(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     media = models.ForeignKey(Media, on_delete=models.CASCADE)

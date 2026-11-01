@@ -1,83 +1,164 @@
 {% load static %}
+
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
   <link rel="icon" type="image/gif" href="{% static 'images/renote_logo_icon.gif' %}">
+
   <link rel="apple-touch-icon" href="{% static 'images/renote_logo_icon.gif' %}">
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>ReNote — Create your account</title>
+
   {% include 'shared/seo_meta.html' with meta_title="Create an account — ReNote" meta_description="Start tracking everything you watch, read, and rewatch in one beautiful place." %}
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
+
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="{% static 'css/shared/base.css' %}">
+
 <link rel="stylesheet" href="{% static 'css/shared/auth.css' %}">
+
 <link rel="stylesheet" href="{% static 'css/register/register.css' %}">
+
 </head>
+
 <body>
 
 
+
   <main class="auth-shell">
+
     <a href="{% url 'home:home' %}" class="logo">
+
       <img src="{% static 'images/renote_logo_icon.gif' %}" alt="ReNote" class="brand-logo-icon" width="38" height="38" style="width:38px;height:38px;min-width:38px;min-height:38px;object-fit:cover;border-radius:50%;flex-shrink:0;">
+
       <span class="brand">ReNote</span>
+
     </a>
 
+
+
     <div class="auth-card">
+
       <h1>Start your library</h1>
+
       <p class="auth-sub">Track everything you watch, read and rewatch — in one place.</p>
 
+
+
       {% if form.non_field_errors %}
+
         <div class="form-alert" role="alert">{{ form.non_field_errors.0 }}</div>
+
       {% endif %}
 
+
+
       <form method="post" novalidate>
+
         {% csrf_token %}
 
+
+
         <div class="field">
+
           <label for="id_username">Username</label>
+
           <input type="text" id="id_username" name="username" placeholder="yourname" autocomplete="username" required>
+
         </div>
 
+
+
         <div class="field">
+
           <label for="id_email">Email</label>
+
           <input type="email" id="id_email" name="email" placeholder="you@example.com" autocomplete="email" required>
+
         </div>
 
+
+
         <div class="field">
+
           <label for="id_password1">Password</label>
+
           <div class="password-field">
+
             <input type="password" id="id_password1" name="password1" placeholder="••••••••" autocomplete="new-password" required>
+
             <button type="button" class="toggle-pw" data-target="id_password1" aria-label="Show password" aria-pressed="false"></button>
+
           </div>
+
           <div class="strength-meter" id="strengthMeter">
+
             <div class="strength-bar"><span></span></div>
+
             <span class="strength-label" id="strengthLabel">&nbsp;</span>
+
           </div>
+
         </div>
 
+
+
         <div class="field">
+
           <label for="id_password2">Confirm password</label>
+
           <div class="password-field">
+
             <input type="password" id="id_password2" name="password2" placeholder="••••••••" autocomplete="new-password" required>
+
             <button type="button" class="toggle-pw" data-target="id_password2" aria-label="Show password" aria-pressed="false"></button>
+
           </div>
+
           <span class="field-hint" id="matchHint">&nbsp;</span>
+
         </div>
+
+
 
         <label class="checkbox terms-check">
+
           <input type="checkbox" name="terms" required>
+
           <span>I agree to the <a href="{% url 'register:terms' %}" class="link-muted" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();">Terms</a> and <a href="{% url 'register:privacy' %}" class="link-muted" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();">Privacy Policy</a></span>
+
         </label>
 
+
+
         <button type="submit" class="btn-auth">Create account</button>
+
       </form>
 
+
+
       <p class="auth-switch">Already have an account? <a href="{% url 'login:login' %}">Log in</a></p>
+
     </div>
+
   </main>
 
+
+
 <script src="{% static 'js/register/register.js' %}"></script>
+
 </body>
+
 </html>
+

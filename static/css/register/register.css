@@ -1,4 +1,4 @@
-/* Register — password strength + live match hint */
+
 .strength-meter { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
 .strength-bar {
   flex: 1;

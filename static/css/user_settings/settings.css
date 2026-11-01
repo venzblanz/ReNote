@@ -1,4 +1,4 @@
-/* Settings shell */
+
 .settings-shell { padding: clamp(40px, 6vw, 72px) var(--gutter) clamp(96px, 12vw, 140px); }
 .settings-layout {
   display: grid;
@@ -8,7 +8,6 @@
   align-items: start;
 }
 
-/* ---- SECTION NAV ---- */
 .settings-nav {
   position: sticky;
   top: 84px;
@@ -44,7 +43,6 @@
   box-shadow: inset 2px 0 0 var(--bad), inset 0 0 0 1px rgba(252,129,129,0.2);
 }
 
-/* ---- CONTENT AREA ---- */
 .settings-content { min-width: 0; max-width: 640px; }
 .settings-section { display: none; }
 .settings-section.active {
@@ -78,7 +76,6 @@
 .divider { height: 1px; margin: 32px 0; background: var(--line); }
 .char-count { display: block; margin-top: 8px; font-size: 0.75rem; color: var(--faint); text-align: right; }
 
-/* Avatar Picker Section */
 .avatar-picker-section {
   margin-bottom: 32px;
 }
@@ -174,7 +171,6 @@
   display: flex;
 }
 
-/* ---- TOGGLES ---- */
 .toggle-row {
   display: flex;
   align-items: center;
@@ -221,7 +217,6 @@
 }
 .toggle input:focus-visible + i { outline: 1.5px solid var(--accent); outline-offset: 3px; }
 
-/* ---- DANGER ZONE ---- */
 .danger-card {
   display: flex;
   align-items: center;
@@ -237,7 +232,6 @@
 .danger-card strong { display: block; font-weight: 500; }
 .danger-card small { display: block; margin-top: 3px; max-width: 44ch; font-size: 0.8125rem; line-height: 1.5; color: var(--faint); }
 
-/* ---- SAVE BAR ---- */
 .save-bar {
   position: fixed;
   left: 50%;
@@ -275,7 +269,6 @@
 .save-bar-actions { display: flex; align-items: center; gap: 4px; }
 .save-bar .btn-auth { height: 38px; }
 
-/* ---- MODAL ---- */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -314,7 +307,6 @@
 .modal p strong { color: var(--text); font-weight: 500; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
 
-/* ---- TOAST ---- */
 .toast {
   position: fixed;
   top: 80px;
@@ -352,7 +344,6 @@
   .danger-card { flex-direction: column; align-items: flex-start; }
 }
 
-/* ---- SETTINGS FEEDBACK & MESSAGES ---- */
 .settings-messages {
   margin-bottom: 24px;
 }
@@ -376,7 +367,6 @@
   color: var(--ok);
 }
 
-/* Derived Genre Display */
 .derived-genre-box {
   display: flex;
   align-items: center;

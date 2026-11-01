@@ -1,4 +1,4 @@
-/* Library & Add-title shared shell */
+
 .library-shell {
   padding: clamp(40px, 6vw, 72px) var(--gutter) clamp(56px, 8vw, 96px);
 }
@@ -70,7 +70,6 @@
   width: 100%;
 }
 
-/* Status pills — purple-aware */
 .status-pill {
   display: inline-flex;
   align-items: center;
@@ -120,7 +119,6 @@
 .rewatch { color: var(--p-400); font-size: 0.75rem; }
 .rewatch-zero { color: var(--faint); font-size: 0.75rem; }
 
-/* Clickable card links */
 .card-cover-link {
   display: block;
   text-decoration: none;
@@ -144,9 +142,6 @@
   color: var(--p-400, #A855F7);
 }
 
-/* ======================================================
-   LIBRARY FILTER CONTROLS & GENRE CHIPS
-   ====================================================== */
 .library-filter-bar {
   display: flex;
   align-items: center;

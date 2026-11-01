@@ -1,4 +1,4 @@
-// ---- password visibility toggles ----
+
 document.querySelectorAll(".toggle-pw").forEach((btn) => {
   const target = document.getElementById(btn.dataset.target);
   btn.addEventListener("click", () => {
@@ -9,7 +9,6 @@ document.querySelectorAll(".toggle-pw").forEach((btn) => {
   });
 });
 
-// ---- password strength meter ----
 const pw1 = document.getElementById("id_password1");
 const pw2 = document.getElementById("id_password2");
 const strengthBar = document.querySelector(".strength-bar span");
@@ -60,7 +59,6 @@ function checkMatch() {
 }
 pw2.addEventListener("input", checkMatch);
 
-// ---- form validation ----
 const form = document.querySelector(".auth-card form");
 const card = document.querySelector(".auth-card");
 const requiredFields = [

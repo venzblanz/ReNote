@@ -1,8 +1,4 @@
-// =====================================================================
-// ReNote — User Settings Interactions & Actions
-// =====================================================================
 
-// ---- profile dropdown ----
 const profileMenu = document.getElementById("profileMenu");
 const profileTrigger = document.getElementById("profileTrigger");
 
@@ -28,7 +24,6 @@ if (profileTrigger && profileMenu) {
   });
 }
 
-// ---- section switching ----
 const navItems = document.querySelectorAll(".settings-nav-item");
 const sections = document.querySelectorAll(".settings-section");
 
@@ -49,7 +44,6 @@ if (initialSection && document.querySelector(`.settings-nav-item[data-section="$
   showSection(initialSection);
 }
 
-// ---- Preset Avatar Picker ----
 const avatarButtons = document.querySelectorAll(".avatar-option-btn");
 const selectedAvatarInput = document.getElementById("selectedAvatarInput");
 const avatarPreview = document.getElementById("avatarPreview");
@@ -74,7 +68,6 @@ if (avatarButtons.length && selectedAvatarInput) {
   });
 }
 
-// ---- bio character count ----
 const bioField = document.getElementById("prof-bio");
 const bioCount = document.getElementById("bioCount");
 const BIO_LIMIT = 200;
@@ -88,7 +81,6 @@ if (bioField && bioCount) {
   bioField.addEventListener("input", updateBioCount);
 }
 
-// ---- unsaved changes / save bar ----
 const settingsForm = document.getElementById("settingsForm");
 const saveBar = document.getElementById("saveBar");
 const discardBtn = document.getElementById("discardChanges");
@@ -130,14 +122,12 @@ window.addEventListener("beforeunload", (e) => {
   }
 });
 
-// Clear dirty flag when form actually submits
 if (settingsForm) {
   settingsForm.addEventListener("submit", () => {
     dirty = false;
   });
 }
 
-// ---- danger zone: deactivate account ----
 const deactivateBtn = document.getElementById("deactivateBtn");
 const deactivateAccountForm = document.getElementById("deactivateAccountForm");
 
@@ -152,7 +142,6 @@ if (deactivateBtn && deactivateAccountForm) {
   });
 }
 
-// ---- danger zone: delete account modal ----
 const deleteModal = document.getElementById("deleteModal");
 const openDeleteModalBtn = document.getElementById("openDeleteModal");
 const cancelDeleteBtn = document.getElementById("cancelDelete");

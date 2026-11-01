@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 USER_AGENT = "ReNote/1.0 (+https://renote.app; anime-media-tracker)"
 DEFAULT_TIMEOUT = (3.0, 5.0)  # (connect_timeout, read_timeout) in seconds
 
-
 def _get_http_session():
     """Create a persistent requests session configured with connection pooling and retries."""
     session = requests.Session()
@@ -33,9 +32,7 @@ def _get_http_session():
     })
     return session
 
-
 _SESSION = _get_http_session()
-
 
 def _clean_html(text):
     """Strip HTML tags from synopses/descriptions."""
@@ -43,7 +40,6 @@ def _clean_html(text):
         return ""
     clean = re.sub(r"<[^>]+>", "", text)
     return clean.replace("\n", " ").strip()
-
 
 def _parse_date(date_str):
     """Best-effort parse of various date string formats into a date object."""
@@ -58,7 +54,6 @@ def _parse_date(date_str):
         except (ValueError, TypeError):
             continue
     return None
-
 
 def search_anilist(query, media_type, genre=None):
     """
@@ -168,7 +163,6 @@ def search_anilist(query, media_type, genre=None):
 
     return results
 
-
 def search_kitsu(query, media_type):
     """Fallback search using Kitsu API (up to 20 results)."""
     if not query or not query.strip():
@@ -228,7 +222,6 @@ def search_kitsu(query, media_type):
         })
     return results
 
-
 def search_jikan(query, media_type):
     """Secondary fallback search using Jikan (MyAnimeList, up to 25 results)."""
     if not query or not query.strip():
@@ -258,7 +251,6 @@ def search_jikan(query, media_type):
             "genre": [g["name"] for g in item.get("genres", [])],
         })
     return results
-
 
 def search_free_movies(query, genre=None):
     """
@@ -371,7 +363,6 @@ def search_free_movies(query, genre=None):
 
     return results[:50]
 
-
 def search_tmdb(query, genre=None):
     """Search TMDB if API key is configured; otherwise fallback to keyless search."""
     api_key = getattr(settings, "TMDB_API_KEY", os.environ.get("TMDB_API_KEY", "")).strip()
@@ -406,7 +397,6 @@ def search_tmdb(query, genre=None):
     except Exception as e:
         logger.warning("TMDB search error: %s", e)
         return search_free_movies(query, genre=genre)
-
 
 def search_open_library(query, genre=None):
     """Search Open Library for novels and books with query and/or genre (subject)."""
@@ -472,7 +462,6 @@ def search_open_library(query, genre=None):
 
     return results
 
-
 def search_local_catalog(query, media_type, genre=None):
     """Fallback search using titles already stored in media_catalog."""
     try:
@@ -501,7 +490,6 @@ def search_local_catalog(query, media_type, genre=None):
     except Exception as e:
         logger.warning("Local catalog fallback search error: %s", e)
         return []
-
 
 def search_media(query="", media_type="anime", genre=None):
     """

@@ -1,346 +1,662 @@
 {% load static %}
+
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
   <link rel="icon" type="image/gif" href="{% static 'images/renote_logo_icon.gif' %}">
+
   <link rel="apple-touch-icon" href="{% static 'images/renote_logo_icon.gif' %}">
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>ReNote — Anime Media Dashboard</title>
+
   {% include 'shared/seo_meta.html' with meta_title="ReNote — Anime Media Tracker" meta_description="Track everything you watch, read, and rewatch — all in one celestial dark dashboard." %}
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
+
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="{% static 'css/shared/base.css' %}?v={% now 'U' %}">
+
 <link rel="stylesheet" href="{% static 'css/home/home.css' %}?v={% now 'U' %}">
+
 </head>
+
 <body class="dash-body">
 
-<!-- ==================== TOP NAVIGATION (Full-Width, Non-Floating) ==================== -->
+
+
 <header class="dash-header">
+
   <a href="{% url 'home:home' %}" class="dash-brand-block">
+
     <img src="{% static 'images/renote_logo_icon.gif' %}" alt="ReNote" class="brand-logo-icon" width="38" height="38" style="width:38px;height:38px;min-width:38px;min-height:38px;object-fit:cover;border-radius:50%;flex-shrink:0;">
+
     <span class="brand-name">ReNote</span>
+
   </a>
 
+
+
   <nav class="dash-nav-links">
+
     <a href="{% url 'home:home' %}" class="active">Dashboard</a>
+
     <a href="#pickerModal" id="navRandomBtn">Pick for Me</a>
+
     <a href="{% url 'library:list' %}">My Library</a>
+
     <a href="{% url 'library:add' %}">Catalog Search</a>
+
     <a href="{% url 'library:add' %}" class="nav-cta-add">+ Add Title</a>
+
   </nav>
 
+
+
   <div class="dash-user-controls">
+
     <div class="profile-menu" id="profileMenu">
+
       <button class="user-profile-pill" id="profileTrigger" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
+
         <img src="{% static 'images/avatars/' %}{{ user_avatar }}" alt="{{ user.username }}" class="pill-avatar" onerror="this.onerror=null; this.src='{% static 'images/avatars/202156.png' %}';">
+
         <span class="pill-username">{{ user.username|default:"AnimeFan" }}</span>
+
         <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+
       </button>
 
+
+
       <div class="profile-dropdown" id="profileDropdown">
+
         <div class="profile-dropdown-header">
+
           <img src="{% static 'images/avatars/' %}{{ user_avatar }}" alt="{{ user.username }}" class="avatar avatar-sm" onerror="this.onerror=null; this.src='{% static 'images/avatars/202156.png' %}';">
+
           <div>
+
             <div class="profile-dropdown-name">{{ user.username }}</div>
+
             <div class="profile-dropdown-email">{{ user.email }}</div>
+
           </div>
+
         </div>
+
         <a href="{% url 'user_profile:profile' %}" class="profile-dropdown-item">
+
           <span class="pd-icon pd-icon-profile"></span> Profile
+
         </a>
+
         <a href="{% url 'user_settings:settings' %}" class="profile-dropdown-item">
+
           <span class="pd-icon pd-icon-settings"></span> Settings
+
         </a>
+
         <form method="post" action="{% url 'login:logout' %}" class="profile-dropdown-form">
+
           {% csrf_token %}
+
           <button type="submit" class="profile-dropdown-item profile-dropdown-logout">
+
             <span class="pd-icon pd-icon-logout"></span> Logout
+
           </button>
+
         </form>
+
       </div>
+
     </div>
+
   </div>
+
 </header>
+
+
 
 <div class="dash-canvas">
 
-  <!-- ==================== HERO SPOTLIGHT SHOWCASE ==================== -->
+
+
   <section class="hero-spotlight">
-    <!-- Center Hero Moon (Replaceable with any media in the static/images folder) -->
+
     <div class="hero-moon-stage" id="heroMoonStage">
+
       <div class="moon-halo-effect"></div>
+
       <img src="{% static 'images/moon.png' %}" alt="Celestial Moon" class="hero-moon-image" id="heroMoonImg">
+
     </div>
 
-    <!-- Left Column: Spotlight Info -->
+
+
     <div class="spotlight-info">
+
       <h1 class="spotlight-title" id="spotlightTitle">ReNote</h1>
+
       <p class="spotlight-jp-title" id="spotlightJp">Celestial Moon Collection</p>
+
       
+
       <p class="spotlight-synopsis" id="spotlightDesc">
+
         Stories come alive when the world goes quiet. Renote was built around the Violet Hour—that fleeting twilight when reality fades into imagination—and the Moon, humanity’s oldest keeper of time and memory. Just as the moon reflects light in the dark, Renote is your personal night-sky archive: a place to re-note, track, and revisit every anime, novel, manga, and film that left a mark on you.
+
       </p>
 
-      <!-- Action buttons -->
+
+
       <div class="spotlight-cta-row">
+
         <button type="button" class="btn-pill-primary" id="heroPickBtn">
+
           <span>Pick for Me</span>
+
         </button>
+
         <a href="{% url 'library:add' %}" class="btn-pill-ghost">
+
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+
           <span>Add title</span>
+
         </a>
+
       </div>
 
-      <!-- Rating & stats row -->
+
+
       <div class="spotlight-stats-row">
+
         <div class="stat-col">
+
           <span class="stat-col-label">YOUR COLLECTION</span>
+
           <div class="stat-col-val">
+
             <span class="val-num" id="spotlightCollectionCount">{{ total_count }}</span>
+
             <span style="font-size: 0.8125rem; color: #D8B4FE;">titles</span>
+
           </div>
+
         </div>
+
         <div class="stat-col">
+
           <span class="stat-col-label">COMMUNITY</span>
+
           <div class="stat-col-val">
+
             <span class="stars-gold">★★★★★</span>
+
             <span class="val-num" id="spotlightRating">5.0</span>
+
           </div>
+
         </div>
+
         <div class="stat-col">
+
           <span class="stat-col-label">REWATCHES</span>
+
           <div class="stat-col-val">
+
             <span class="trend-icon"> </span>
+
             <span id="spotlightRewatchTotal">{{ rewatched_media_count }}</span>
+
           </div>
+
         </div>
+
       </div>
 
-      <!-- Genre Pills -->
+
+
       <div class="genre-pills-row" id="spotlightGenres">
+
         <span class="genre-pill">Anime</span>
+
         <span class="genre-pill">Manga</span>
+
         <span class="genre-pill">Movie</span>
+
         <span class="genre-pill">Novel</span>
+
       </div>
+
     </div>
 
-    <!-- Right Side: Floating Search Bar -->
+
+
     <div class="spotlight-floating-dock">
+
       <form method="get" action="{% url 'library:add' %}" class="dock-search-form">
+
         <div class="dock-search-pill">
+
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+
           <input type="text" name="q" placeholder="Search catalog..." class="dock-search-input">
+
         </div>
+
       </form>
+
     </div>
+
   </section>
 
-  <!-- ==================== "PICK FOR ME" INTERACTIVE MODAL ==================== -->
+
+
   <div class="picker-modal-backdrop" id="pickerModal">
+
     <div class="picker-dialog">
+
       <div class="picker-dialog-header">
+
         <div class="dialog-title-group">
+
           <span class="dialog-badge">Interactive Chooser</span>
+
           <h2>Decide What to Watch or Read Next</h2>
+
           <p>Roll a random selection from your actual library collection.</p>
+
         </div>
+
         <button type="button" class="dialog-close-btn" id="closePickerBtn">&times;</button>
+
       </div>
+
+
 
       <div class="picker-form-row">
+
         <div class="field">
+
           <label for="modalFilterType">Filter by Format</label>
+
           <select id="modalFilterType">
+
             <option value="all">All Formats</option>
+
             <option value="anime">Anime</option>
+
             <option value="manga">Manga</option>
+
             <option value="movie">Movie</option>
+
             <option value="novel">Novel</option>
+
           </select>
+
         </div>
+
         <div class="field">
+
           <label for="modalFilterStatus">Filter by Status</label>
+
           <select id="modalFilterStatus">
+
             <option value="all">Any Status</option>
+
             <option value="plan to watch">Plan to Watch / Read</option>
+
             <option value="watching">Watching / Reading</option>
+
             <option value="completed">Completed</option>
+
           </select>
+
         </div>
+
         <div class="field">
+
           <label for="modalSource">Pool Source</label>
+
           <select id="modalSource">
+
             <option value="library">Your Library ({{ total_count }} titles)</option>
+
           </select>
+
         </div>
+
       </div>
+
+
 
       <div class="picker-roll-zone">
+
         <button type="button" class="btn-pill-primary" id="spinPickBtn">
+
           <span>Pick for Me</span>
+
         </button>
+
         <div class="pick-live-result" id="modalPickResult">
-          <!-- Live roll output -->
+
         </div>
+
       </div>
+
     </div>
+
   </div>
 
-  <!-- ==================== INTEGRATED USER LIBRARY SECTION ==================== -->
+
+
   <section class="dash-library-section" id="librarySection">
+
     <div class="section-header-row">
+
       <div>
+
         <span class="section-eyebrow">YOUR COLLECTION</span>
+
         <h2 class="dash-section-title">Your library overview</h2>
+
       </div>
+
       <div class="library-filter-tabs" id="filterTabs">
+
         <button type="button" class="tab-pill active" data-filter="all">All</button>
+
         <button type="button" class="tab-pill" data-filter="anime">Anime</button>
+
         <button type="button" class="tab-pill" data-filter="manga">Manga</button>
+
         <button type="button" class="tab-pill" data-filter="movie">Movie</button>
+
         <button type="button" class="tab-pill" data-filter="novel">Novel</button>
+
       </div>
+
     </div>
+
+
 
     <div class="dash-layout-grid">
-      <!-- Media Cards Grid: Rendered directly from user's UserLibraryLog using media_catalog table -->
+
       <div class="library-content-area">
+
         {% if logs %}
+
           <div class="library-grid" id="libraryGrid">
+
             {% for log in logs %}
+
               <div class="media-card" data-type="{{ log.media.media_type|lower }}">
+
                 <a href="{% url 'library:detail' log.media.id %}" class="cover card-cover-link" title="View details for {{ log.media.media_title }}">
+
                   {% if log.media.media_image %}
+
                     <img src="{{ log.media.media_image }}" alt="{{ log.media.media_title }}" onerror="this.onerror=null; this.src='{% static 'images/moon.png' %}';">
+
                   {% else %}
+
                     <div class="cover-placeholder">{{ log.media.media_title }}</div>
+
                   {% endif %}
+
                   <span class="type-badge">{{ log.media.media_type|title }}</span>
+
                 </a>
+
                 <div class="card-body">
+
                   <h3 class="card-title">
+
                     <a href="{% url 'library:detail' log.media.id %}" class="card-title-link">{{ log.media.media_title }}</a>
+
                   </h3>
+
                   <span class="status-pill status-{{ log.status|slugify }}">{{ log.status|title }}</span>
+
                   <div class="card-meta">
+
                     {% if log.personal_rate %}
+
                       <span class="stars">★ {{ log.personal_rate }}/5</span>
+
                     {% else %}
+
                       <span class="stars unrated">Unrated</span>
+
                     {% endif %}
+
                     {% if log.rewatch_count %}
+
                       <span class="rewatch">{{ log.rewatch_count }} rewatch{{ log.rewatch_count|pluralize }}</span>
+
                     {% else %}
+
                       <span class="rewatch-zero">0 rewatches</span>
+
                     {% endif %}
+
                   </div>
+
                 </div>
+
               </div>
+
             {% endfor %}
+
           </div>
 
-          <!-- Show all button (visible when the current tab has > 10 items) -->
+
+
           <div class="library-show-all-row" id="showAllRow" style="display: none;">
+
             <a href="{% url 'library:list' %}" class="btn-show-all" id="showAllBtn">
+
               <span id="showAllText">Show All in Library</span>
+
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+
             </a>
+
           </div>
+
         {% else %}
+
           <div class="empty-library-state">
+
             <div class="empty-icon-orb">
+
               <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#C084FC" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
+
             </div>
+
             <h3 class="empty-title">Your library is currently empty</h3>
+
             <p class="empty-sub">Titles you add from the catalog are saved to your collection with their images stored in the <code>media_catalog</code> table, eliminating repeated API requests.</p>
+
             <a href="{% url 'library:add' %}" class="btn-pill-primary empty-add-cta">+ Search & Add Title</a>
+
           </div>
+
         {% endif %}
+
       </div>
 
-      <!-- Sidebar with real stats from user's library -->
+
+
       <aside class="dash-sidebar">
+
         <div class="dash-panel">
+
           <h3 class="panel-heading">Stats overview</h3>
+
           {% if total_count > 0 %}
+
             <div class="chart-box">
+
               <div class="chart-donut-purple" style="background: conic-gradient(#A855F7 0% {{ anime_pct }}%, #7C3AED {{ anime_pct }}% {{ anime_pct|add:manga_pct }}%, #C084FC {{ anime_pct|add:manga_pct }}% 100%);"></div>
+
               <div class="chart-legend">
+
                 <div><span class="dot purple-500"></span> Anime ({{ anime_pct }}%)</div>
+
                 <div><span class="dot purple-400"></span> Manga ({{ manga_pct }}%)</div>
+
                 <div><span class="dot purple-300"></span> Movies ({{ movie_pct }}%)</div>
+
                 {% if novel_count > 0 %}
+
                   <div><span class="dot" style="background: #E9D5FF;"></span> Novels ({{ novel_pct }}%)</div>
+
                 {% endif %}
+
               </div>
+
             </div>
+
             <div class="stats-total-chip">Total in library: <strong>{{ total_count }}</strong></div>
+
           {% else %}
+
             <p class="panel-empty-text">No library statistics yet.</p>
+
           {% endif %}
+
         </div>
 
+
+
         <div class="dash-panel">
+
           <h3 class="panel-heading">Top genres</h3>
+
           {% if top_genres %}
+
             <div class="genre-bars">
+
               {% for g in top_genres %}
+
                 <div class="gbar-item">
+
                   <div class="gbar-meta"><span>{{ g.name }}</span><span>{{ g.percent }}%</span></div>
+
                   <div class="gbar-track"><div class="gbar-fill" style="width: {{ g.percent }}%;"></div></div>
+
                 </div>
+
               {% endfor %}
+
             </div>
+
           {% else %}
+
             <p class="panel-empty-text">Add titles to view your top genres.</p>
+
           {% endif %}
+
         </div>
 
+
+
         <div class="dash-panel">
+
           <h3 class="panel-heading">Rewatch leaderboard</h3>
+
           {% if leaderboard %}
+
             <ol class="leaderboard">
+
               {% for item in leaderboard %}
+
                 <li>
+
                   <span class="lb-rank">0{{ forloop.counter }}</span>
+
                   <span class="lb-title"><a href="{% url 'library:detail' item.media.id %}" class="lb-title-link">{{ item.media.media_title }}</a><span>{{ item.media.media_type|title }}</span></span>
+
                   <span class="lb-count">{{ item.rewatch_count }} rewatch{{ item.rewatch_count|pluralize }}</span>
+
                 </li>
+
               {% endfor %}
+
             </ol>
+
           {% else %}
+
             <p class="panel-empty-text">No rewatched titles logged yet.</p>
+
           {% endif %}
+
         </div>
+
       </aside>
+
     </div>
+
   </section>
 
-  <!-- ==================== DASHBOARD FOOTER ==================== -->
+
+
   <footer class="dash-footer">
+
     <div class="footer-left">
+
       <span>© 2026 </span>
+
       <span class="footer-brand"> ReNote</span>
+
       <span class="footer-copy">Decide what to watch next. Made for myself 💗</span>
+
       <span class="footer-github-link"><a href="https://github.com/venzblanz" target="_blank" rel="noopener noreferrer">venzblanz</a></span>
+
     </div>
+
     <div class="footer-links">
+
       <a href="{% url 'home:home' %}">Dashboard</a>
+
       <a href="{% url 'library:list' %}">Library</a>
+
       <a href="{% url 'library:add' %}">Search</a>
+
       <a href="{% url 'user_profile:profile' %}">Profile</a>
+
       <a href="{% url 'user_settings:settings' %}">Settings</a>
+
       <a href="{% url 'register:terms' %}">Terms</a>
+
       <a href="{% url 'register:privacy' %}">Privacy</a>
+
     </div>
+
   </footer>
+
+
 
 </div>
 
+
+
 <script src="{% static 'js/home/home.js' %}?v={% now 'U' %}"></script>
+
 </body>
+
 </html>
+

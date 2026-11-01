@@ -1,4 +1,4 @@
-// ---- password visibility toggle ----
+
 const pwInput = document.getElementById("id_password");
 const togglePw = document.getElementById("togglePw");
 
@@ -9,7 +9,6 @@ togglePw.addEventListener("click", () => {
   togglePw.setAttribute("aria-label", isPassword ? "Hide password" : "Show password");
 });
 
-// ---- lightweight client-side validation ----
 const form = document.querySelector(".auth-card form");
 const card = document.querySelector(".auth-card");
 const usernameInput = document.getElementById("id_username");
@@ -21,7 +20,7 @@ form.addEventListener("submit", (e) => {
     e.preventDefault();
     missing.forEach((input) => input.classList.add("invalid"));
     card.classList.remove("shake");
-    void card.offsetWidth; // restart animation
+    void card.offsetWidth; 
     card.classList.add("shake");
     missing[0].focus();
   }

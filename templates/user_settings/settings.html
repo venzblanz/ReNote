@@ -81,11 +81,9 @@
       <button type="button" class="settings-nav-item danger" data-section="danger">Danger zone</button>
     </nav>
 
-    <!-- Main Settings Form -->
     <form method="post" enctype="multipart/form-data" class="settings-content" id="settingsForm">
       {% csrf_token %}
 
-      <!-- Section: Account -->
       <div class="settings-section active" id="section-account" data-section="account">
         <h2>Account Details</h2>
         <p class="section-desc">Manage the primary login credentials and display properties tied to your ReNote account.</p>
@@ -133,7 +131,6 @@
         </div>
       </div>
 
-      <!-- Section: Profile -->
       <div class="settings-section" id="section-profile" data-section="profile">
         <h2>Public Profile</h2>
         <p class="section-desc">Customize what other readers and viewers see when visiting your profile.</p>
@@ -180,7 +177,6 @@
         </div>
       </div>
 
-      <!-- Section: Notifications -->
       <div class="settings-section" id="section-notifications" data-section="notifications">
         <h2>Notifications & Alerts</h2>
         <p class="section-desc">Control which updates and reminders ReNote sends to your email.</p>
@@ -196,7 +192,6 @@
         </label>
       </div>
 
-      <!-- Section: Privacy -->
       <div class="settings-section" id="section-privacy" data-section="privacy">
         <h2>Privacy & Data</h2>
         <p class="section-desc">Control your data storage consents and privacy preferences.</p>
@@ -212,7 +207,6 @@
         </label>
       </div>
 
-      <!-- Section: Danger Zone -->
       <div class="settings-section" id="section-danger" data-section="danger">
         <h2>Danger Zone</h2>
         <p class="section-desc">Manage account deactivation or permanent deletion.</p>
@@ -234,7 +228,6 @@
         </div>
       </div>
 
-      <!-- Save Bar -->
       <div class="save-bar" id="saveBar">
         <span>You have unsaved changes</span>
         <div class="save-bar-actions">
@@ -246,12 +239,10 @@
   </div>
 </div>
 
-<!-- Hidden Standalone Deactivate Form -->
 <form method="post" action="{% url 'user_settings:deactivate' %}" id="deactivateAccountForm" style="display:none;">
   {% csrf_token %}
 </form>
 
-<!-- Delete Account Modal -->
 <div class="modal-overlay" id="deleteModal">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
     <h2 id="deleteModalTitle">Delete your account?</h2>

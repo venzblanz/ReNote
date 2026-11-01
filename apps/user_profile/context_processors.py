@@ -1,6 +1,5 @@
 from .models import AVAILABLE_AVATARS, DEFAULT_AVATAR, Profile
 
-
 def user_avatar_processor(request):
     avatar = DEFAULT_AVATAR
     if getattr(request, 'user', None) and request.user.is_authenticated:

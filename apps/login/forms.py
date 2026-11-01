@@ -1,7 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 
-
 class CustomPasswordResetForm(PasswordResetForm):
     """
     Custom password reset form with styled email input matching ReNote's auth design.
@@ -20,7 +19,6 @@ class CustomPasswordResetForm(PasswordResetForm):
             }
         ),
     )
-
 
 class CustomSetPasswordForm(SetPasswordForm):
     """

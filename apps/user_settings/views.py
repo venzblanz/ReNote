@@ -10,7 +10,6 @@ from apps.accounts.models import User
 from apps.user_library_log.models import UserLibraryLog
 from apps.library.views import MEDIA_GENRES
 
-
 @login_required
 def settings_view(request):
     settings_obj, _ = UserSettings.objects.get_or_create(user=request.user)
@@ -110,7 +109,6 @@ def settings_view(request):
         'all_genres': all_genres,
     })
 
-
 @login_required
 def deactivate_account_view(request):
     """Deactivate user account temporarily (sets is_active=False)."""
@@ -122,7 +120,6 @@ def deactivate_account_view(request):
         messages.info(request, 'Your account has been deactivated. You can log in again anytime to reactivate.')
         return redirect('login:login')
     return redirect('user_settings:settings')
-
 
 @login_required
 def delete_account_view(request):

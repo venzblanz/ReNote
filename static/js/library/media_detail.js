@@ -1,6 +1,3 @@
-// =====================================================================
-// ReNote — Media Detail & Personal Journal Interactive Controller
-// =====================================================================
 
 document.addEventListener("DOMContentLoaded", () => {
   const mediaDetailShell = document.getElementById("mediaDetailShell");
@@ -48,7 +45,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ---- 1. Favorite Heart Toggle ----
   const favoriteBtn = document.getElementById("favoriteToggleBtn");
   if (favoriteBtn) {
     favoriteBtn.addEventListener("click", async () => {
@@ -69,7 +65,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ---- 2. Rewatch Counter Stepper ----
   const rewatchValEl = document.getElementById("rewatchVal");
   const btnIncRewatch = document.getElementById("btnIncRewatch");
   const btnDecRewatch = document.getElementById("btnDecRewatch");
@@ -103,7 +98,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ---- 3. Status Segmented Buttons ----
   const statusBtns = document.querySelectorAll(".btn-status-toggle");
   statusBtns.forEach((btn) => {
     btn.addEventListener("click", async () => {
@@ -111,7 +105,6 @@ document.addEventListener("DOMContentLoaded", () => {
       statusBtns.forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
 
-      // Update meta pill at top if present
       const metaStatusPill = document.getElementById("metaStatusPill");
       if (metaStatusPill) {
         metaStatusPill.textContent = btn.textContent.trim();
@@ -122,7 +115,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // ---- 4. Star Rating Component ----
   const starBtns = document.querySelectorAll(".star-btn");
   const ratingBadge = document.getElementById("ratingScoreBadge");
   const clearRateBtn = document.getElementById("clearRateBtn");
@@ -155,7 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     btn.addEventListener("click", async () => {
       const clickedVal = parseInt(btn.dataset.value, 10);
-      // Clicking already active star toggles it off
+      
       const nextVal = currentRating === clickedVal ? 0 : clickedVal;
       currentRating = nextVal;
       renderStars(currentRating);
@@ -177,7 +169,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ---- 5. Personal Note / Comment Save ----
   const noteTextarea = document.getElementById("journalNoteText");
   const saveNoteBtn = document.getElementById("saveNoteBtn");
 
@@ -198,6 +189,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Initialize stars on load
   renderStars(currentRating);
 });

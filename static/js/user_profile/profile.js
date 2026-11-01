@@ -1,8 +1,4 @@
-// =====================================================================
-// ReNote — User Profile Interactions
-// =====================================================================
 
-// Profile dropdown
 const profileMenu = document.getElementById("profileMenu");
 const profileTrigger = document.getElementById("profileTrigger");
 

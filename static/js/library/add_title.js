@@ -1,12 +1,7 @@
-/**
- * ReNote — Add Title Live Search & Library Actions
- * Asynchronous live search with Media Type + Genre exploration and in-place save.
- */
 
 (function () {
   'use strict';
 
-  // DOM Elements
   const searchForm = document.getElementById('searchForm');
   const searchInput = document.getElementById('searchInput');
   const mediaTypeSelect = document.getElementById('mediaTypeSelect');
@@ -20,7 +15,6 @@
 
   if (!searchForm || !searchInput || !resultsContainer) return;
 
-  // Load genres mapping
   let mediaGenres = {};
   if (mediaGenresDataEl) {
     try {
@@ -30,14 +24,12 @@
     }
   }
 
-  // State
   let debounceTimer = null;
   let activeAbortController = null;
   let lastSearchedQuery = (searchInput.value || '').trim();
   let lastSearchedType = mediaTypeSelect ? mediaTypeSelect.value : 'anime';
   let lastSearchedGenre = genreSelect ? genreSelect.value : 'all';
 
-  // Get CSRF Token helper
   function getCsrfToken() {
     const meta = document.querySelector('meta[name="csrf-token"]');
     if (meta && meta.content) return meta.content;
@@ -51,7 +43,6 @@
     return '';
   }
 
-  // HTML escape helper
   function escapeHtml(str) {
     if (str === null || str === undefined) return '';
     return String(str)
@@ -62,7 +53,6 @@
       .replace(/'/g, '&#039;');
   }
 
-  // Description word truncation
   function truncateWords(text, count = 25) {
     if (!text) return 'No description available.';
     const words = String(text).trim().split(/\s+/);
@@ -70,13 +60,11 @@
     return words.slice(0, count).join(' ') + '…';
   }
 
-  // Capitalize helper
   function capitalize(str) {
     if (!str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
-  // Toast Notification
   function showToast(message, type = 'success') {
     if (!toastContainer) return;
 
@@ -101,7 +89,6 @@
     }, 3500);
   }
 
-  // Render Skeleton Loader
   function renderSkeleton() {
     return `
       <div class="results-grid">
@@ -120,7 +107,6 @@
     `;
   }
 
-  // Render a single Media Result Card
   function renderCard(item, csrfToken) {
     const title = item.media_title || 'Untitled';
     const escapedTitle = escapeHtml(title);
@@ -170,11 +156,9 @@
     `;
   }
 
-  // Update dynamic genre dropdown options and chips when media type changes
   function updateGenreOptions(mediaType, selectedGenre = 'all') {
     const genresList = mediaGenres[mediaType] || mediaGenres['anime'] || [];
 
-    // Dropdown
     if (genreSelect) {
       genreSelect.innerHTML = '<option value="all">All Genres</option>';
       genresList.forEach((g) => {
@@ -191,7 +175,6 @@
       }
     }
 
-    // Chips
     if (searchGenreChipsRow) {
       searchGenreChipsRow.innerHTML = `<button type="button" class="genre-chip ${!selectedGenre || selectedGenre.toLowerCase() === 'all' ? 'active' : ''}" data-genre="all">All</button>`;
       genresList.forEach((g) => {
@@ -205,7 +188,6 @@
     }
   }
 
-  // Update URL without page reload
   function updateUrl(query, mediaType, genre, push = false) {
     const url = new URL(window.location.href);
     if (query) {
@@ -228,13 +210,11 @@
     }
   }
 
-  // Perform Live Search
   async function performSearch(query, mediaType, genre = 'all', options = { pushUrl: false }) {
     const cleanQuery = (query || '').trim();
     const cleanGenre = (genre || 'all').trim();
     const isGenreActive = cleanGenre && cleanGenre.toLowerCase() !== 'all';
 
-    // If both query and genre are empty/all, show welcoming empty state
     if (!cleanQuery && !isGenreActive) {
       if (activeAbortController) {
         activeAbortController.abort();
@@ -255,7 +235,6 @@
       searchClearBtn.hidden = !cleanQuery;
     }
 
-    // Avoid duplicate requests
     if (
       cleanQuery === lastSearchedQuery &&
       mediaType === lastSearchedType &&
@@ -269,13 +248,11 @@
     lastSearchedType = mediaType;
     lastSearchedGenre = cleanGenre;
 
-    // Cancel in-flight search
     if (activeAbortController) {
       activeAbortController.abort();
     }
     activeAbortController = new AbortController();
 
-    // Show spinner & skeletons
     if (searchSpinner) searchSpinner.hidden = false;
     resultsContainer.innerHTML = renderSkeleton();
 
@@ -331,7 +308,6 @@
     }
   }
 
-  // Event: Search Input with debouncing
   searchInput.addEventListener('input', () => {
     const query = searchInput.value.trim();
     const mediaType = mediaTypeSelect ? mediaTypeSelect.value : 'anime';
@@ -347,22 +323,18 @@
     }, 350);
   });
 
-  // Event: Media Type select change
   if (mediaTypeSelect) {
     mediaTypeSelect.addEventListener('change', () => {
       const mediaType = mediaTypeSelect.value;
-      // Repopulate genre options for this type and reset genre to 'all'
       updateGenreOptions(mediaType, 'all');
       const query = searchInput.value.trim();
       performSearch(query, mediaType, 'all', { pushUrl: true, force: true });
     });
   }
 
-  // Event: Genre Select change
   if (genreSelect) {
     genreSelect.addEventListener('change', () => {
       const genre = genreSelect.value;
-      // Sync chips active state
       if (searchGenreChipsRow) {
         searchGenreChipsRow.querySelectorAll('.genre-chip').forEach((c) => {
           c.classList.toggle('active', (c.dataset.genre || '').toLowerCase() === genre.toLowerCase());
@@ -374,18 +346,15 @@
     });
   }
 
-  // Event: Genre Chip click
   if (searchGenreChipsRow) {
     searchGenreChipsRow.addEventListener('click', (e) => {
       const chip = e.target.closest('.genre-chip');
       if (!chip) return;
       const genre = chip.dataset.genre || 'all';
 
-      // Sync select dropdown
       if (genreSelect) {
         genreSelect.value = genre;
       }
-      // Sync chip active classes
       searchGenreChipsRow.querySelectorAll('.genre-chip').forEach((c) => {
         c.classList.toggle('active', (c.dataset.genre || '').toLowerCase() === genre.toLowerCase());
       });
@@ -396,7 +365,6 @@
     });
   }
 
-  // Event: Form submit (immediate search)
   searchForm.addEventListener('submit', (e) => {
     e.preventDefault();
     clearTimeout(debounceTimer);
@@ -406,7 +374,6 @@
     performSearch(query, mediaType, genre, { pushUrl: true, force: true });
   });
 
-  // Event: Clear button click
   if (searchClearBtn) {
     searchClearBtn.addEventListener('click', () => {
       searchInput.value = '';
@@ -418,7 +385,6 @@
     });
   }
 
-  // Event: In-place Add to Library form submission
   resultsContainer.addEventListener('submit', async (e) => {
     const form = e.target.closest('.add-form');
     if (!form) return;
@@ -473,7 +439,6 @@
     }
   });
 
-  // Event: Browser Back / Forward navigation
   window.addEventListener('popstate', (e) => {
     const url = new URL(window.location.href);
     const q = url.searchParams.get('q') || '';
@@ -488,7 +453,6 @@
     performSearch(q, mediaType, genre, { pushUrl: false, force: true });
   });
 
-  // Initial check: if query or genre is present, ensure clear button is accurate
   if (searchInput.value.trim() && searchClearBtn) {
     searchClearBtn.hidden = false;
   }

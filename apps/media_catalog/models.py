@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
-
 class Media(models.Model):
     external_id = models.CharField(max_length=50)
     media_type = models.CharField(max_length=15)

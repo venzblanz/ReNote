@@ -3,7 +3,6 @@ from django.contrib.auth import login
 from django.contrib import messages
 from .forms import RegisterForm
 
-
 def register_view(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -16,10 +15,8 @@ def register_view(request):
         form = RegisterForm()
     return render(request, 'register/register.html', {'form': form})
 
-
 def terms_view(request):
     return render(request, 'register/terms.html')
-
 
 def privacy_view(request):
     return render(request, 'register/privacy.html')

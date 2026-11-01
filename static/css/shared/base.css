@@ -1,35 +1,26 @@
-/* =====================================================================
-   ReNote — Premium Anime Design System
-   Deep violet-obsidian dark theme. Purple as the singular accent.
-   Motion: expressive entrance animations, physics spring easing on hover.
-   "Premium" = intentional depth, not decoration.
-   ===================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 
 :root {
   color-scheme: dark;
 
-  /* === SURFACES === */
   --bg:  #07070A;
   --s1:  #0D0D12;
   --s2:  #121218;
   --s3:  #18181F;
   --s4:  #1E1E28;
 
-  /* === PURPLE ACCENT SYSTEM === */
   --p-50:  #F5F0FF;
   --p-100: #EDE4FF;
   --p-200: #D8C8FF;
   --p-300: #BFA0FF;
   --p-400: #A375FF;
-  --p-500: #8B5CF6;   /* primary interactive */
+  --p-500: #8B5CF6;   
   --p-600: #7C3AED;
   --p-700: #6D28D9;
   --p-800: #5B21B6;
   --p-900: #4C1D95;
 
-  /* semantic aliases */
   --accent:         var(--p-500);
   --accent-bright:  var(--p-400);
   --accent-dim:     var(--p-700);
@@ -38,22 +29,18 @@
   --accent-border:  rgba(139, 92, 246, 0.35);
   --on-accent:      #FFFFFF;
 
-  /* === HAIRLINES === */
   --line:     rgba(139, 92, 246, 0.08);
   --line-2:   rgba(139, 92, 246, 0.16);
   --line-neu: rgba(255, 255, 255, 0.07);
 
-  /* === TYPE === */
   --text:  #F0EDFF;
   --dim:   #A09AB8;
   --faint: #6B6485;
 
-  /* === SEMANTICS === */
   --ok:   #6EE7B7;
   --warn: #FCD34D;
   --bad:  #FC8181;
 
-  /* === MOTION === */
   --ease:         cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-out:     cubic-bezier(0, 0, 0.2, 1);
@@ -62,14 +49,12 @@
   --t-layout:     280ms;
   --t-long:       420ms;
 
-  /* === RADII === */
   --r-1: 6px;
   --r-2: 10px;
   --r-3: 16px;
   --r-4: 22px;
   --r-5: 32px;
 
-  /* === LAYOUT === */
   --max: 1300px;
   --pad: clamp(20px, 4vw, 52px);
   --gutter: max(var(--pad), calc((100vw - var(--max)) / 2));
@@ -78,13 +63,6 @@
   --font-body: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* ======================================================
-   GLOBAL SCROLLBAR MANAGEMENT (CLEAN, IMMERSIVE & HIDDEN)
-   ====================================================== */
-
-/* Completely hide all ugly browser scrollbars (arrows, grey tracks, native widgets)
-   across Windows (Edge, Chrome), macOS/iOS (Safari), and Linux/Firefox.
-   Smooth scrolling via mouse wheel, trackpad swipe, touch, and keys is 100% preserved. */
 html,
 body,
 * {
@@ -112,7 +90,6 @@ body::-webkit-scrollbar,
   background: transparent !important;
 }
 
-/* Explicit horizontal scrolling containers - ensure zero scrollbars and smooth touch */
 .dash-nav-links,
 .nav-links,
 .tabs,
@@ -145,7 +122,6 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Subtle starfield noise overlay on body */
 body::after {
   content: "";
   position: fixed;
@@ -178,15 +154,11 @@ p { text-wrap: pretty; }
   outline-offset: 3px;
 }
 
-/* ======================================================
-   GLASS / SURFACE SHARED TRAIT
-   ====================================================== */
 .media-card, .result-card, .auth-card, .picker, .modal,
 .profile-dropdown, .save-bar, .search-bar {
   background: var(--s1);
 }
 
-/* Specular top edge — now tinged purple */
 .media-card::before, .result-card::before, .auth-card::before, .picker::before,
 .modal::before, .profile-dropdown::before, .save-bar::before, .search-bar::before {
   content: "";
@@ -207,9 +179,6 @@ p { text-wrap: pretty; }
   z-index: 2;
 }
 
-/* ======================================================
-   GLOBAL DASHBOARD & SHARED HEADER NAVIGATION
-   ====================================================== */
 .dash-header {
   display: flex;
   align-items: center;
@@ -406,9 +375,6 @@ p { text-wrap: pretty; }
   }
 }
 
-/* ======================================================
-   NAVIGATION
-   ====================================================== */
 .nav {
   position: sticky;
   top: 0;
@@ -423,11 +389,10 @@ p { text-wrap: pretty; }
   -webkit-backdrop-filter: blur(20px) saturate(1.6);
   backdrop-filter: blur(20px) saturate(1.6);
   border-bottom: 1px solid var(--line-2);
-  /* thin purple glow at bottom */
+  
   box-shadow: 0 1px 0 0 rgba(139, 92, 246, 0.10), 0 8px 32px rgba(0,0,0,0.4);
 }
 
-/* ---- LOGO ---- */
 .logo { display: inline-flex; align-items: center; gap: 10px; justify-self: start; }
 .logo .mark {
   display: grid;
@@ -465,7 +430,6 @@ p { text-wrap: pretty; }
   -webkit-text-fill-color: transparent;
 }
 
-/* ---- NAV LINKS ---- */
 .nav-links { display: flex; align-items: stretch; align-self: stretch; gap: 2px; }
 .nav-links a {
   position: relative;
@@ -515,7 +479,6 @@ p { text-wrap: pretty; }
 
 .nav-right { display: flex; align-items: center; justify-self: end; }
 
-/* ---- AVATAR ---- */
 .avatar {
   width: 34px; height: 34px;
   flex-shrink: 0;
@@ -529,9 +492,6 @@ button.avatar:hover { box-shadow: 0 0 0 2px var(--accent), 0 4px 12px rgba(0,0,0
 button.avatar:active { transform: scale(0.94); }
 .avatar-sm { width: 32px; height: 32px; }
 
-/* ======================================================
-   PROFILE DROPDOWN
-   ====================================================== */
 .profile-menu { position: relative; }
 .profile-dropdown {
   position: absolute;
@@ -604,9 +564,6 @@ button.avatar:active { transform: scale(0.94); }
 .pd-icon-settings { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 4.5h7M12 4.5h2M2 11.5h2M7 11.5h7'/%3E%3Ccircle cx='10.5' cy='4.5' r='1.5'/%3E%3Ccircle cx='5.5' cy='11.5' r='1.5'/%3E%3C/svg%3E"); }
 .pd-icon-logout   { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6.5 2.75h-3v10.5h3M10 5l3 3-3 3M13 8H6.5'/%3E%3C/svg%3E"); }
 
-/* ======================================================
-   BUTTONS
-   ====================================================== */
 .btn-auth, .btn-pick, .btn-secondary, .btn-danger, .btn-edit-profile, .btn-add {
   display: inline-flex;
   align-items: center;
@@ -634,7 +591,6 @@ button.avatar:active { transform: scale(0.94); }
   transform: scale(0.97);
 }
 
-/* shimmer layer for primary buttons */
 .btn-auth::after, .btn-pick::after {
   content: "";
   position: absolute;
@@ -647,7 +603,6 @@ button.avatar:active { transform: scale(0.94); }
   transform: translateX(100%);
 }
 
-/* Primary */
 .btn-auth, .btn-pick {
   background: linear-gradient(135deg, var(--p-500), var(--p-700));
   color: #fff;
@@ -659,7 +614,6 @@ button.avatar:active { transform: scale(0.94); }
   box-shadow: 0 0 20px var(--accent-glow), 0 4px 16px rgba(109,40,217,0.35);
 }
 
-/* Secondary */
 .btn-secondary, .btn-edit-profile, .btn-add {
   height: 38px;
   background: var(--s3);
@@ -672,7 +626,6 @@ button.avatar:active { transform: scale(0.94); }
   box-shadow: 0 0 10px var(--accent-glow-sm);
 }
 
-/* Danger */
 .btn-danger {
   height: 38px;
   background: transparent;
@@ -681,7 +634,6 @@ button.avatar:active { transform: scale(0.94); }
 }
 .btn-danger:hover { background: rgba(252,129,129,0.08); border-color: rgba(252,129,129,0.5); }
 
-/* Text only */
 .btn-text {
   padding: 8px 10px;
   border: 0;
@@ -695,9 +647,6 @@ button.avatar:active { transform: scale(0.94); }
 
 button:disabled, .btn-auth:disabled { opacity: 0.38; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
 
-/* ======================================================
-   FORM FIELDS
-   ====================================================== */
 .field { margin-bottom: 22px; }
 .field label {
   display: block;
@@ -752,9 +701,6 @@ option { background: var(--s3); color: var(--text); }
 .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .field-grid .field { margin-bottom: 22px; }
 
-/* ======================================================
-   SEGMENTED TABS
-   ====================================================== */
 .tabs {
   display: inline-flex;
   gap: 2px;
@@ -792,9 +738,6 @@ option { background: var(--s3); color: var(--text); }
   box-shadow: 0 0 10px rgba(109,40,217,0.4), 0 2px 6px rgba(0,0,0,0.3);
 }
 
-/* ======================================================
-   CONTENT PRIMITIVES
-   ====================================================== */
 .page-title {
   font-family: var(--font-display);
   font-size: clamp(2.25rem, 5.5vw, 4rem);
@@ -843,7 +786,6 @@ option { background: var(--s3); color: var(--text); }
 .empty-state a { color: var(--p-300); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--accent-border); }
 .empty-state a:hover { text-decoration-color: var(--p-300); }
 
-/* leaderboard / activity list */
 .leaderboard { list-style: none; margin: 0; padding: 0; }
 .leaderboard li {
   display: flex;
@@ -861,9 +803,6 @@ option { background: var(--s3); color: var(--text); }
 .lb-title span { display: block; margin-top: 2px; color: var(--faint); font-size: 0.75rem; }
 .lb-count { color: var(--dim); font-size: 0.8125rem; white-space: nowrap; }
 
-/* ======================================================
-   MEDIA CARDS
-   ====================================================== */
 .library-grid, .results-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -938,7 +877,6 @@ option { background: var(--s3); color: var(--text); }
 }
 .cover[data-type]::after { content: attr(data-type); }
 
-/* Anime-themed cover gradients — purple-hued */
 .c1 { background: linear-gradient(160deg, #3d2d5c, #120d1e); }
 .c2 { background: linear-gradient(160deg, #2d3a5c, #0d1220); }
 .c3 { background: linear-gradient(160deg, #3a2d52, #160f1d); }
@@ -1044,7 +982,6 @@ option { background: var(--s3); color: var(--text); }
 .rewatch { color: var(--p-400); font-size: 0.75rem; }
 .rewatch-zero { color: var(--faint); font-size: 0.75rem; }
 
-/* Scroll-reveal for cards */
 @media (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
     .media-card, .result-card {
@@ -1068,9 +1005,6 @@ option { background: var(--s3); color: var(--text); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* ======================================================
-   FOOTER
-   ====================================================== */
 footer {
   display: flex;
   flex-wrap: wrap;
@@ -1084,9 +1018,6 @@ footer {
 footer a { transition: color var(--t-micro) var(--ease); }
 footer a:hover { color: var(--p-300); }
 
-/* ======================================================
-   RESPONSIVE
-   ====================================================== */
 @media (max-width: 960px) {
   .layout { grid-template-columns: minmax(0, 1fr); }
   .sidebar { margin-top: 48px; padding-top: 40px; border-top: 1px solid var(--line); }

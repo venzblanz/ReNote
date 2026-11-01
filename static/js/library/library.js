@@ -1,8 +1,4 @@
-// =====================================================================
-// ReNote — Library Interactions & Multi-Dimensional Filtering
-// =====================================================================
 
-// ---- profile dropdown ----
 const profileMenu = document.getElementById("profileMenu");
 const profileTrigger = document.getElementById("profileTrigger");
 
@@ -28,7 +24,6 @@ if (profileTrigger && profileMenu) {
   });
 }
 
-// ---- library filtering (Media Type + Dynamic Genre) ----
 (function initLibraryFilters() {
   const filterTabs = document.getElementById("filterTabs");
   const libraryGrid = document.getElementById("libraryGrid");
@@ -39,7 +34,6 @@ if (profileTrigger && profileMenu) {
 
   if (!filterTabs || !libraryGrid) return;
 
-  // Load genres mapping
   let mediaGenres = {};
   if (mediaGenresDataEl) {
     try {
@@ -49,15 +43,12 @@ if (profileTrigger && profileMenu) {
     }
   }
 
-  // Active filter state
   let currentType = "all";
   let currentGenre = "all";
 
-  // Repopulate genre dropdown and chips for the active media type
   function updateGenreControls(mediaType) {
     const genresList = mediaGenres[mediaType] || mediaGenres["all"] || [];
 
-    // 1. Update Dropdown
     if (genreFilterSelect) {
       genreFilterSelect.innerHTML = '<option value="all">All Genres</option>';
       genresList.forEach((g) => {
@@ -69,7 +60,7 @@ if (profileTrigger && profileMenu) {
         }
         genreFilterSelect.appendChild(opt);
       });
-      // If previous genre is not in new list, reset to 'all'
+      
       const hasGenre = currentGenre === "all" || genresList.some((g) => g.toLowerCase() === currentGenre);
       if (!hasGenre) {
         currentGenre = "all";
@@ -77,7 +68,6 @@ if (profileTrigger && profileMenu) {
       }
     }
 
-    // 2. Update Quick Chips
     if (genreChipsRow) {
       genreChipsRow.innerHTML = '<button type="button" class="genre-chip active" data-genre="all">All</button>';
       genresList.forEach((g) => {
@@ -91,7 +81,6 @@ if (profileTrigger && profileMenu) {
     }
   }
 
-  // Filter cards on grid
   function applyFilters() {
     const cards = libraryGrid.querySelectorAll(".media-card");
     let matchCount = 0;
@@ -99,7 +88,7 @@ if (profileTrigger && profileMenu) {
     cards.forEach((card) => {
       const cardType = (card.dataset.type || "").toLowerCase().trim();
       const cardGenresRaw = (card.dataset.genres || "").toLowerCase();
-      // card.dataset.genres format: "action,drama,fantasy,"
+      
       const cardGenres = cardGenresRaw
         .split(",")
         .map((s) => s.trim())
@@ -120,32 +109,25 @@ if (profileTrigger && profileMenu) {
     }
   }
 
-  // Set Media Type Tab
   function setLibraryTab(typeVal) {
     currentType = (typeVal || "all").toLowerCase().trim();
 
-    // Sync tab button active class
     filterTabs.querySelectorAll(".tab").forEach((tab) => {
       tab.classList.toggle("active", (tab.dataset.filter || "").toLowerCase() === currentType);
     });
 
-    // Update available genres for this type
     updateGenreControls(currentType);
 
-    // Apply combined filter
     applyFilters();
   }
 
-  // Set Genre Filter
   function setLibraryGenre(genreVal) {
     currentGenre = (genreVal || "all").toLowerCase().trim();
 
-    // Sync select dropdown
     if (genreFilterSelect) {
       genreFilterSelect.value = currentGenre;
     }
 
-    // Sync quick chips
     if (genreChipsRow) {
       genreChipsRow.querySelectorAll(".genre-chip").forEach((chip) => {
         chip.classList.toggle("active", (chip.dataset.genre || "").toLowerCase() === currentGenre);
@@ -155,21 +137,18 @@ if (profileTrigger && profileMenu) {
     applyFilters();
   }
 
-  // Listeners: Tabs
   filterTabs.addEventListener("click", (e) => {
     const btn = e.target.closest(".tab");
     if (!btn) return;
     setLibraryTab(btn.dataset.filter);
   });
 
-  // Listeners: Genre Select Dropdown
   if (genreFilterSelect) {
     genreFilterSelect.addEventListener("change", () => {
       setLibraryGenre(genreFilterSelect.value);
     });
   }
 
-  // Listeners: Quick Genre Chips
   if (genreChipsRow) {
     genreChipsRow.addEventListener("click", (e) => {
       const chip = e.target.closest(".genre-chip");
@@ -178,7 +157,6 @@ if (profileTrigger && profileMenu) {
     });
   }
 
-  // Check initial URL parameters
   const urlParams = new URLSearchParams(window.location.search);
   const initialTab = urlParams.get("tab") || urlParams.get("type") || urlParams.get("filter") || window.location.hash.replace("#", "");
   const initialGenre = urlParams.get("genre");

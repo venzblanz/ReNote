@@ -34,7 +34,6 @@ MEDIA_GENRES = {
     ],
 }
 
-
 @login_required
 def library_view(request):
     logs = (
@@ -48,7 +47,6 @@ def library_view(request):
         'media_genres': MEDIA_GENRES,
         'media_genres_json': json.dumps(MEDIA_GENRES),
     })
-
 
 @login_required
 def add_title_view(request):
@@ -109,7 +107,6 @@ def add_title_view(request):
         'error': error,
     })
 
-
 @login_required
 def save_title_view(request):
     if request.method != 'POST':
@@ -160,7 +157,6 @@ def save_title_view(request):
         messages.info(request, message)
 
     return redirect('library:list')
-
 
 @login_required
 def media_detail_view(request, media_id):
@@ -252,7 +248,6 @@ def media_detail_view(request, media_id):
         'rewatch_noun': rewatch_noun,
     }
     return render(request, 'library/media_detail.html', context)
-
 
 @login_required
 def update_library_log_view(request, media_id):

@@ -1,10 +1,6 @@
-// =====================================================================
-// ReNote — Anime Media Dashboard Interactions
-// Moon Hero Switcher, Modal Picker & Live User Library
-// =====================================================================
 
 document.addEventListener("DOMContentLoaded", () => {
-  // ---- Spotlight Media Data (Media in static/images folder) ----
+  
   const spotlights = [
     {
       title: "ReNote",
@@ -115,7 +111,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // ---- Profile Menu Dropdown ----
   const profileMenu = document.getElementById("profileMenu");
   const profileTrigger = document.getElementById("profileTrigger");
 
@@ -141,7 +136,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ---- Interactive Rate Button ----
   const rateBtn = document.getElementById("rateBtn");
   const rateLabel = document.getElementById("rateLabel");
   let userRated = false;
@@ -153,7 +147,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ---- "Pick for Me" Modal ----
   const pickerModal = document.getElementById("pickerModal");
   const navRandomBtn = document.getElementById("navRandomBtn");
   const heroPickBtn = document.getElementById("heroPickBtn");
@@ -185,7 +178,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Gather actual library items from the DOM
   function getUserLibraryItems() {
     const cards = document.querySelectorAll("#libraryGrid .media-card");
     const items = [];
@@ -267,7 +259,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ---- Real User Library Tab Filtering (Max 10 per tab + Show All redirect) ----
   const filterTabs = document.getElementById("filterTabs");
   const libraryGrid = document.getElementById("libraryGrid");
   const showAllRow = document.getElementById("showAllRow");
@@ -292,7 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
           card.style.display = "";
           visibleCount++;
         } else {
-          // Cap at max 12 items for the home overview
+          
           card.style.display = "none";
         }
       } else {
@@ -300,7 +291,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // If more than 12 items in this tab, show the 'Show All' button redirecting to library with tab open
     if (showAllRow && showAllBtn) {
       if (matchingCount > 12) {
         showAllRow.style.display = "flex";
@@ -315,7 +305,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Initial filter run on page load (shows max 10 for "all")
   filterLibraryCards("all");
 
   if (filterTabs && libraryGrid) {

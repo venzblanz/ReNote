@@ -1,4 +1,4 @@
-/* Add title — search bar */
+
 .search-bar {
   position: relative;
   display: grid;
@@ -63,7 +63,6 @@
   }
 }
 
-/* Input with spinner & clear */
 .search-input-wrapper {
   position: relative;
   display: flex;
@@ -90,7 +89,6 @@
   background: var(--s3);
 }
 
-/* Clear button */
 .search-clear-btn {
   position: absolute;
   right: 40px;
@@ -113,7 +111,6 @@
   transform: scale(1.1);
 }
 
-/* Purple rotating ring spinner */
 .search-spinner {
   position: absolute;
   right: 14px;
@@ -138,7 +135,6 @@
   cursor: pointer;
 }
 
-/* Results grid & entrance */
 .results-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
@@ -259,7 +255,6 @@
   cursor: not-allowed;
 }
 
-/* Successfully added state */
 .btn-add.btn-added {
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(139, 92, 246, 0.25)) !important;
   border-color: rgba(110, 231, 183, 0.5) !important;
@@ -282,7 +277,6 @@
   animation: spinRing 0.6s linear infinite;
 }
 
-/* Skeleton shimmer cards during loading */
 .skeleton-card {
   background: var(--s1);
   border: 1px solid var(--line);
@@ -320,7 +314,6 @@
   100% { background-position: -200% 0; }
 }
 
-/* Toast container */
 .toast-container {
   position: fixed;
   bottom: 28px;
