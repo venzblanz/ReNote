@@ -2,6 +2,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="icon" type="image/gif" href="{% static 'images/renote_logo_icon.gif' %}">
+  <link rel="apple-touch-icon" href="{% static 'images/renote_logo_icon.gif' %}">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ReNote — Log in</title>
@@ -17,8 +19,8 @@
 
   <main class="auth-shell">
     <a href="{% url 'home:home' %}" class="logo">
-      <div class="mark">R</div>
-      <div class="brand">ReNote</div>
+      <img src="{% static 'images/renote_logo_icon.gif' %}" alt="ReNote" class="brand-logo-icon">
+      <span class="brand">ReNote</span>
     </a>
 
     <div class="auth-card">
