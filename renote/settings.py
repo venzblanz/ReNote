@@ -1043,10 +1043,10 @@ ANYMAIL = {
     'REQUESTS_TIMEOUT': EMAIL_TIMEOUT,
 }
 
-if os.environ.get('RESEND_API_KEY'):
-    EMAIL_BACKEND = 'anymail.backends.resend.EmailBackend'
-elif os.environ.get('BREVO_API_KEY'):
+if os.environ.get('BREVO_API_KEY'):
     EMAIL_BACKEND = 'anymail.backends.brevo.EmailBackend'
+elif os.environ.get('RESEND_API_KEY'):
+    EMAIL_BACKEND = 'anymail.backends.resend.EmailBackend'
 elif os.environ.get('SENDGRID_API_KEY'):
     EMAIL_BACKEND = 'anymail.backends.sendgrid.EmailBackend'
 elif os.environ.get('EMAIL_BACKEND'):
@@ -1064,7 +1064,9 @@ EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'False').lower() in ('true', '1'
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 
-if os.environ.get('RESEND_API_KEY'):
+if os.environ.get('BREVO_API_KEY'):
+    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'ReNote <renote.team.contact@gmail.com>')
+elif os.environ.get('RESEND_API_KEY'):
     DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'onboarding@resend.dev')
 else:
     DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'ReNote <noreply@renote.app>')
