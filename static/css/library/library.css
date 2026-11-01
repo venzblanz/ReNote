@@ -72,3 +72,19 @@
 
 .card-body .card-meta { align-self: stretch; padding: 12px 0 0; }
 .rewatch { color: var(--p-400); font-size: 0.75rem; }
+
+
+/* Clickable card links */
+.card-cover-link {
+  display: block;
+  text-decoration: none;
+  cursor: pointer;
+}
+.card-title-link {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.card-title-link:hover {
+  color: var(--p-400, #A855F7);
+}
