@@ -50,12 +50,14 @@ def home_view(request):
 
     # Leaderboard: items with rewatches (or recent titles if none rewatched yet)
     rewatch_logs = [log for log in user_logs if (log.rewatch_count or 0) > 0]
+    rewatched_media_count = len(rewatch_logs)
     rewatch_logs.sort(key=lambda x: x.rewatch_count, reverse=True)
     leaderboard = rewatch_logs[:5]
 
     context = {
         'logs': user_logs,
         'total_count': total_count,
+        'rewatched_media_count': rewatched_media_count,
         'anime_count': anime_count,
         'manga_count': manga_count,
         'movie_count': movie_count,
