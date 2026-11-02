@@ -189,7 +189,7 @@
         {% if logs %}
           <div class="library-grid" id="libraryGrid">
             {% for log in logs %}
-              <div class="media-card" data-type="{{ log.media.media_type|lower }}">
+              <div class="media-card" data-type="{{ log.media.media_type|lower }}" data-detail-url="{% url 'library:detail' log.media.id %}">
                 <a href="{% url 'library:detail' log.media.id %}" class="cover card-cover-link" title="View details for {{ log.media.media_title }}">
                   {% if log.media.media_image %}
                     <img src="{{ log.media.media_image }}" alt="{{ log.media.media_title }}" onerror="this.onerror=null; this.src='{% static 'images/moon.png' %}';">

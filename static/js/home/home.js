@@ -178,6 +178,19 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function escapeHtml(str) {
+    if (!str) return "";
+    return String(str).replace(/[&<>"']/g, function(m) {
+      return {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[m];
+    });
+  }
+
   function getUserLibraryItems() {
     const cards = document.querySelectorAll("#libraryGrid .media-card");
     const items = [];
@@ -186,6 +199,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const typeEl = card.querySelector(".type-badge");
       const statusEl = card.querySelector(".status-pill");
       const imgEl = card.querySelector(".cover img");
+      const linkEl = card.querySelector("a.card-cover-link, a.card-title-link, a[href*='/library/media/']");
+      const detailUrl = card.dataset.detailUrl || (linkEl ? linkEl.getAttribute("href") : "");
       const type = (card.dataset.type || (typeEl ? typeEl.textContent : "")).trim().toLowerCase();
       const status = statusEl ? statusEl.textContent.trim().toLowerCase() : "";
       if (titleEl) {
@@ -194,7 +209,8 @@ document.addEventListener("DOMContentLoaded", () => {
           type: typeEl ? typeEl.textContent.trim() : "Title",
           typeRaw: type,
           status: status,
-          img: imgEl ? imgEl.src : ""
+          img: imgEl ? imgEl.src : "",
+          url: detailUrl
         });
       }
     });
@@ -211,7 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
         modalPickResult.innerHTML = `
           <div style="padding: 12px 0;">
             <p style="color: #F87171; margin: 0 0 8px; font-size: 1rem;">Your library is empty.</p>
-            <span style="font-size: 0.85rem; color: #D8B4FE;">Add titles from Catalog Search first to roll a pick!</span>
+            <span style="font-size: 0.85rem; color: #D8B4FE;">Add titles from Search & Add Title first to roll a pick!</span>
           </div>
         `;
         return;
@@ -247,12 +263,30 @@ document.addEventListener("DOMContentLoaded", () => {
         if (ticks > 8) {
           clearInterval(spinTimer);
           modalPickResult.classList.remove("is-spinning");
+          const safeTitle = escapeHtml(chosen.title);
+          const safeType = escapeHtml(chosen.type);
+          const safeStatus = escapeHtml(chosen.status || "In Library");
+          const detailUrl = chosen.url || "#";
+
           modalPickResult.innerHTML = `
-            <div>
-              <span style="display:block; font-size: 0.8rem; color: #C084FC; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px;">Tonight's Selected Pick</span>
-              <strong style="color: #fff; font-size: 1.45rem;">${chosen.title}</strong>
-              <span style="display:block; font-size: 0.875rem; color: #D8B4FE; font-weight: 500; margin-top: 4px;">${chosen.type} • Status: ${chosen.status || "In Library"}</span>
-            </div>
+            <a href="${detailUrl}" class="pick-result-card" title="Click to view details for ${safeTitle}">
+              ${chosen.img ? `<img src="${chosen.img}" alt="${safeTitle}" class="pick-result-cover">` : '<div class="pick-result-cover placeholder">🎬</div>'}
+              <div class="pick-result-info">
+                <span class="pick-result-badge">Tonight's Selected Pick</span>
+                <strong class="pick-result-title">${safeTitle}</strong>
+                <div class="pick-result-meta">
+                  <span class="pick-result-type">${safeType}</span>
+                  <span class="pick-result-dot">•</span>
+                  <span class="pick-result-status">${safeStatus}</span>
+                </div>
+              </div>
+              <div class="pick-result-action">
+                <span class="btn-pick-open">
+                  <span>View Details</span>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </span>
+              </div>
+            </a>
           `;
         }
       }, 75);
