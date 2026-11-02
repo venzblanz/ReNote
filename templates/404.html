@@ -21,11 +21,9 @@
       <img src="{% static 'images/renote_logo_icon.gif' %}" alt="ReNote" width="38" height="38" style="width:38px;height:38px;object-fit:cover;border-radius:50%;flex-shrink:0;">
       <span>ReNote</span>
     </a>
-
     <div class="error-visual">
       <div class="error-orb-glow"></div>
       <div class="error-orb-circle">
-        
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle>
           <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
@@ -33,13 +31,11 @@
         </svg>
       </div>
     </div>
-
     <div class="error-code">404</div>
     <h1 class="error-title">Lost in the Celestial Void</h1>
     <p class="error-desc">
       The coordinates you navigated to don't exist in the ReNote universe. The page may have drifted out of orbit, been moved, or never existed.
     </p>
-
     <div class="error-actions">
       <a href="{% url 'home:home' %}" class="btn-primary-glow">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
@@ -50,7 +46,6 @@
         <span>My Library</span>
       </a>
     </div>
-
     <div class="error-quick-links">
       <span>Need coordinates?</span>
       <a href="{% url 'library:add' %}">Search Titles</a>
@@ -60,6 +55,7 @@
       <a href="{% url 'user_profile:profile' %}">Profile</a>
     </div>
   </div>
+
 </main>
 
 </body>

@@ -14,20 +14,18 @@
 <link rel="stylesheet" href="{% static 'css/user_settings/settings.css' %}?v={% now 'U' %}">
 </head>
 <body>
+
 <header class="dash-header">
   <a href="{% url 'home:home' %}" class="dash-brand-block">
     <img src="{% static 'images/renote_logo_icon.gif' %}" alt="ReNote" class="brand-logo-icon" width="38" height="38" style="width:38px;height:38px;min-width:38px;min-height:38px;object-fit:cover;border-radius:50%;flex-shrink:0;">
     <span class="brand-name">ReNote</span>
   </a>
-
   <nav class="dash-nav-links">
     <a href="{% url 'home:home' %}">Dashboard</a>
     <a href="{% url 'home:home' %}#pickerModal">Pick for Me</a>
     <a href="{% url 'library:list' %}">My Library</a>
-    <a href="{% url 'library:add' %}">Catalog Search</a>
     <a href="{% url 'library:add' %}" class="nav-cta-add">+ Add Title</a>
   </nav>
-
   <div class="dash-user-controls">
     <div class="profile-menu" id="profileMenu">
       <button class="user-profile-pill" id="profileTrigger" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
@@ -35,7 +33,6 @@
         <span class="pill-username">{{ user.username|default:"AnimeFan" }}</span>
         <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
       </button>
-
       <div class="profile-dropdown" id="profileDropdown">
         <div class="profile-dropdown-header">
           <img src="{% static 'images/avatars/' %}{{ user_avatar }}" alt="{{ user.username }}" class="avatar avatar-sm" onerror="this.onerror=null; this.src='{% static 'images/avatars/202156.png' %}';">
@@ -60,10 +57,8 @@
     </div>
   </div>
 </header>
-
 <div class="settings-shell">
   <h1 class="page-title">Settings</h1>
-
   {% if messages %}
     <div class="settings-messages">
       {% for message in messages %}
@@ -71,7 +66,6 @@
       {% endfor %}
     </div>
   {% endif %}
-
   <div class="settings-layout">
     <nav class="settings-nav" id="settingsNav" aria-label="Settings sections">
       <button type="button" class="settings-nav-item active" data-section="account">Account</button>
@@ -80,14 +74,11 @@
       <button type="button" class="settings-nav-item" data-section="privacy">Privacy</button>
       <button type="button" class="settings-nav-item danger" data-section="danger">Danger zone</button>
     </nav>
-
     <form method="post" enctype="multipart/form-data" class="settings-content" id="settingsForm">
       {% csrf_token %}
-
       <div class="settings-section active" id="section-account" data-section="account">
         <h2>Account Details</h2>
         <p class="section-desc">Manage the primary login credentials and display properties tied to your ReNote account.</p>
-
         <div class="field">
           <label for="acc-username">Username</label>
           <input type="text" id="acc-username" name="username" value="{{ user.username }}" required autocomplete="username">
@@ -98,9 +89,7 @@
           <input type="email" id="acc-email" name="email" value="{{ user.email }}" required autocomplete="email">
           <small class="field-hint">Used for password resets and updates.</small>
         </div>
-
         <div class="divider"></div>
-
         <label class="toggle-row">
           <span>
             <strong>Dark mode</strong>
@@ -110,9 +99,7 @@
             <input type="checkbox" name="dark_mode" {% if settings_obj.dark_mode %}checked{% endif %}><i></i>
           </span>
         </label>
-
         <div class="divider"></div>
-
         <h3>Change Password</h3>
         <p class="section-desc">Leave these fields blank unless you wish to update your password.</p>
         <div class="field">
@@ -130,11 +117,9 @@
           </div>
         </div>
       </div>
-
       <div class="settings-section" id="section-profile" data-section="profile">
         <h2>Public Profile</h2>
         <p class="section-desc">Customize what other readers and viewers see when visiting your profile.</p>
-
         <div class="avatar-picker-section">
           <label class="field-label">Choose Your Avatar</label>
           <div class="avatar-picker-header">
@@ -144,9 +129,7 @@
               <span class="avatar-help-text">Click any of the presets below to select your avatar.</span>
             </div>
           </div>
-
           <input type="hidden" name="profile_image" id="selectedAvatarInput" value="{{ user_avatar }}">
-
           <div class="avatar-grid" id="avatarGrid">
             {% for av in available_avatars %}
               <button type="button" class="avatar-option-btn {% if av == user_avatar %}selected{% endif %}" data-avatar="{{ av }}" aria-label="Select avatar {{ forloop.counter }}" title="Avatar {{ forloop.counter }}">
@@ -156,7 +139,6 @@
             {% endfor %}
           </div>
         </div>
-
         <div class="field">
           <label for="prof-display-name">Display Name</label>
           <input type="text" id="prof-display-name" name="profile_name" value="{{ profile.profile_name|default:'' }}" placeholder="{{ user.username }}">
@@ -166,7 +148,6 @@
           <textarea id="prof-bio" name="bio" rows="4" maxlength="200" placeholder="Tell people what genres, anime, and novels you're into…">{{ profile.bio|default:'' }}</textarea>
           <span class="char-count" id="bioCount">0 / 200</span>
         </div>
-
         <div class="field">
           <label>Favorite Genre (Derived from your Library)</label>
           <div class="derived-genre-box">
@@ -176,11 +157,9 @@
           <small class="field-hint">Your favorite genre is dynamically computed based on which genre appears most in your library titles.</small>
         </div>
       </div>
-
       <div class="settings-section" id="section-notifications" data-section="notifications">
         <h2>Notifications & Alerts</h2>
         <p class="section-desc">Control which updates and reminders ReNote sends to your email.</p>
-
         <label class="toggle-row">
           <span>
             <strong>Email Notifications & Weekly Recap</strong>
@@ -191,11 +170,9 @@
           </span>
         </label>
       </div>
-
       <div class="settings-section" id="section-privacy" data-section="privacy">
         <h2>Privacy & Data</h2>
         <p class="section-desc">Control your data storage consents and privacy preferences.</p>
-
         <label class="toggle-row">
           <span>
             <strong>Data Privacy & Activity Consent</strong>
@@ -206,11 +183,9 @@
           </span>
         </label>
       </div>
-
       <div class="settings-section" id="section-danger" data-section="danger">
         <h2>Danger Zone</h2>
         <p class="section-desc">Manage account deactivation or permanent deletion.</p>
-
         <div class="danger-card">
           <div>
             <strong>Deactivate Account</strong>
@@ -218,7 +193,6 @@
           </div>
           <button type="button" class="btn-secondary" id="deactivateBtn">Deactivate</button>
         </div>
-
         <div class="danger-card">
           <div>
             <strong>Delete Account</strong>
@@ -227,7 +201,6 @@
           <button type="button" class="btn-danger" id="openDeleteModal">Delete account</button>
         </div>
       </div>
-
       <div class="save-bar" id="saveBar">
         <span>You have unsaved changes</span>
         <div class="save-bar-actions">
@@ -238,12 +211,11 @@
     </form>
   </div>
 </div>
-
 <form method="post" action="{% url 'user_settings:deactivate' %}" id="deactivateAccountForm" style="display:none;">
   {% csrf_token %}
 </form>
-
 <div class="modal-overlay" id="deleteModal">
+
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
     <h2 id="deleteModalTitle">Delete your account?</h2>
     <p>This will permanently delete your account, all library items, personal notes, ratings, and stats. Type <strong>DELETE</strong> below to confirm.</p>
@@ -257,9 +229,9 @@
     </form>
   </div>
 </div>
-
 <div class="toast" id="toast">Changes saved</div>
 
 <script src="{% static 'js/user_settings/settings.js' %}?v={% now 'U' %}"></script>
+
 </body>
 </html>

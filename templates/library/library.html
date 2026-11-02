@@ -1,298 +1,141 @@
-{% load static %}
-
-<!DOCTYPE html>
-
-<html lang="en">
-
-<head>
-
-  <link rel="icon" type="image/gif" href="{% static 'images/renote_logo_icon.gif' %}">
-
-  <link rel="apple-touch-icon" href="{% static 'images/renote_logo_icon.gif' %}">
-
-  <meta charset="UTF-8">
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Your Library — ReNote</title>
-
-  {% include 'shared/seo_meta.html' with meta_title="Your Library — ReNote" noindex=True %}
-
-  <link rel="stylesheet" href="{% static 'css/shared/base.css' %}?v={% now 'U' %}">
-
-  <link rel="stylesheet" href="{% static 'css/library/library.css' %}?v={% now 'U' %}">
-
-</head>
-
-<body>
-
-
-
-<header class="dash-header">
-
-  <a href="{% url 'home:home' %}" class="dash-brand-block">
-
-    <img src="{% static 'images/renote_logo_icon.gif' %}" alt="ReNote" class="brand-logo-icon" width="38" height="38" style="width:38px;height:38px;min-width:38px;min-height:38px;object-fit:cover;border-radius:50%;flex-shrink:0;">
-
-    <span class="brand-name">ReNote</span>
-
-  </a>
-
-
-
-  <nav class="dash-nav-links">
-
-    <a href="{% url 'home:home' %}">Dashboard</a>
-
-    <a href="{% url 'home:home' %}#pickerModal">Pick for Me</a>
-
-    <a href="{% url 'library:list' %}" class="active">My Library</a>
-
-    <a href="{% url 'library:add' %}">Catalog Search</a>
-
-    <a href="{% url 'library:add' %}" class="nav-cta-add">+ Add Title</a>
-
-  </nav>
-
-
-
-  <div class="dash-user-controls">
-
-    <div class="profile-menu" id="profileMenu">
-
-      <button class="user-profile-pill" id="profileTrigger" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
-
-        <img src="{% static 'images/avatars/' %}{{ user_avatar }}" alt="{{ user.username }}" class="pill-avatar" onerror="this.onerror=null; this.src='{% static 'images/avatars/202156.png' %}';">
-
-        <span class="pill-username">{{ user.username|default:"AnimeFan" }}</span>
-
-        <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
-
-      </button>
-
-
-
-      <div class="profile-dropdown" id="profileDropdown">
-
-        <div class="profile-dropdown-header">
-
-          <img src="{% static 'images/avatars/' %}{{ user_avatar }}" alt="{{ user.username }}" class="avatar avatar-sm" onerror="this.onerror=null; this.src='{% static 'images/avatars/202156.png' %}';">
-
-          <div>
-
-            <div class="profile-dropdown-name">{{ user.username }}</div>
-
-            <div class="profile-dropdown-email">{{ user.email }}</div>
-
-          </div>
-
-        </div>
-
-        <a href="{% url 'user_profile:profile' %}" class="profile-dropdown-item">
-
-          <span class="pd-icon pd-icon-profile"></span> Profile
-
-        </a>
-
-        <a href="{% url 'user_settings:settings' %}" class="profile-dropdown-item">
-
-          <span class="pd-icon pd-icon-settings"></span> Settings
-
-        </a>
-
-        <form method="post" action="{% url 'login:logout' %}" class="profile-dropdown-form">
-
-          {% csrf_token %}
-
-          <button type="submit" class="profile-dropdown-item profile-dropdown-logout">
-
-            <span class="pd-icon pd-icon-logout"></span> Logout
-
-          </button>
-
-        </form>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</header>
-
-
-
-<div class="library-shell">
-
-  <div class="library-header">
-
-    <h1 class="page-title">Your library</h1>
-
-    <a href="{% url 'library:add' %}" class="btn-auth">Add title</a>
-
-  </div>
-
-
-
-  {% if messages %}
-
-    {% for message in messages %}
-
-      <p class="flash-message">{{ message }}</p>
-
-    {% endfor %}
-
-  {% endif %}
-
-
-
-  <div class="library-filter-bar">
-
-    <div class="tabs" id="filterTabs">
-
-      <button type="button" class="tab active" data-filter="all">All</button>
-
-      <button type="button" class="tab" data-filter="anime">Anime</button>
-
-      <button type="button" class="tab" data-filter="manga">Manga</button>
-
-      <button type="button" class="tab" data-filter="movie">Movie</button>
-
-      <button type="button" class="tab" data-filter="novel">Novel</button>
-
-    </div>
-
-
-
-    <div class="genre-filter-wrap">
-
-      <label for="genreFilterSelect" class="genre-filter-label">Genre:</label>
-
-      <div class="genre-select-wrap">
-
-        <select id="genreFilterSelect" class="genre-dropdown" aria-label="Filter library by genre">
-
-          <option value="all">All Genres</option>
-
-          {% for g in media_genres.all %}
-
-            <option value="{{ g|lower }}">{{ g }}</option>
-
-          {% endfor %}
-
-        </select>
-
-        <svg class="select-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-
-  <div class="genre-chips-container" id="genreChipsContainer">
-
-    <div class="genre-chips-row" id="genreChipsRow">
-
-      <button type="button" class="genre-chip active" data-genre="all">All</button>
-
-      {% for g in media_genres.all %}
-
-        <button type="button" class="genre-chip" data-genre="{{ g|lower }}">{{ g }}</button>
-
-      {% endfor %}
-
-    </div>
-
-  </div>
-
-
-
-  {% if logs %}
-
-    <div id="noMatchState" class="empty-state" style="display: none;">No titles found matching the selected filters.</div>
-
-    <div class="library-grid" id="libraryGrid">
-
-      {% for log in logs %}
-
-        <div class="media-card" data-type="{{ log.media.media_type|lower }}" data-genres="{% if log.media.genre %}{% for g in log.media.genre %}{{ g|lower }},{% endfor %}{% endif %}">
-
-          <a href="{% url 'library:detail' log.media.id %}" class="cover card-cover-link" title="View details for {{ log.media.media_title }}">
-
-            {% if log.media.media_image %}
-
-              <img src="{{ log.media.media_image }}" alt="{{ log.media.media_title }}" onerror="this.onerror=null; this.src='{% static 'images/moon.png' %}';">
-
-            {% else %}
-
-              <div class="cover-placeholder">{{ log.media.media_title }}</div>
-
-            {% endif %}
-
-            <span class="type-badge">{{ log.media.media_type|title }}</span>
-
-          </a>
-
-          <div class="card-body">
-
-            <h3 class="card-title">
-
-              <a href="{% url 'library:detail' log.media.id %}" class="card-title-link" title="{{ log.media.media_title }}">{{ log.media.media_title }}</a>
-
-            </h3>
-
-            <span class="status-pill status-{{ log.status|slugify }}">{{ log.status|title }}</span>
-
-            <div class="card-meta">
-
-              {% if log.personal_rate %}
-
-                <span class="stars">★ {{ log.personal_rate }}/5</span>
-
-              {% else %}
-
-                <span class="stars unrated">Unrated</span>
-
-              {% endif %}
-
-              {% if log.rewatch_count %}
-
-                <span class="rewatch">{{ log.rewatch_count }} rewatch{{ log.rewatch_count|pluralize }}</span>
-
-              {% else %}
-
-                <span class="rewatch-zero">0 rewatches</span>
-
-              {% endif %}
-
-            </div>
-
-          </div>
-
-        </div>
-
-      {% endfor %}
-
-    </div>
-
-  {% else %}
-
-    <p class="empty-state">Nothing here yet. <a href="{% url 'library:add' %}">Add your first title</a> to get started.</p>
-
-  {% endif %}
-
-</div>
-
-
-
-<script id="mediaGenresData" type="application/json">{{ media_genres_json|safe }}</script>
-
-<script src="{% static 'js/library/library.js' %}?v={% now 'U' %}"></script>
-
-</body>
-
-</html>
-
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/gif" href="{% static 'images/renote_logo_icon.gif' %}">
+  <link rel="apple-touch-icon" href="{% static 'images/renote_logo_icon.gif' %}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Library — ReNote</title>
+  {% include 'shared/seo_meta.html' with meta_title="Your Library — ReNote" noindex=True %}
+  <link rel="stylesheet" href="{% static 'css/shared/base.css' %}?v={% now 'U' %}">
+  <link rel="stylesheet" href="{% static 'css/library/library.css' %}?v={% now 'U' %}">
+</head>
+<body>
+
+<header class="dash-header">
+  <a href="{% url 'home:home' %}" class="dash-brand-block">
+    <img src="{% static 'images/renote_logo_icon.gif' %}" alt="ReNote" class="brand-logo-icon" width="38" height="38" style="width:38px;height:38px;min-width:38px;min-height:38px;object-fit:cover;border-radius:50%;flex-shrink:0;">
+    <span class="brand-name">ReNote</span>
+  </a>
+  <nav class="dash-nav-links">
+    <a href="{% url 'home:home' %}">Dashboard</a>
+    <a href="{% url 'home:home' %}#pickerModal">Pick for Me</a>
+    <a href="{% url 'library:list' %}" class="active">My Library</a>
+    <a href="{% url 'library:add' %}" class="nav-cta-add">+ Add Title</a>
+  </nav>
+  <div class="dash-user-controls">
+    <div class="profile-menu" id="profileMenu">
+      <button class="user-profile-pill" id="profileTrigger" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
+        <img src="{% static 'images/avatars/' %}{{ user_avatar }}" alt="{{ user.username }}" class="pill-avatar" onerror="this.onerror=null; this.src='{% static 'images/avatars/202156.png' %}';">
+        <span class="pill-username">{{ user.username|default:"AnimeFan" }}</span>
+        <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="profile-dropdown" id="profileDropdown">
+        <div class="profile-dropdown-header">
+          <img src="{% static 'images/avatars/' %}{{ user_avatar }}" alt="{{ user.username }}" class="avatar avatar-sm" onerror="this.onerror=null; this.src='{% static 'images/avatars/202156.png' %}';">
+          <div>
+            <div class="profile-dropdown-name">{{ user.username }}</div>
+            <div class="profile-dropdown-email">{{ user.email }}</div>
+          </div>
+        </div>
+        <a href="{% url 'user_profile:profile' %}" class="profile-dropdown-item">
+          <span class="pd-icon pd-icon-profile"></span> Profile
+        </a>
+        <a href="{% url 'user_settings:settings' %}" class="profile-dropdown-item">
+          <span class="pd-icon pd-icon-settings"></span> Settings
+        </a>
+        <form method="post" action="{% url 'login:logout' %}" class="profile-dropdown-form">
+          {% csrf_token %}
+          <button type="submit" class="profile-dropdown-item profile-dropdown-logout">
+            <span class="pd-icon pd-icon-logout"></span> Logout
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</header>
+<div class="library-shell">
+  <div class="library-header">
+    <h1 class="page-title">Your library</h1>
+    <a href="{% url 'library:add' %}" class="btn-auth">Add title</a>
+  </div>
+  {% if messages %}
+    {% for message in messages %}
+      <p class="flash-message">{{ message }}</p>
+    {% endfor %}
+  {% endif %}
+  <div class="library-filter-bar">
+    <div class="tabs" id="filterTabs">
+      <button type="button" class="tab active" data-filter="all">All</button>
+      <button type="button" class="tab" data-filter="anime">Anime</button>
+      <button type="button" class="tab" data-filter="manga">Manga</button>
+      <button type="button" class="tab" data-filter="movie">Movie</button>
+      <button type="button" class="tab" data-filter="novel">Novel</button>
+    </div>
+    <div class="genre-filter-wrap">
+      <label for="genreFilterSelect" class="genre-filter-label">Genre:</label>
+      <div class="genre-select-wrap">
+        <select id="genreFilterSelect" class="genre-dropdown" aria-label="Filter library by genre">
+          <option value="all">All Genres</option>
+          {% for g in media_genres.all %}
+            <option value="{{ g|lower }}">{{ g }}</option>
+          {% endfor %}
+        </select>
+        <svg class="select-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="genre-chips-container" id="genreChipsContainer">
+    <div class="genre-chips-row" id="genreChipsRow">
+      <button type="button" class="genre-chip active" data-genre="all">All</button>
+      {% for g in media_genres.all %}
+        <button type="button" class="genre-chip" data-genre="{{ g|lower }}">{{ g }}</button>
+      {% endfor %}
+    </div>
+  </div>
+  {% if logs %}
+    <div id="noMatchState" class="empty-state" style="display: none;">No titles found matching the selected filters.</div>
+    <div class="library-grid" id="libraryGrid">
+      {% for log in logs %}
+        <div class="media-card" data-type="{{ log.media.media_type|lower }}" data-genres="{% if log.media.genre %}{% for g in log.media.genre %}{{ g|lower }},{% endfor %}{% endif %}">
+          <a href="{% url 'library:detail' log.media.id %}" class="cover card-cover-link" title="View details for {{ log.media.media_title }}">
+            {% if log.media.media_image %}
+              <img src="{{ log.media.media_image }}" alt="{{ log.media.media_title }}" onerror="this.onerror=null; this.src='{% static 'images/moon.png' %}';">
+            {% else %}
+              <div class="cover-placeholder">{{ log.media.media_title }}</div>
+            {% endif %}
+            <span class="type-badge">{{ log.media.media_type|title }}</span>
+          </a>
+          <div class="card-body">
+            <h3 class="card-title">
+              <a href="{% url 'library:detail' log.media.id %}" class="card-title-link" title="{{ log.media.media_title }}">{{ log.media.media_title }}</a>
+            </h3>
+            <span class="status-pill status-{{ log.status|slugify }}">{{ log.status|title }}</span>
+            <div class="card-meta">
+              {% if log.personal_rate %}
+                <span class="stars">★ {{ log.personal_rate }}/5</span>
+              {% else %}
+                <span class="stars unrated">Unrated</span>
+              {% endif %}
+              {% if log.rewatch_count %}
+                <span class="rewatch">{{ log.rewatch_count }} rewatch{{ log.rewatch_count|pluralize }}</span>
+              {% else %}
+                <span class="rewatch-zero">0 rewatches</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="empty-state">Nothing here yet. <a href="{% url 'library:add' %}">Add your first title</a> to get started.</p>
+  {% endif %}
+</div>
+
+<script id="mediaGenresData" type="application/json">{{ media_genres_json|safe }}</script>
+
+<script src="{% static 'js/library/library.js' %}?v={% now 'U' %}"></script>
+
+</body>
+</html>

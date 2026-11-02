@@ -1,20 +1,16 @@
 {% load static %}
-
 <meta name="description" content="{{ meta_description|default:'ReNote is your personal anime, manga, and media tracking library. Log progress, rate titles, curate lists, and discover your next binge.' }}">
 <meta name="theme-color" content="#0d0c14">
 <meta name="robots" content="{% if noindex %}noindex, nofollow{% else %}index, follow{% endif %}">
-
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="ReNote">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
 <meta property="og:type" content="{{ og_type|default:'website' }}">
 <meta property="og:site_name" content="ReNote">
 <meta property="og:url" content="{{ request.build_absolute_uri }}">
 <meta property="og:title" content="{{ meta_title|default:'ReNote — Track Everything You Watch, Read & Rewatch' }}">
 <meta property="og:description" content="{{ meta_description|default:'Your personal anime, manga, and media tracking library. Log progress, curate lists, and discover your next binge.' }}">
 <meta property="og:image" content="{% if meta_image %}{{ meta_image }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/renote_logo_icon.gif' %}{% endif %}">
-
 <meta name="twitter:card" content="{% if meta_image %}summary_large_image{% else %}summary{% endif %}">
 <meta name="twitter:title" content="{{ meta_title|default:'ReNote — Track Everything You Watch, Read & Rewatch' }}">
 <meta name="twitter:description" content="{{ meta_description|default:'Your personal anime, manga, and media tracking library. Log progress, curate lists, and discover your next binge.' }}">

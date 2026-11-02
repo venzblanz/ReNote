@@ -1,548 +1,246 @@
-{% load static %}
-
-<!DOCTYPE html>
-
-<html lang="en">
-
-<head>
-
-  <link rel="icon" type="image/gif" href="{% static 'images/renote_logo_icon.gif' %}">
-
-  <link rel="apple-touch-icon" href="{% static 'images/renote_logo_icon.gif' %}">
-
-  <meta charset="UTF-8">
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>{{ media.media_title }} — ReNote</title>
-
-  {% include 'shared/seo_meta.html' with meta_title=media.media_title|add:" — ReNote" meta_description=media.media_description|truncatewords:25 meta_image=media.media_image og_type="video.other" %}
-
-  <link rel="stylesheet" href="{% static 'css/shared/base.css' %}?v={% now 'U' %}">
-
-  <link rel="stylesheet" href="{% static 'css/library/library.css' %}">
-
-  <link rel="stylesheet" href="{% static 'css/library/media_detail.css' %}?v={% now 'U' %}">
-
-</head>
-
-<body class="detail-page-wrapper">
-
-
-
-<header class="dash-header">
-
-  <a href="{% url 'home:home' %}" class="dash-brand-block">
-
-    <img src="{% static 'images/renote_logo_icon.gif' %}" alt="ReNote" class="brand-logo-icon" width="38" height="38" style="width:38px;height:38px;min-width:38px;min-height:38px;object-fit:cover;border-radius:50%;flex-shrink:0;">
-
-    <span class="brand-name">ReNote</span>
-
-  </a>
-
-
-
-  <nav class="dash-nav-links">
-
-    <a href="{% url 'home:home' %}">Dashboard</a>
-
-    <a href="{% url 'home:home' %}#pickerModal">Pick for Me</a>
-
-    <a href="{% url 'library:list' %}" class="active">My Library</a>
-
-    <a href="{% url 'library:add' %}">Catalog Search</a>
-
-    <a href="{% url 'library:add' %}" class="nav-cta-add">+ Add Title</a>
-
-  </nav>
-
-
-
-  <div class="dash-user-controls">
-
-    <div class="profile-menu" id="profileMenu">
-
-      <button class="user-profile-pill" id="profileTrigger" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
-
-        <img src="{% static 'images/avatars/' %}{{ user_avatar }}" alt="{{ user.username }}" class="pill-avatar" onerror="this.onerror=null; this.src='{% static 'images/avatars/202156.png' %}';">
-
-        <span class="pill-username">{{ user.username|default:"AnimeFan" }}</span>
-
-        <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
-
-      </button>
-
-
-
-      <div class="profile-dropdown" id="profileDropdown">
-
-        <div class="profile-dropdown-header">
-
-          <img src="{% static 'images/avatars/' %}{{ user_avatar }}" alt="{{ user.username }}" class="avatar avatar-sm" onerror="this.onerror=null; this.src='{% static 'images/avatars/202156.png' %}';">
-
-          <div>
-
-            <div class="profile-dropdown-name">{{ user.username }}</div>
-
-            <div class="profile-dropdown-email">{{ user.email }}</div>
-
-          </div>
-
-        </div>
-
-        <a href="{% url 'user_profile:profile' %}" class="profile-dropdown-item">
-
-          <span class="pd-icon pd-icon-profile"></span> Profile
-
-        </a>
-
-        <a href="{% url 'user_settings:settings' %}" class="profile-dropdown-item">
-
-          <span class="pd-icon pd-icon-settings"></span> Settings
-
-        </a>
-
-        <form method="post" action="{% url 'login:logout' %}" class="profile-dropdown-form">
-
-          {% csrf_token %}
-
-          <button type="submit" class="profile-dropdown-item profile-dropdown-logout">
-
-            <span class="pd-icon pd-icon-logout"></span> Logout
-
-          </button>
-
-        </form>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</header>
-
-
-
-{% if media.media_image %}
-
-  <div class="detail-backdrop-banner" style="background-image: url('{{ media.media_image }}');"></div>
-
-{% else %}
-
-  <div class="detail-backdrop-banner" style="background-image: url('{% static 'images/moon.png' %}');"></div>
-
-{% endif %}
-
-<div class="detail-backdrop-overlay"></div>
-
-
-
-<main class="detail-shell" id="mediaDetailShell"
-
-      data-media-id="{{ media.id }}"
-
-      data-update-url="{% url 'library:update_log' media.id %}"
-
-      data-current-rating="{{ user_log.personal_rate|default:0 }}"
-
-      data-csrf="{{ csrf_token }}">
-
-
-
-  <div class="detail-top-nav">
-
-    <a href="{% url 'library:list' %}" class="btn-back-link">
-
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-
-      <span>Back to Library</span>
-
-    </a>
-
-    <div class="detail-breadcrumbs">
-
-      <a href="{% url 'home:home' %}">Home</a> &nbsp;/&nbsp;
-
-      <a href="{% url 'library:list' %}">Library</a> &nbsp;/&nbsp;
-
-      <span>{{ media.media_title }}</span>
-
-    </div>
-
-  </div>
-
-
-
-  {% if messages %}
-
-    {% for message in messages %}
-
-      <div class="flash-message">{{ message }}</div>
-
-    {% endfor %}
-
-  {% endif %}
-
-
-
-  <div class="detail-showcase-grid">
-
-
-
-    <div class="detail-poster-col">
-
-      <div class="detail-poster-card">
-
-        {% if media.media_image %}
-
-          <img src="{{ media.media_image }}" alt="{{ media.media_title }}" class="detail-poster-img" onerror="this.onerror=null; this.src='{% static 'images/moon.png' %}';">
-
-        {% else %}
-
-          <div class="detail-poster-placeholder">{{ media.media_title }}</div>
-
-        {% endif %}
-
-        <span class="detail-format-badge">{{ media.media_type|title }}</span>
-
-      </div>
-
-
-
-      {% if is_in_library %}
-
-        <div class="quick-actions-bar">
-
-          
-
-          <button type="button" class="btn-favorite-toggle {% if user_log.is_favorite %}active{% endif %}" id="favoriteToggleBtn" title="Toggle Favorite">
-
-            <svg class="heart-icon" viewBox="0 0 24 24">
-
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-
-            </svg>
-
-            <span class="fav-label">{% if user_log.is_favorite %}Favorited{% else %}Favorite{% endif %}</span>
-
-          </button>
-
-
-
-          <div class="rewatch-stepper-box">
-
-            <div class="stepper-header">
-
-              <span class="stepper-label">{{ rewatch_label }}</span>
-
-            </div>
-
-            <div class="stepper-controls">
-
-              <button type="button" class="btn-stepper" id="btnDecRewatch" aria-label="Decrease rewatch count">−</button>
-
-              <span class="stepper-num" id="rewatchVal">{{ user_log.rewatch_count|default:0 }}</span>
-
-              <button type="button" class="btn-stepper" id="btnIncRewatch" aria-label="Increase rewatch count">+</button>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      {% endif %}
-
-    </div>
-
-
-
-    <div class="detail-info-col">
-
-      <div class="detail-title-group">
-
-        <h1 class="media-detail-title">{{ media.media_title }}</h1>
-
-
-
-        <div class="detail-meta-pills">
-
-          {% if media.media_release_date %}
-
-            <span class="meta-chip">
-
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-
-              {{ media.media_release_date|date:"F j, Y" }}
-
-            </span>
-
-          {% endif %}
-
-
-
-          {% if media.media_rate %}
-
-            <span class="meta-chip meta-chip-rating">
-
-              ★ {{ media.media_rate }} / 10 Community
-
-            </span>
-
-          {% endif %}
-
-
-
-          <span class="meta-chip">
-
-            {{ media.media_type|title }}
-
-          </span>
-
-
-
-          {% if is_in_library %}
-
-            <span class="meta-chip status-chip status-{{ user_log.status|slugify }}" id="metaStatusPill">
-
-              {{ user_log.status|title }}
-
-            </span>
-
-          {% endif %}
-
-        </div>
-
-
-
-        {% if media.genre %}
-
-          <div class="detail-genre-tags">
-
-            {% for g in media.genre %}
-
-              {% if g %}
-
-                <span class="genre-tag-pill">{{ g }}</span>
-
-              {% endif %}
-
-            {% endfor %}
-
-          </div>
-
-        {% endif %}
-
-      </div>
-
-
-
-      <div class="detail-synopsis-box">
-
-        <h3 class="box-heading">
-
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C084FC" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-
-          Synopsis
-
-        </h3>
-
-        <p class="synopsis-text">
-
-          {{ media.media_description|default:"No synopsis available in catalog." }}
-
-        </p>
-
-      </div>
-
-
-
-      <div class="personal-journal-panel">
-
-        <div class="journal-header">
-
-          <div class="journal-title-group">
-
-            <h2>Your Personal Log & Journal</h2>
-
-            <p>Your personal ratings, notes, and progress are stored privately in your account.</p>
-
-          </div>
-
-          <span class="sync-status-indicator" id="syncIndicator">✓ Saved!</span>
-
-        </div>
-
-
-
-        {% if is_in_library %}
-
-          
-
-          <div class="journal-field-group">
-
-            <span class="journal-field-label">Status</span>
-
-            <div class="status-pill-grid">
-
-              {% for val, label in status_options %}
-
-                <button type="button" class="btn-status-toggle {% if user_log.status|lower == val %}active{% endif %}" data-status="{{ val }}">
-
-                  {{ label }}
-
-                </button>
-
-              {% endfor %}
-
-            </div>
-
-          </div>
-
-
-
-          <div class="journal-field-group">
-
-            <span class="journal-field-label">Your Personal Rating</span>
-
-            <div class="rating-interactive-row">
-
-              <div class="star-rating-widget" id="starRatingWidget">
-
-                {% for n in "12345" %}
-
-                  <button type="button" class="star-btn" data-value="{{ forloop.counter }}" title="Rate {{ forloop.counter }} of 5 stars">
-
-                    <svg viewBox="0 0 24 24">
-
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-
-                    </svg>
-
-                  </button>
-
-                {% endfor %}
-
-              </div>
-
-              <span class="rating-score-badge" id="ratingScoreBadge">
-
-                {% if user_log.personal_rate %}
-
-                  ★ {{ user_log.personal_rate }} / 5
-
-                {% else %}
-
-                  Unrated
-
-                {% endif %}
-
-              </span>
-
-              <button type="button" class="btn-clear-rate" id="clearRateBtn" title="Clear rating">Clear</button>
-
-            </div>
-
-          </div>
-
-
-
-          <div class="journal-field-group">
-
-            <span class="journal-field-label">Personal Notes & Review</span>
-
-            <textarea class="journal-note-textarea" id="journalNoteText" placeholder="Write your personal thoughts, episode notes, review, or memories about this title...">{{ user_log.media_note|default:'' }}</textarea>
-
-            <div class="journal-note-actions">
-
-              <button type="button" class="btn-save-note" id="saveNoteBtn">
-
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-
-                <span>Save Note</span>
-
-              </button>
-
-            </div>
-
-          </div>
-
-
-
-          <div class="journal-footer-danger">
-
-            <form method="post" action="{% url 'library:detail' media.id %}" onsubmit="return confirm('Remove {{ media.media_title }} from your library?');">
-
-              {% csrf_token %}
-
-              <input type="hidden" name="action" value="remove_from_library">
-
-              <button type="submit" class="btn-remove-link">Remove from my library</button>
-
-            </form>
-
-          </div>
-
-
-
-        {% else %}
-
-          
-
-          <div class="not-in-library-callout">
-
-            <div class="callout-text">
-
-              <h3>This title is in the catalog, but not in your library yet</h3>
-
-              <p>Add it to your personal collection to log your status, personal rating, review notes, rewatches, and favorites.</p>
-
-            </div>
-
-            <form method="post" action="{% url 'library:detail' media.id %}">
-
-              {% csrf_token %}
-
-              <input type="hidden" name="action" value="add_to_library">
-
-              <button type="submit" class="btn-add-collection-cta">
-
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-
-                <span>+ Add to My Collection</span>
-
-              </button>
-
-            </form>
-
-          </div>
-
-        {% endif %}
-
-
-
-      </div>
-
-
-
-    </div>
-
-
-
-  </div>
-
-
-
-</main>
-
-
-
-<script src="{% static 'js/library/library.js' %}?v={% now 'U' %}"></script>
-
-<script src="{% static 'js/library/media_detail.js' %}?v={% now 'U' %}"></script>
-
-</body>
-
-</html>
-
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/gif" href="{% static 'images/renote_logo_icon.gif' %}">
+  <link rel="apple-touch-icon" href="{% static 'images/renote_logo_icon.gif' %}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ media.media_title }} — ReNote</title>
+  {% include 'shared/seo_meta.html' with meta_title=media.media_title|add:" — ReNote" meta_description=media.media_description|truncatewords:25 meta_image=media.media_image og_type="video.other" %}
+  <link rel="stylesheet" href="{% static 'css/shared/base.css' %}?v={% now 'U' %}">
+  <link rel="stylesheet" href="{% static 'css/library/library.css' %}">
+  <link rel="stylesheet" href="{% static 'css/library/media_detail.css' %}?v={% now 'U' %}">
+</head>
+<body class="detail-page-wrapper">
+
+<header class="dash-header">
+  <a href="{% url 'home:home' %}" class="dash-brand-block">
+    <img src="{% static 'images/renote_logo_icon.gif' %}" alt="ReNote" class="brand-logo-icon" width="38" height="38" style="width:38px;height:38px;min-width:38px;min-height:38px;object-fit:cover;border-radius:50%;flex-shrink:0;">
+    <span class="brand-name">ReNote</span>
+  </a>
+  <nav class="dash-nav-links">
+    <a href="{% url 'home:home' %}">Dashboard</a>
+    <a href="{% url 'home:home' %}#pickerModal">Pick for Me</a>
+    <a href="{% url 'library:list' %}" class="active">My Library</a>
+    <a href="{% url 'library:add' %}" class="nav-cta-add">+ Add Title</a>
+  </nav>
+  <div class="dash-user-controls">
+    <div class="profile-menu" id="profileMenu">
+      <button class="user-profile-pill" id="profileTrigger" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
+        <img src="{% static 'images/avatars/' %}{{ user_avatar }}" alt="{{ user.username }}" class="pill-avatar" onerror="this.onerror=null; this.src='{% static 'images/avatars/202156.png' %}';">
+        <span class="pill-username">{{ user.username|default:"AnimeFan" }}</span>
+        <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="profile-dropdown" id="profileDropdown">
+        <div class="profile-dropdown-header">
+          <img src="{% static 'images/avatars/' %}{{ user_avatar }}" alt="{{ user.username }}" class="avatar avatar-sm" onerror="this.onerror=null; this.src='{% static 'images/avatars/202156.png' %}';">
+          <div>
+            <div class="profile-dropdown-name">{{ user.username }}</div>
+            <div class="profile-dropdown-email">{{ user.email }}</div>
+          </div>
+        </div>
+        <a href="{% url 'user_profile:profile' %}" class="profile-dropdown-item">
+          <span class="pd-icon pd-icon-profile"></span> Profile
+        </a>
+        <a href="{% url 'user_settings:settings' %}" class="profile-dropdown-item">
+          <span class="pd-icon pd-icon-settings"></span> Settings
+        </a>
+        <form method="post" action="{% url 'login:logout' %}" class="profile-dropdown-form">
+          {% csrf_token %}
+          <button type="submit" class="profile-dropdown-item profile-dropdown-logout">
+            <span class="pd-icon pd-icon-logout"></span> Logout
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</header>
+{% if media.media_image %}
+  <div class="detail-backdrop-banner" style="background-image: url('{{ media.media_image }}');"></div>
+{% else %}
+  <div class="detail-backdrop-banner" style="background-image: url('{% static 'images/moon.png' %}');"></div>
+{% endif %}
+<div class="detail-backdrop-overlay"></div>
+
+<main class="detail-shell" id="mediaDetailShell"
+      data-media-id="{{ media.id }}"
+      data-update-url="{% url 'library:update_log' media.id %}"
+      data-current-rating="{{ user_log.personal_rate|default:0 }}"
+      data-csrf="{{ csrf_token }}">
+  <div class="detail-top-nav">
+    <a href="{% url 'library:list' %}" class="btn-back-link">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      <span>Back to Library</span>
+    </a>
+    <div class="detail-breadcrumbs">
+      <a href="{% url 'home:home' %}">Home</a> &nbsp;/&nbsp;
+      <a href="{% url 'library:list' %}">Library</a> &nbsp;/&nbsp;
+      <span>{{ media.media_title }}</span>
+    </div>
+  </div>
+  {% if messages %}
+    {% for message in messages %}
+      <div class="flash-message">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+  <div class="detail-showcase-grid">
+    <div class="detail-poster-col">
+      <div class="detail-poster-card">
+        {% if media.media_image %}
+          <img src="{{ media.media_image }}" alt="{{ media.media_title }}" class="detail-poster-img" onerror="this.onerror=null; this.src='{% static 'images/moon.png' %}';">
+        {% else %}
+          <div class="detail-poster-placeholder">{{ media.media_title }}</div>
+        {% endif %}
+        <span class="detail-format-badge">{{ media.media_type|title }}</span>
+      </div>
+      {% if is_in_library %}
+        <div class="quick-actions-bar">
+          <button type="button" class="btn-favorite-toggle {% if user_log.is_favorite %}active{% endif %}" id="favoriteToggleBtn" title="Toggle Favorite">
+            <svg class="heart-icon" viewBox="0 0 24 24">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            <span class="fav-label">{% if user_log.is_favorite %}Favorited{% else %}Favorite{% endif %}</span>
+          </button>
+          <div class="rewatch-stepper-box">
+            <div class="stepper-header">
+              <span class="stepper-label">{{ rewatch_label }}</span>
+            </div>
+            <div class="stepper-controls">
+              <button type="button" class="btn-stepper" id="btnDecRewatch" aria-label="Decrease rewatch count">−</button>
+              <span class="stepper-num" id="rewatchVal">{{ user_log.rewatch_count|default:0 }}</span>
+              <button type="button" class="btn-stepper" id="btnIncRewatch" aria-label="Increase rewatch count">+</button>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+    <div class="detail-info-col">
+      <div class="detail-title-group">
+        <h1 class="media-detail-title">{{ media.media_title }}</h1>
+        <div class="detail-meta-pills">
+          {% if media.media_release_date %}
+            <span class="meta-chip">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              {{ media.media_release_date|date:"F j, Y" }}
+            </span>
+          {% endif %}
+          {% if media.media_rate %}
+            <span class="meta-chip meta-chip-rating">
+              ★ {{ media.media_rate }} / 10 Community
+            </span>
+          {% endif %}
+          <span class="meta-chip">
+            {{ media.media_type|title }}
+          </span>
+          {% if is_in_library %}
+            <span class="meta-chip status-chip status-{{ user_log.status|slugify }}" id="metaStatusPill">
+              {{ user_log.status|title }}
+            </span>
+          {% endif %}
+        </div>
+        {% if media.genre %}
+          <div class="detail-genre-tags">
+            {% for g in media.genre %}
+              {% if g %}
+                <span class="genre-tag-pill">{{ g }}</span>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+      <div class="detail-synopsis-box">
+        <h3 class="box-heading">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C084FC" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Synopsis
+        </h3>
+        <p class="synopsis-text">
+          {{ media.media_description|default:"No synopsis available in catalog." }}
+        </p>
+      </div>
+      <div class="personal-journal-panel">
+        <div class="journal-header">
+          <div class="journal-title-group">
+            <h2>Your Personal Log & Journal</h2>
+            <p>Your personal ratings, notes, and progress are stored privately in your account.</p>
+          </div>
+          <span class="sync-status-indicator" id="syncIndicator">✓ Saved!</span>
+        </div>
+        {% if is_in_library %}
+          <div class="journal-field-group">
+            <span class="journal-field-label">Status</span>
+            <div class="status-pill-grid">
+              {% for val, label in status_options %}
+                <button type="button" class="btn-status-toggle {% if user_log.status|lower == val %}active{% endif %}" data-status="{{ val }}">
+                  {{ label }}
+                </button>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="journal-field-group">
+            <span class="journal-field-label">Your Personal Rating</span>
+            <div class="rating-interactive-row">
+              <div class="star-rating-widget" id="starRatingWidget">
+                {% for n in "12345" %}
+                  <button type="button" class="star-btn" data-value="{{ forloop.counter }}" title="Rate {{ forloop.counter }} of 5 stars">
+                    <svg viewBox="0 0 24 24">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
+                  </button>
+                {% endfor %}
+              </div>
+              <span class="rating-score-badge" id="ratingScoreBadge">
+                {% if user_log.personal_rate %}
+                  ★ {{ user_log.personal_rate }} / 5
+                {% else %}
+                  Unrated
+                {% endif %}
+              </span>
+              <button type="button" class="btn-clear-rate" id="clearRateBtn" title="Clear rating">Clear</button>
+            </div>
+          </div>
+          <div class="journal-field-group">
+            <span class="journal-field-label">Personal Notes & Review</span>
+            <textarea class="journal-note-textarea" id="journalNoteText" placeholder="Write your personal thoughts, episode notes, review, or memories about this title...">{{ user_log.media_note|default:'' }}</textarea>
+            <div class="journal-note-actions">
+              <button type="button" class="btn-save-note" id="saveNoteBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                <span>Save Note</span>
+              </button>
+            </div>
+          </div>
+          <div class="journal-footer-danger">
+            <form method="post" action="{% url 'library:detail' media.id %}" onsubmit="return confirm('Remove {{ media.media_title }} from your library?');">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="remove_from_library">
+              <button type="submit" class="btn-remove-link">Remove from my library</button>
+            </form>
+          </div>
+        {% else %}
+          <div class="not-in-library-callout">
+            <div class="callout-text">
+              <h3>This title is in the catalog, but not in your library yet</h3>
+              <p>Add it to your personal collection to log your status, personal rating, review notes, rewatches, and favorites.</p>
+            </div>
+            <form method="post" action="{% url 'library:detail' media.id %}">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="add_to_library">
+              <button type="submit" class="btn-add-collection-cta">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>+ Add to My Collection</span>
+              </button>
+            </form>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script src="{% static 'js/library/library.js' %}?v={% now 'U' %}"></script>
+
+<script src="{% static 'js/library/media_detail.js' %}?v={% now 'U' %}"></script>
+
+</body>
+</html>
