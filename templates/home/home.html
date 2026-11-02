@@ -123,53 +123,6 @@
 
   </section>
 
-  <div class="picker-modal-backdrop" id="pickerModal">
-    <div class="picker-dialog">
-      <div class="picker-dialog-header">
-        <div class="dialog-title-group">
-          <span class="dialog-badge">Interactive Chooser</span>
-          <h2>Decide What to Watch or Read Next</h2>
-          <p>Roll a random selection from your actual library collection.</p>
-        </div>
-        <button type="button" class="dialog-close-btn" id="closePickerBtn">&times;</button>
-      </div>
-      <div class="picker-form-row">
-        <div class="field">
-          <label for="modalFilterType">Filter by Format</label>
-          <select id="modalFilterType">
-            <option value="all">All Formats</option>
-            <option value="anime">Anime</option>
-            <option value="manga">Manga</option>
-            <option value="movie">Movie</option>
-            <option value="novel">Novel</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="modalFilterStatus">Filter by Status</label>
-          <select id="modalFilterStatus">
-            <option value="all">Any Status</option>
-            <option value="plan to watch">Plan to Watch / Read</option>
-            <option value="watching">Watching / Reading</option>
-            <option value="completed">Completed</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="modalSource">Pool Source</label>
-          <select id="modalSource">
-            <option value="library">Your Library ({{ total_count }} titles)</option>
-          </select>
-        </div>
-      </div>
-      <div class="picker-roll-zone">
-        <button type="button" class="btn-pill-primary" id="spinPickBtn">
-          <span>Pick for Me</span>
-        </button>
-        <div class="pick-live-result" id="modalPickResult">
-        </div>
-      </div>
-    </div>
-  </div>
-
   <section class="dash-library-section" id="librarySection">
     <div class="section-header-row">
       <div>
@@ -312,6 +265,53 @@
       <a href="{% url 'register:privacy' %}">Privacy</a>
     </div>
   </footer>
+</div>
+
+<div class="picker-modal-backdrop" id="pickerModal">
+  <div class="picker-dialog">
+    <div class="picker-dialog-header">
+      <div class="dialog-title-group">
+        <span class="dialog-badge">Interactive Chooser</span>
+        <h2>Decide What to Watch or Read Next</h2>
+        <p>Roll a random selection from your actual library collection.</p>
+      </div>
+      <button type="button" class="dialog-close-btn" id="closePickerBtn">&times;</button>
+    </div>
+    <div class="picker-form-row">
+      <div class="field">
+        <label for="modalFilterType">Filter by Format</label>
+        <select id="modalFilterType">
+          <option value="all">All Formats</option>
+          <option value="anime">Anime</option>
+          <option value="manga">Manga</option>
+          <option value="movie">Movie</option>
+          <option value="novel">Novel</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="modalFilterStatus">Filter by Status</label>
+        <select id="modalFilterStatus">
+          <option value="all">Any Status</option>
+          <option value="plan to watch">Plan to Watch / Read</option>
+          <option value="watching">Watching / Reading</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="modalSource">Pool Source</label>
+        <select id="modalSource">
+          <option value="library">Your Library ({{ total_count }} titles)</option>
+        </select>
+      </div>
+    </div>
+    <div class="picker-roll-zone">
+      <button type="button" class="btn-pill-primary" id="spinPickBtn">
+        <span>Pick for Me</span>
+      </button>
+      <div class="pick-live-result" id="modalPickResult">
+      </div>
+    </div>
+  </div>
 </div>
 
 <script src="{% static 'js/home/home.js' %}?v={% now 'U' %}"></script>

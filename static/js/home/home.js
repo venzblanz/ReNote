@@ -159,12 +159,14 @@ document.addEventListener("DOMContentLoaded", () => {
   function openModal() {
     if (pickerModal) {
       pickerModal.classList.add("open");
+      document.body.classList.add("modal-open");
       if (modalPickResult) modalPickResult.textContent = "";
     }
   }
   function closeModal() {
     if (pickerModal) {
       pickerModal.classList.remove("open");
+      document.body.classList.remove("modal-open");
     }
   }
 
@@ -177,6 +179,12 @@ document.addEventListener("DOMContentLoaded", () => {
       if (e.target === pickerModal) closeModal();
     });
   }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && pickerModal && pickerModal.classList.contains("open")) {
+      closeModal();
+    }
+  });
 
   function escapeHtml(str) {
     if (!str) return "";
