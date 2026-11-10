@@ -69,13 +69,13 @@
       data-current-rating="{{ user_log.personal_rate|default:0 }}"
       data-csrf="{{ csrf_token }}">
   <div class="detail-top-nav">
-    <a href="{% url 'library:list' %}" class="btn-back-link">
+    <a href="{{ back_url|default:'/library/' }}" class="btn-back-link">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
       <span>Back to Library</span>
     </a>
     <div class="detail-breadcrumbs">
       <a href="{% url 'home:home' %}">Home</a> &nbsp;/&nbsp;
-      <a href="{% url 'library:list' %}">Library</a> &nbsp;/&nbsp;
+      <a href="{{ back_url|default:'/library/' }}">Library</a> &nbsp;/&nbsp;
       <span>{{ media.media_title }}</span>
     </div>
   </div>
@@ -213,6 +213,7 @@
             <form method="post" action="{% url 'library:detail' media.id %}" onsubmit="return confirm('Remove {{ media.media_title }} from your library?');">
               {% csrf_token %}
               <input type="hidden" name="action" value="remove_from_library">
+              <input type="hidden" name="back" value="{{ back_url|default:'/library/' }}">
               <button type="submit" class="btn-remove-link">Remove from my library</button>
             </form>
           </div>
@@ -225,6 +226,7 @@
             <form method="post" action="{% url 'library:detail' media.id %}">
               {% csrf_token %}
               <input type="hidden" name="action" value="add_to_library">
+              <input type="hidden" name="back" value="{{ back_url|default:'/library/' }}">
               <button type="submit" class="btn-add-collection-cta">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                 <span>+ Add to My Collection</span>

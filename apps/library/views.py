@@ -1,5 +1,5 @@
 from datetime import datetime
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlparse
 import json
 import uuid
 
@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
 from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 from apps.media_catalog.models import Media
 from apps.user_library_log.models import UserLibraryLog
 from .api import search_media
@@ -269,10 +270,38 @@ def save_title_view(request):
 
     return redirect('library:list')
 
+def _get_safe_library_back_url(request, raw_url=None):
+    """Return a validated URL pointing back to the library list (preserving filter query params)."""
+    library_url = reverse('library:list')
+    candidate = (raw_url or '').strip()
+    if not candidate:
+        return library_url
+    if not url_has_allowed_host_and_scheme(
+        candidate,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        return library_url
+    parsed = urlparse(candidate)
+    if parsed.path != library_url:
+        return library_url
+    return f"{library_url}?{parsed.query}" if parsed.query else library_url
+
+def _build_detail_redirect_url(media_id, back_url):
+    """Preserve ?back=... across POST redirects on media_detail_view."""
+    detail_url = reverse('library:detail', kwargs={'media_id': media_id})
+    if back_url and back_url != reverse('library:list'):
+        return f"{detail_url}?{urlencode({'back': back_url})}"
+    return detail_url
+
 @login_required
 def media_detail_view(request, media_id):
     media = get_object_or_404(Media, id=media_id)
     user_log = UserLibraryLog.objects.filter(user=request.user, media=media).first()
+    back_url = _get_safe_library_back_url(
+        request,
+        request.POST.get('back') or request.GET.get('back') or request.META.get('HTTP_REFERER'),
+    )
 
     is_reading = (media.media_type or '').strip().lower() in ('manga', 'novel', 'light novel')
     if is_reading:
@@ -306,13 +335,13 @@ def media_detail_view(request, media_id):
                 defaults={'status': default_status}
             )
             messages.success(request, f'Added "{media.media_title}" to your library!')
-            return redirect('library:detail', media_id=media.id)
+            return redirect(_build_detail_redirect_url(media.id, back_url))
 
         elif action == 'remove_from_library':
             if user_log:
                 user_log.delete()
                 messages.info(request, f'Removed "{media.media_title}" from your library.')
-            return redirect('library:list')
+            return redirect(back_url)
 
         elif action == 'save_all':
             if not user_log:
@@ -347,7 +376,7 @@ def media_detail_view(request, media_id):
             user_log.is_favorite = ('is_favorite' in request.POST)
             user_log.save()
             messages.success(request, f'Updated your log for "{media.media_title}".')
-            return redirect('library:detail', media_id=media.id)
+            return redirect(_build_detail_redirect_url(media.id, back_url))
 
     context = {
         'media': media,
@@ -357,6 +386,7 @@ def media_detail_view(request, media_id):
         'is_reading': is_reading,
         'rewatch_label': rewatch_label,
         'rewatch_noun': rewatch_noun,
+        'back_url': back_url,
     }
     return render(request, 'library/media_detail.html', context)
 

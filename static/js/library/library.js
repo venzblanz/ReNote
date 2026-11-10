@@ -24,6 +24,14 @@ if (profileTrigger && profileMenu) {
   });
 }
 
+document.addEventListener("click", (e) => {
+  if (e.target.closest(".dash-nav-links a")) {
+    try {
+      sessionStorage.removeItem("renote:libraryScroll");
+    } catch (err) {}
+  }
+});
+
 (function initLibraryFilters() {
   const filterTabs = document.getElementById("filterTabs");
   const libraryGrid = document.getElementById("libraryGrid");
@@ -71,9 +79,45 @@ if (profileTrigger && profileMenu) {
     ],
   };
 
+  const LIBRARY_SCROLL_KEY = "renote:libraryScroll";
   let currentType = "all";
   let currentGenre = "all";
   let currentStatus = "all";
+
+  function buildLibraryReturnUrl() {
+    const params = new URLSearchParams();
+    if (currentType && currentType !== "all") params.set("tab", currentType);
+    if (currentStatus && currentStatus !== "all") params.set("status", currentStatus);
+    if (currentGenre && currentGenre !== "all") params.set("genre", currentGenre);
+    const query = params.toString();
+    const basePath = window.location.pathname || "/library/";
+    return query ? `${basePath}?${query}` : basePath;
+  }
+
+  function syncUrlAndCardLinks() {
+    const returnUrl = buildLibraryReturnUrl();
+    if (window.history && typeof window.history.replaceState === "function") {
+      window.history.replaceState(
+        { tab: currentType, status: currentStatus, genre: currentGenre },
+        "",
+        returnUrl
+      );
+    }
+
+    const basePath = window.location.pathname || "/library/";
+    const hasActiveFilters = returnUrl !== basePath;
+    libraryGrid.querySelectorAll(".card-cover-link, .card-title-link").forEach((link) => {
+      if (!link.dataset.baseHref) {
+        link.dataset.baseHref = link.getAttribute("href") || "";
+      }
+      const baseHref = link.dataset.baseHref;
+      if (!baseHref) return;
+      link.setAttribute(
+        "href",
+        hasActiveFilters ? `${baseHref}?back=${encodeURIComponent(returnUrl)}` : baseHref
+      );
+    });
+  }
 
   function getStatusGroup(mediaType) {
     if (mediaType === "all") return "all";
@@ -197,6 +241,8 @@ if (profileTrigger && profileMenu) {
     if (noMatchState) {
       noMatchState.style.display = matchCount === 0 && cards.length > 0 ? "block" : "none";
     }
+
+    syncUrlAndCardLinks();
   }
 
   function setLibraryTab(typeVal) {
@@ -264,6 +310,17 @@ if (profileTrigger && profileMenu) {
     });
   }
 
+  libraryGrid.addEventListener("click", (e) => {
+    const link = e.target.closest(".card-cover-link, .card-title-link");
+    if (!link) return;
+    try {
+      sessionStorage.setItem(
+        LIBRARY_SCROLL_KEY,
+        JSON.stringify({ url: buildLibraryReturnUrl(), y: window.scrollY || 0 })
+      );
+    } catch (err) {}
+  });
+
   const urlParams = new URLSearchParams(window.location.search);
   const initialTab = urlParams.get("tab") || urlParams.get("type") || urlParams.get("filter") || window.location.hash.replace("#", "");
   const initialGenre = urlParams.get("genre");
@@ -278,4 +335,23 @@ if (profileTrigger && profileMenu) {
   if (initialGenre) {
     setLibraryGenre(initialGenre);
   }
+  if (!initialTab && !initialStatus && !initialGenre) {
+    syncUrlAndCardLinks();
+  }
+
+  try {
+    const rawScroll = sessionStorage.getItem(LIBRARY_SCROLL_KEY);
+    if (rawScroll) {
+      sessionStorage.removeItem(LIBRARY_SCROLL_KEY);
+      const saved = JSON.parse(rawScroll);
+      if (saved && saved.url === buildLibraryReturnUrl() && typeof saved.y === "number" && saved.y > 0) {
+        const scrollFn = () => window.scrollTo(0, saved.y);
+        if (typeof requestAnimationFrame === "function") {
+          requestAnimationFrame(scrollFn);
+        } else {
+          scrollFn();
+        }
+      }
+    }
+  } catch (err) {}
 })();
