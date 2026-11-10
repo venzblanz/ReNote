@@ -27,6 +27,7 @@ if (profileTrigger && profileMenu) {
 (function initLibraryFilters() {
   const filterTabs = document.getElementById("filterTabs");
   const libraryGrid = document.getElementById("libraryGrid");
+  const statusFilterSelect = document.getElementById("statusFilterSelect");
   const genreFilterSelect = document.getElementById("genreFilterSelect");
   const genreChipsRow = document.getElementById("genreChipsRow");
   const noMatchState = document.getElementById("noMatchState");
@@ -43,8 +44,84 @@ if (profileTrigger && profileMenu) {
     }
   }
 
+  const STATUS_OPTIONS = {
+    all: [
+      { value: "all", label: "All Statuses" },
+      { value: "in_progress", label: "Watching / Reading" },
+      { value: "planned", label: "Plan to Watch / Read" },
+      { value: "completed", label: "Completed" },
+      { value: "on hold", label: "On Hold" },
+      { value: "dropped", label: "Dropped" },
+    ],
+    watch: [
+      { value: "all", label: "All Statuses" },
+      { value: "watching", label: "Watching" },
+      { value: "plan to watch", label: "Plan to Watch" },
+      { value: "completed", label: "Completed" },
+      { value: "on hold", label: "On Hold" },
+      { value: "dropped", label: "Dropped" },
+    ],
+    read: [
+      { value: "all", label: "All Statuses" },
+      { value: "reading", label: "Reading" },
+      { value: "plan to read", label: "Plan to Read" },
+      { value: "completed", label: "Completed" },
+      { value: "on hold", label: "On Hold" },
+      { value: "dropped", label: "Dropped" },
+    ],
+  };
+
   let currentType = "all";
   let currentGenre = "all";
+  let currentStatus = "all";
+
+  function getStatusGroup(mediaType) {
+    if (mediaType === "all") return "all";
+    if (mediaType === "manga" || mediaType === "novel" || mediaType === "light novel") {
+      return "read";
+    }
+    return "watch";
+  }
+
+  function normalizeStatusForType(statusVal, mediaType) {
+    const val = (statusVal || "all").toLowerCase().trim();
+    const group = getStatusGroup(mediaType);
+
+    let mapped = val;
+    if (group === "all") {
+      if (val === "watching" || val === "reading") mapped = "in_progress";
+      else if (val === "plan to watch" || val === "plan to read") mapped = "planned";
+    } else if (group === "watch") {
+      if (val === "in_progress" || val === "reading") mapped = "watching";
+      else if (val === "planned" || val === "plan to read") mapped = "plan to watch";
+    } else if (group === "read") {
+      if (val === "in_progress" || val === "watching") mapped = "reading";
+      else if (val === "planned" || val === "plan to watch") mapped = "plan to read";
+    }
+
+    const validValues = STATUS_OPTIONS[group].map((opt) => opt.value);
+    return validValues.includes(mapped) ? mapped : "all";
+  }
+
+  function updateStatusControls(mediaType) {
+    if (!statusFilterSelect) return;
+
+    const group = getStatusGroup(mediaType);
+    const optionsList = STATUS_OPTIONS[group] || STATUS_OPTIONS.all;
+    currentStatus = normalizeStatusForType(currentStatus, mediaType);
+
+    statusFilterSelect.innerHTML = "";
+    optionsList.forEach((item) => {
+      const opt = document.createElement("option");
+      opt.value = item.value;
+      opt.textContent = item.label;
+      if (item.value === currentStatus) {
+        opt.selected = true;
+      }
+      statusFilterSelect.appendChild(opt);
+    });
+    statusFilterSelect.value = currentStatus;
+  }
 
   function updateGenreControls(mediaType) {
     const genresList = mediaGenres[mediaType] || mediaGenres["all"] || [];
@@ -81,12 +158,24 @@ if (profileTrigger && profileMenu) {
     }
   }
 
+  function statusMatchesCard(cardStatus) {
+    if (currentStatus === "all") return true;
+    if (currentStatus === "in_progress") {
+      return cardStatus === "watching" || cardStatus === "reading";
+    }
+    if (currentStatus === "planned") {
+      return cardStatus === "plan to watch" || cardStatus === "plan to read";
+    }
+    return cardStatus === currentStatus;
+  }
+
   function applyFilters() {
     const cards = libraryGrid.querySelectorAll(".media-card");
     let matchCount = 0;
 
     cards.forEach((card) => {
       const cardType = (card.dataset.type || "").toLowerCase().trim();
+      const cardStatus = (card.dataset.status || "").toLowerCase().trim();
       const cardGenresRaw = (card.dataset.genres || "").toLowerCase();
       
       const cardGenres = cardGenresRaw
@@ -95,11 +184,12 @@ if (profileTrigger && profileMenu) {
         .filter(Boolean);
 
       const typeMatches = currentType === "all" || cardType === currentType;
+      const statusMatches = statusMatchesCard(cardStatus);
       const genreMatches =
         currentGenre === "all" ||
         cardGenres.some((cg) => cg === currentGenre || cg.includes(currentGenre) || currentGenre.includes(cg));
 
-      const isVisible = typeMatches && genreMatches;
+      const isVisible = typeMatches && statusMatches && genreMatches;
       card.style.display = isVisible ? "" : "none";
       if (isVisible) matchCount++;
     });
@@ -116,7 +206,18 @@ if (profileTrigger && profileMenu) {
       tab.classList.toggle("active", (tab.dataset.filter || "").toLowerCase() === currentType);
     });
 
+    updateStatusControls(currentType);
     updateGenreControls(currentType);
+
+    applyFilters();
+  }
+
+  function setLibraryStatus(statusVal) {
+    currentStatus = normalizeStatusForType(statusVal, currentType);
+
+    if (statusFilterSelect) {
+      statusFilterSelect.value = currentStatus;
+    }
 
     applyFilters();
   }
@@ -143,6 +244,12 @@ if (profileTrigger && profileMenu) {
     setLibraryTab(btn.dataset.filter);
   });
 
+  if (statusFilterSelect) {
+    statusFilterSelect.addEventListener("change", () => {
+      setLibraryStatus(statusFilterSelect.value);
+    });
+  }
+
   if (genreFilterSelect) {
     genreFilterSelect.addEventListener("change", () => {
       setLibraryGenre(genreFilterSelect.value);
@@ -160,9 +267,13 @@ if (profileTrigger && profileMenu) {
   const urlParams = new URLSearchParams(window.location.search);
   const initialTab = urlParams.get("tab") || urlParams.get("type") || urlParams.get("filter") || window.location.hash.replace("#", "");
   const initialGenre = urlParams.get("genre");
+  const initialStatus = urlParams.get("status");
 
   if (initialTab) {
     setLibraryTab(initialTab);
+  }
+  if (initialStatus) {
+    setLibraryStatus(initialStatus);
   }
   if (initialGenre) {
     setLibraryGenre(initialGenre);

@@ -151,6 +151,13 @@
   margin-bottom: 14px;
 }
 
+.library-dropdowns-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
 .genre-filter-wrap {
   display: inline-flex;
   align-items: center;
@@ -286,9 +293,18 @@
     margin-bottom: 12px;
     gap: 12px;
   }
+  .library-dropdowns-group {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 10px;
+  }
   .genre-filter-wrap {
     justify-content: space-between;
     width: 100%;
+  }
+  .genre-filter-label {
+    min-width: 58px;
   }
   .genre-select-wrap {
     flex: 1;
