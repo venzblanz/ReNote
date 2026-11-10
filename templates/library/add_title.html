@@ -90,7 +90,7 @@
       {% endfor %}
     </div>
   </div>
-  <div id="resultsContainer">
+  <div id="resultsContainer" data-preview-url="{% url 'library:preview' %}">
     {% if error %}
       <p class="flash-message error">{{ error }}</p>
     {% endif %}
@@ -99,7 +99,7 @@
         <div class="results-grid">
           {% for item in results %}
             <div class="result-card">
-              <div class="cover" data-type="{{ item.media_type|default:media_type }}">
+              <div class="cover" data-type="{{ item.media_type|default:media_type }}" title="View details for {{ item.media_title }}">
                 {% if item.media_image %}
                   <img src="{{ item.media_image }}" alt="{{ item.media_title }}" loading="lazy">
                 {% else %}
@@ -107,7 +107,9 @@
                 {% endif %}
               </div>
               <div class="card-body">
-                <h3 class="card-title">{{ item.media_title }}</h3>
+                <h3 class="card-title">
+                  <a href="#preview" class="card-title-link js-preview-trigger" title="View details for {{ item.media_title }}">{{ item.media_title }}</a>
+                </h3>
                 <div class="card-meta">
                   {% if item.media_release_date %}
                     <span class="card-year">{{ item.media_release_date|date:"Y" }}</span>

@@ -129,11 +129,13 @@
 
     return `
       <div class="result-card">
-        <div class="cover" data-type="${escapeHtml(mediaType)}">
+        <div class="cover" data-type="${escapeHtml(mediaType)}" title="View details for ${escapedTitle}">
           ${coverHtml}
         </div>
         <div class="card-body">
-          <h3 class="card-title">${escapedTitle}</h3>
+          <h3 class="card-title">
+            <a href="#preview" class="card-title-link js-preview-trigger" title="View details for ${escapedTitle}">${escapedTitle}</a>
+          </h3>
           <div class="card-meta">
             ${year}
             ${rating}
@@ -384,6 +386,51 @@
       performSearch('', mediaType, genre, { pushUrl: true, force: true });
     });
   }
+
+  function openResultPreview(card) {
+    const addForm = card.querySelector('.add-form');
+    if (!addForm) return;
+
+    const previewForm = document.createElement('form');
+    previewForm.method = 'POST';
+    previewForm.action = resultsContainer.dataset.previewUrl || '/library/preview/';
+    previewForm.style.display = 'none';
+
+    const appendField = (name, value) => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = name;
+      input.value = value ?? '';
+      previewForm.appendChild(input);
+    };
+
+    appendField('csrfmiddlewaretoken', getCsrfToken());
+
+    addForm.querySelectorAll('input[type="hidden"]').forEach((field) => {
+      if (field.name && field.name !== 'csrfmiddlewaretoken') {
+        appendField(field.name, field.value);
+      }
+    });
+
+    appendField('search_q', searchInput.value.trim());
+    appendField('search_media_type', mediaTypeSelect ? mediaTypeSelect.value : 'anime');
+    appendField('search_genre', genreSelect ? genreSelect.value : 'all');
+
+    document.body.appendChild(previewForm);
+    previewForm.submit();
+  }
+
+  resultsContainer.addEventListener('click', (e) => {
+    if (e.target.closest('.add-form')) return;
+
+    const card = e.target.closest('.result-card:not(.skeleton-card)');
+    if (!card) return;
+
+    if (e.target.closest('.js-preview-trigger')) {
+      e.preventDefault();
+    }
+    openResultPreview(card);
+  });
 
   resultsContainer.addEventListener('submit', async (e) => {
     const form = e.target.closest('.add-form');

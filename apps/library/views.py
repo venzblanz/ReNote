@@ -1,11 +1,16 @@
+from datetime import datetime
+from urllib.parse import urlencode
+import json
+import uuid
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
+from django.urls import reverse
 from apps.media_catalog.models import Media
 from apps.user_library_log.models import UserLibraryLog
 from .api import search_media
-import json
 
 MEDIA_GENRES = {
     'all': [
@@ -107,6 +112,109 @@ def add_title_view(request):
         'error': error,
     })
 
+def _build_add_back_url(query, media_type, genre):
+    """Build a safe return URL back to the Add Title page with active search filters."""
+    mtype = (media_type or 'anime').strip().lower()
+    if mtype not in ('anime', 'manga', 'movie', 'novel'):
+        mtype = 'anime'
+
+    params = {'media_type': mtype}
+    if query:
+        params['q'] = query
+    if genre and genre.lower() != 'all':
+        params['genre'] = genre
+    return f"{reverse('library:add')}?{urlencode(params)}"
+
+def _parse_preview_date(date_str):
+    """Parse YYYY-MM-DD strings into date objects so template date filters work."""
+    if not date_str:
+        return None
+    try:
+        return datetime.strptime(date_str.strip(), '%Y-%m-%d').date()
+    except ValueError:
+        return None
+
+@login_required
+def media_preview_view(request):
+    """
+    Preview a search result from Add Title without saving it to the user's library.
+    Uses Post-Redirect-Get backed by session storage so refreshes and Back navigation stay clean.
+    """
+    if request.method == 'POST':
+        external_id = request.POST.get('external_id', '').strip()
+        media_title = request.POST.get('media_title', '').strip()
+        back_url = _build_add_back_url(
+            request.POST.get('search_q', '').strip(),
+            request.POST.get('search_media_type', ''),
+            request.POST.get('search_genre', '').strip(),
+        )
+        if not external_id and not media_title:
+            return redirect(back_url)
+
+        raw_rate = request.POST.get('media_rate', '').strip()
+        if raw_rate.lower() in ('', 'none', 'null'):
+            raw_rate = ''
+
+        preview_items = dict(request.session.get('preview_items') or {})
+        key = uuid.uuid4().hex[:12]
+        preview_items[key] = {
+            'external_id': external_id,
+            'media_type': (request.POST.get('media_type') or 'anime').strip().lower(),
+            'media_title': media_title,
+            'media_description': request.POST.get('media_description', '').strip(),
+            'media_image': request.POST.get('media_image', '').strip(),
+            'media_release_date': request.POST.get('media_release_date', '').strip(),
+            'media_rate': raw_rate,
+            'genre': [g.strip() for g in request.POST.getlist('genre') if g and g.strip()],
+            'back_url': back_url,
+        }
+        if len(preview_items) > 10:
+            for old_key in list(preview_items.keys())[:-10]:
+                preview_items.pop(old_key, None)
+
+        request.session['preview_items'] = preview_items
+        request.session.modified = True
+        return redirect(f"{reverse('library:preview')}?key={key}")
+
+    key = request.GET.get('key', '').strip()
+    preview_items = request.session.get('preview_items') or {}
+    raw_item = preview_items.get(key)
+    if not raw_item:
+        return redirect('library:add')
+
+    raw_rate = (raw_item.get('media_rate') or '').strip()
+    media_data = {
+        'external_id': raw_item.get('external_id', ''),
+        'media_type': raw_item.get('media_type', 'anime'),
+        'media_title': raw_item.get('media_title', ''),
+        'media_description': raw_item.get('media_description', ''),
+        'media_image': raw_item.get('media_image', ''),
+        'media_release_date': _parse_preview_date(raw_item.get('media_release_date', '')),
+        'media_rate': None if raw_rate.lower() in ('', 'none', 'null') else raw_rate,
+        'genre': raw_item.get('genre') or [],
+    }
+
+    existing_media = None
+    existing_log = None
+    if media_data['external_id'] and media_data['media_type']:
+        existing_media = Media.objects.filter(
+            external_id=media_data['external_id'],
+            media_type=media_data['media_type'],
+        ).first()
+        if existing_media:
+            existing_log = UserLibraryLog.objects.filter(
+                user=request.user,
+                media=existing_media,
+            ).first()
+
+    return render(request, 'library/media_preview.html', {
+        'media': media_data,
+        'back_url': raw_item.get('back_url') or reverse('library:add'),
+        'is_in_library': existing_log is not None,
+        'existing_media': existing_media,
+        'existing_log': existing_log,
+    })
+
 @login_required
 def save_title_view(request):
     if request.method != 'POST':
@@ -155,6 +263,9 @@ def save_title_view(request):
         messages.success(request, message)
     else:
         messages.info(request, message)
+
+    if request.POST.get('next') == 'detail':
+        return redirect('library:detail', media_id=media.id)
 
     return redirect('library:list')
 

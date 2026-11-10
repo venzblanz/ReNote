@@ -688,6 +688,7 @@ html {
   background: linear-gradient(135deg, #9333EA 0%, #A855F7 100%);
   border: 0;
   color: #fff;
+  text-decoration: none;
   font-family: var(--font-display, inherit);
   font-size: 0.95rem;
   font-weight: 700;

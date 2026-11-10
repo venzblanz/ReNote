@@ -186,6 +186,14 @@
   text-overflow: ellipsis;
   word-break: break-word;
 }
+.result-card:hover .card-title-link {
+  color: var(--p-400, #A855F7);
+}
+.result-card .card-title-link:focus-visible {
+  outline: 2px solid var(--p-400, #A855F7);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
 
 .card-meta {
   display: flex;
