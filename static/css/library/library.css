@@ -14,6 +14,84 @@
   align-items: center;
   gap: 12px;
 }
+.library-search-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 230px;
+  height: 42px;
+  border-radius: var(--r-2);
+  background: var(--s2);
+  border: 1px solid var(--line-2);
+  transition:
+    background-color var(--t-micro) var(--ease),
+    border-color var(--t-fast) var(--ease),
+    box-shadow var(--t-fast) var(--ease),
+    width var(--t-fast) var(--ease);
+}
+.library-search-bar:hover {
+  background: var(--s3);
+  border-color: var(--accent-border);
+}
+.library-search-bar:focus-within {
+  background: var(--s3);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow), 0 0 16px var(--accent-glow-sm);
+  width: 270px;
+}
+.library-search-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--faint);
+  pointer-events: none;
+  flex-shrink: 0;
+  transition: color var(--t-micro) var(--ease);
+}
+.library-search-bar:focus-within .library-search-icon {
+  color: var(--p-300);
+}
+.library-search-input {
+  width: 100%;
+  height: 100%;
+  padding: 0 32px 0 38px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  letter-spacing: -0.01em;
+}
+.library-search-input:focus {
+  outline: none;
+}
+.library-search-input::placeholder {
+  color: var(--faint);
+}
+.library-search-clear {
+  position: absolute;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: none;
+  background: var(--s4);
+  color: var(--dim);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0;
+  transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease), transform var(--t-micro) var(--ease-spring);
+}
+.library-search-clear:hover {
+  background: var(--p-700);
+  color: #fff;
+  transform: scale(1.1);
+}
+.library-search-clear[hidden] {
+  display: none !important;
+}
 .btn-folders {
   display: inline-flex;
   align-items: center;
@@ -325,6 +403,24 @@
     margin-bottom: 16px;
     flex-wrap: wrap;
     gap: 12px;
+  }
+  .library-header-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+  }
+  .library-search-bar {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+  .library-search-bar:focus-within {
+    width: 100%;
+  }
+  .btn-folders,
+  .library-header-actions .btn-auth {
+    width: 100%;
+    justify-content: center;
   }
   .page-title {
     font-size: 1.65rem;

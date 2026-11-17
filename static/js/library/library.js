@@ -40,6 +40,8 @@ document.addEventListener("click", (e) => {
   const genreChipsRow = document.getElementById("genreChipsRow");
   const noMatchState = document.getElementById("noMatchState");
   const mediaGenresDataEl = document.getElementById("mediaGenresData");
+  const librarySearchInput = document.getElementById("librarySearchInput");
+  const librarySearchClearBtn = document.getElementById("librarySearchClearBtn");
 
   if (!filterTabs || !libraryGrid) return;
 
@@ -83,12 +85,18 @@ document.addEventListener("click", (e) => {
   let currentType = "all";
   let currentGenre = "all";
   let currentStatus = "all";
+  let currentSearch = "";
+
+  function normalizeSearch(str) {
+    return (str || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  }
 
   function buildLibraryReturnUrl() {
     const params = new URLSearchParams();
     if (currentType && currentType !== "all") params.set("tab", currentType);
     if (currentStatus && currentStatus !== "all") params.set("status", currentStatus);
     if (currentGenre && currentGenre !== "all") params.set("genre", currentGenre);
+    if (currentSearch && currentSearch.trim()) params.set("q", currentSearch.trim());
     const query = params.toString();
     const basePath = window.location.pathname || "/library/";
     return query ? `${basePath}?${query}` : basePath;
@@ -98,7 +106,7 @@ document.addEventListener("click", (e) => {
     const returnUrl = buildLibraryReturnUrl();
     if (window.history && typeof window.history.replaceState === "function") {
       window.history.replaceState(
-        { tab: currentType, status: currentStatus, genre: currentGenre },
+        { tab: currentType, status: currentStatus, genre: currentGenre, q: currentSearch },
         "",
         returnUrl
       );
@@ -216,11 +224,15 @@ document.addEventListener("click", (e) => {
   function applyFilters() {
     const cards = libraryGrid.querySelectorAll(".media-card");
     let matchCount = 0;
+    const query = currentSearch.trim().toLowerCase();
+    const queryClean = normalizeSearch(query);
 
     cards.forEach((card) => {
       const cardType = (card.dataset.type || "").toLowerCase().trim();
       const cardStatus = (card.dataset.status || "").toLowerCase().trim();
       const cardGenresRaw = (card.dataset.genres || "").toLowerCase();
+      const cardTitle = (card.dataset.title || card.querySelector(".card-title")?.textContent || "").toLowerCase().trim();
+      const cardTitleClean = normalizeSearch(cardTitle);
       
       const cardGenres = cardGenresRaw
         .split(",")
@@ -232,17 +244,41 @@ document.addEventListener("click", (e) => {
       const genreMatches =
         currentGenre === "all" ||
         cardGenres.some((cg) => cg === currentGenre || cg.includes(currentGenre) || currentGenre.includes(cg));
+      const searchMatches = !query || cardTitle.includes(query) || cardTitleClean.includes(queryClean);
 
-      const isVisible = typeMatches && statusMatches && genreMatches;
+      const isVisible = typeMatches && statusMatches && genreMatches && searchMatches;
       card.style.display = isVisible ? "" : "none";
       if (isVisible) matchCount++;
     });
 
     if (noMatchState) {
-      noMatchState.style.display = matchCount === 0 && cards.length > 0 ? "block" : "none";
+      if (matchCount === 0 && cards.length > 0) {
+        if (query) {
+          noMatchState.textContent = `No titles found matching "${currentSearch.trim()}".`;
+        } else {
+          noMatchState.textContent = "No titles found matching the selected filters.";
+        }
+        noMatchState.style.display = "block";
+      } else {
+        noMatchState.style.display = "none";
+      }
     }
 
     syncUrlAndCardLinks();
+  }
+
+  function setLibrarySearch(searchVal) {
+    currentSearch = searchVal || "";
+
+    if (librarySearchInput && librarySearchInput.value !== currentSearch) {
+      librarySearchInput.value = currentSearch;
+    }
+
+    if (librarySearchClearBtn) {
+      librarySearchClearBtn.hidden = !currentSearch.trim();
+    }
+
+    applyFilters();
   }
 
   function setLibraryTab(typeVal) {
@@ -282,6 +318,31 @@ document.addEventListener("click", (e) => {
     }
 
     applyFilters();
+  }
+
+  if (librarySearchInput) {
+    librarySearchInput.addEventListener("input", () => {
+      currentSearch = librarySearchInput.value;
+      if (librarySearchClearBtn) {
+        librarySearchClearBtn.hidden = !currentSearch.trim();
+      }
+      applyFilters();
+    });
+
+    librarySearchInput.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        setLibrarySearch("");
+      }
+    });
+  }
+
+  if (librarySearchClearBtn) {
+    librarySearchClearBtn.addEventListener("click", () => {
+      setLibrarySearch("");
+      if (librarySearchInput) {
+        librarySearchInput.focus();
+      }
+    });
   }
 
   filterTabs.addEventListener("click", (e) => {
@@ -325,6 +386,7 @@ document.addEventListener("click", (e) => {
   const initialTab = urlParams.get("tab") || urlParams.get("type") || urlParams.get("filter") || window.location.hash.replace("#", "");
   const initialGenre = urlParams.get("genre");
   const initialStatus = urlParams.get("status");
+  const initialSearch = urlParams.get("q") || "";
 
   if (initialTab) {
     setLibraryTab(initialTab);
@@ -335,7 +397,10 @@ document.addEventListener("click", (e) => {
   if (initialGenre) {
     setLibraryGenre(initialGenre);
   }
-  if (!initialTab && !initialStatus && !initialGenre) {
+  if (initialSearch) {
+    setLibrarySearch(initialSearch);
+  }
+  if (!initialTab && !initialStatus && !initialGenre && !initialSearch) {
     syncUrlAndCardLinks();
   }
 

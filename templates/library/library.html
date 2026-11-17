@@ -59,6 +59,19 @@
   <div class="library-header">
     <h1 class="page-title">Your library</h1>
     <div class="library-header-actions">
+      <div class="library-search-bar" id="librarySearchBar">
+        <svg class="library-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text"
+               id="librarySearchInput"
+               class="library-search-input"
+               placeholder="Search by title…"
+               aria-label="Search titles in library"
+               autocomplete="off">
+        <button type="button" class="library-search-clear" id="librarySearchClearBtn" aria-label="Clear search" hidden>✕</button>
+      </div>
       <a href="{% url 'library:folder_list' %}" class="btn-folders" title="Manage your folders">
         <svg class="btn-folders-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
@@ -122,7 +135,7 @@
     <div id="noMatchState" class="empty-state" style="display: none;">No titles found matching the selected filters.</div>
     <div class="library-grid" id="libraryGrid">
       {% for log in logs %}
-        <div class="media-card" data-type="{{ log.media.media_type|lower }}" data-status="{{ log.status|lower }}" data-genres="{% if log.media.genre %}{% for g in log.media.genre %}{{ g|lower }},{% endfor %}{% endif %}">
+        <div class="media-card" data-title="{{ log.media.media_title|lower }}" data-type="{{ log.media.media_type|lower }}" data-status="{{ log.status|lower }}" data-genres="{% if log.media.genre %}{% for g in log.media.genre %}{{ g|lower }},{% endfor %}{% endif %}">
           <a href="{% url 'library:detail' log.media.id %}" class="cover card-cover-link" title="View details for {{ log.media.media_title }}">
             {% if log.media.media_image %}
               <img src="{{ log.media.media_image }}" alt="{{ log.media.media_title }}" onerror="this.onerror=null; this.src='{% static 'images/moon.png' %}';">
