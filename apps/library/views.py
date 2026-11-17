@@ -9,8 +9,9 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
+from django.db.models import Count, Prefetch
 from apps.media_catalog.models import Media
-from apps.user_library_log.models import UserLibraryLog
+from apps.user_library_log.models import UserLibraryLog, LibraryFolder, FolderItem
 from .api import search_media
 
 MEDIA_GENRES = {
@@ -271,7 +272,7 @@ def save_title_view(request):
     return redirect('library:list')
 
 def _get_safe_library_back_url(request, raw_url=None):
-    """Return a validated URL pointing back to the library list (preserving filter query params)."""
+    """Return a validated URL pointing back to the library list or folder detail."""
     library_url = reverse('library:list')
     candidate = (raw_url or '').strip()
     if not candidate:
@@ -283,9 +284,9 @@ def _get_safe_library_back_url(request, raw_url=None):
     ):
         return library_url
     parsed = urlparse(candidate)
-    if parsed.path != library_url:
+    if parsed.path != library_url and not parsed.path.startswith('/library/folders'):
         return library_url
-    return f"{library_url}?{parsed.query}" if parsed.query else library_url
+    return candidate
 
 def _build_detail_redirect_url(media_id, back_url):
     """Preserve ?back=... across POST redirects on media_detail_view."""
@@ -494,3 +495,150 @@ def update_library_log_view(request, media_id):
         'media_note': user_log.media_note,
         'is_favorite': user_log.is_favorite,
     })
+
+
+# =============================================================================
+# Folder Management Views
+# =============================================================================
+
+@login_required
+def folder_list_view(request):
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        description = request.POST.get('description', '').strip()[:200]
+
+        if not name:
+            messages.error(request, 'Folder name is required.')
+            return redirect('library:folder_list')
+
+        if len(name) > 60:
+            messages.error(request, 'Folder name cannot exceed 60 characters.')
+            return redirect('library:folder_list')
+
+        if LibraryFolder.objects.filter(user=request.user, name__iexact=name).exists():
+            messages.error(request, f'A folder named "{name}" already exists.')
+            return redirect('library:folder_list')
+
+        folder = LibraryFolder.objects.create(
+            user=request.user,
+            name=name,
+            description=description,
+        )
+        messages.success(request, f'Folder "{folder.name}" created successfully!')
+        return redirect('library:folder_detail', folder_id=folder.id)
+
+    folders = (
+        LibraryFolder.objects
+        .filter(user=request.user)
+        .annotate(item_count=Count('items'))
+        .prefetch_related(
+            Prefetch(
+                'items',
+                queryset=FolderItem.objects.select_related('library_log__media').order_by('-added_at'),
+                to_attr='preview_items',
+            )
+        )
+        .order_by('-created_at')
+    )
+
+    return render(request, 'library/folder_list.html', {
+        'folders': folders,
+    })
+
+
+@login_required
+def folder_detail_view(request, folder_id):
+    folder = get_object_or_404(LibraryFolder, id=folder_id, user=request.user)
+    items = list(folder.items.select_related('library_log__media').order_by('-added_at'))
+    existing_log_ids = [item.library_log_id for item in items]
+    available_logs = list(
+        UserLibraryLog.objects
+        .filter(user=request.user)
+        .exclude(id__in=existing_log_ids)
+        .select_related('media')
+        .order_by('media__media_title')
+    )
+
+    return render(request, 'library/folder_detail.html', {
+        'folder': folder,
+        'items': items,
+        'available_logs': available_logs,
+    })
+
+
+@login_required
+def folder_delete_view(request, folder_id):
+    folder = get_object_or_404(LibraryFolder, id=folder_id, user=request.user)
+    if request.method == 'POST':
+        name = folder.name
+        folder.delete()
+        messages.success(request, f'Folder "{name}" was deleted.')
+        return redirect('library:folder_list')
+    return redirect('library:folder_detail', folder_id=folder_id)
+
+
+@login_required
+def folder_add_items_view(request, folder_id):
+    folder = get_object_or_404(LibraryFolder, id=folder_id, user=request.user)
+    if request.method == 'POST':
+        is_json = (
+            request.content_type == 'application/json'
+            or request.headers.get('x-requested-with') == 'XMLHttpRequest'
+        )
+        if request.content_type == 'application/json' and request.body:
+            try:
+                body_data = json.loads(request.body)
+            except json.JSONDecodeError:
+                body_data = {}
+            log_ids = body_data.get('log_ids', [])
+        else:
+            log_ids = request.POST.getlist('log_ids')
+
+        logs_to_add = UserLibraryLog.objects.filter(user=request.user, id__in=log_ids)
+        added_count = 0
+        for log in logs_to_add:
+            _, created = FolderItem.objects.get_or_create(folder=folder, library_log=log)
+            if created:
+                added_count += 1
+
+        if is_json:
+            return JsonResponse({'success': True, 'added_count': added_count})
+
+        if added_count > 0:
+            messages.success(request, f'Added {added_count} title{"s" if added_count != 1 else ""} to "{folder.name}".')
+        else:
+            messages.info(request, 'No new titles were added.')
+
+        return redirect('library:folder_detail', folder_id=folder.id)
+
+    return redirect('library:folder_detail', folder_id=folder.id)
+
+
+@login_required
+def folder_remove_items_view(request, folder_id):
+    folder = get_object_or_404(LibraryFolder, id=folder_id, user=request.user)
+    if request.method == 'POST':
+        is_ajax = (
+            request.headers.get('x-requested-with') == 'XMLHttpRequest'
+            or request.content_type == 'application/json'
+            or request.POST.get('format') == 'json'
+        )
+        if request.content_type == 'application/json' and request.body:
+            try:
+                body_data = json.loads(request.body)
+            except json.JSONDecodeError:
+                body_data = {}
+            item_ids = body_data.get('item_ids', [])
+        else:
+            item_ids = request.POST.getlist('item_ids')
+
+        deleted_count, _ = FolderItem.objects.filter(folder=folder, id__in=item_ids).delete()
+
+        if is_ajax:
+            return JsonResponse({'success': True, 'deleted_count': deleted_count})
+
+        messages.success(request, f'Removed {deleted_count} title{"s" if deleted_count != 1 else ""} from "{folder.name}".')
+        return redirect('library:folder_detail', folder_id=folder.id)
+
+    return redirect('library:folder_detail', folder_id=folder.id)
+

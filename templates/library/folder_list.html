@@ -1,0 +1,197 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/gif" href="{% static 'images/renote_logo_icon.gif' %}">
+  <link rel="apple-touch-icon" href="{% static 'images/renote_logo_icon.gif' %}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Folders — ReNote</title>
+  {% include 'shared/seo_meta.html' with meta_title="Your Folders — ReNote" noindex=True %}
+  <link rel="stylesheet" href="{% static 'css/shared/base.css' %}?v={% now 'U' %}">
+  <link rel="stylesheet" href="{% static 'css/library/library.css' %}?v={% now 'U' %}">
+  <link rel="stylesheet" href="{% static 'css/library/folders.css' %}?v={% now 'U' %}">
+</head>
+<body class="folders-page-wrapper">
+
+<header class="dash-header">
+  <a href="{% url 'home:home' %}" class="dash-brand-block">
+    <img src="{% static 'images/renote_logo_icon.gif' %}" alt="ReNote" class="brand-logo-icon" width="38" height="38" style="width:38px;height:38px;min-width:38px;min-height:38px;object-fit:cover;border-radius:50%;flex-shrink:0;">
+    <span class="brand-name">ReNote</span>
+  </a>
+  <nav class="dash-nav-links">
+    <a href="{% url 'home:home' %}">Dashboard</a>
+    <a href="{% url 'home:home' %}#pickerModal">Pick for Me</a>
+    <a href="{% url 'library:list' %}" class="active">My Library</a>
+    <a href="{% url 'library:add' %}" class="nav-cta-add">+ Add Title</a>
+  </nav>
+  <div class="dash-user-controls">
+    <div class="profile-menu" id="profileMenu">
+      <button class="user-profile-pill" id="profileTrigger" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
+        <img src="{% static 'images/avatars/' %}{{ user_avatar }}" alt="{{ user.username }}" class="pill-avatar" onerror="this.onerror=null; this.src='{% static 'images/avatars/202156.png' %}';">
+        <span class="pill-username">{{ user.username|default:"AnimeFan" }}</span>
+        <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="profile-dropdown" id="profileDropdown">
+        <div class="profile-dropdown-header">
+          <img src="{% static 'images/avatars/' %}{{ user_avatar }}" alt="{{ user.username }}" class="avatar avatar-sm" onerror="this.onerror=null; this.src='{% static 'images/avatars/202156.png' %}';">
+          <div>
+            <div class="profile-dropdown-name">{{ user.username }}</div>
+            <div class="profile-dropdown-email">{{ user.email }}</div>
+          </div>
+        </div>
+        <a href="{% url 'user_profile:profile' %}" class="profile-dropdown-item">
+          <span class="pd-icon pd-icon-profile"></span> Profile
+        </a>
+        <a href="{% url 'user_settings:settings' %}" class="profile-dropdown-item">
+          <span class="pd-icon pd-icon-settings"></span> Settings
+        </a>
+        <form method="post" action="{% url 'login:logout' %}" class="profile-dropdown-form">
+          {% csrf_token %}
+          <button type="submit" class="profile-dropdown-item profile-dropdown-logout">
+            <span class="pd-icon pd-icon-logout"></span> Logout
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="library-shell folders-shell">
+  <div class="folders-top-nav">
+    <a href="{% url 'library:list' %}" class="btn-back-link">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      <span>Back to Library</span>
+    </a>
+    <div class="folders-breadcrumbs">
+      <a href="{% url 'home:home' %}">Home</a> &nbsp;/&nbsp;
+      <a href="{% url 'library:list' %}">Library</a> &nbsp;/&nbsp;
+      <span>Folders</span>
+    </div>
+  </div>
+
+  <div class="library-header folders-header">
+    <div class="folders-header-text">
+      <h1 class="page-title">Your Folders</h1>
+      <p class="page-subtitle">Organize your anime, manga, and movies into custom collections.</p>
+    </div>
+    <div class="library-header-actions">
+      <button type="button" class="btn-auth" id="btnOpenNewFolderModal">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        <span>Add Folder</span>
+      </button>
+    </div>
+  </div>
+
+  {% if messages %}
+    <div class="folders-messages-container">
+      {% for message in messages %}
+        <p class="flash-message {% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if folders %}
+    <div class="folders-grid" id="foldersGrid">
+      {% for folder in folders %}
+        <div class="folder-card" data-folder-id="{{ folder.id }}">
+          <a href="{% url 'library:folder_detail' folder.id %}" class="folder-card-preview" title="Open {{ folder.name }}">
+            {% if folder.preview_items %}
+              <div class="folder-preview-collage count-{{ folder.preview_items|slice:':4'|length }}">
+                {% for item in folder.preview_items|slice:":4" %}
+                  <div class="folder-preview-thumb">
+                    {% if item.library_log.media.media_image %}
+                      <img src="{{ item.library_log.media.media_image }}" alt="{{ item.library_log.media.media_title }}" loading="lazy" onerror="this.onerror=null; this.src='{% static 'images/moon.png' %}';">
+                    {% else %}
+                      <div class="preview-placeholder">★</div>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="folder-empty-preview">
+                <svg class="folder-svg-icon" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
+                </svg>
+                <span class="empty-folder-text">Empty Folder</span>
+              </div>
+            {% endif %}
+          </a>
+          <div class="folder-card-body">
+            <div class="folder-card-title-row">
+              <h2 class="folder-card-title">
+                <a href="{% url 'library:folder_detail' folder.id %}" class="folder-title-link" title="{{ folder.name }}">{{ folder.name }}</a>
+              </h2>
+            </div>
+            {% if folder.description %}
+              <p class="folder-card-desc">{{ folder.description }}</p>
+            {% else %}
+              <p class="folder-card-desc folder-desc-empty">No description provided.</p>
+            {% endif %}
+            <div class="folder-card-footer">
+              <span class="folder-count-badge">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path></svg>
+                {{ folder.item_count }} title{{ folder.item_count|pluralize }}
+              </span>
+              <a href="{% url 'library:folder_detail' folder.id %}" class="folder-open-link" title="Open {{ folder.name }}">
+                <span>View</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="folders-empty-state" id="foldersEmptyState">
+      <div class="empty-folder-glow-icon">
+        <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
+          <path d="M12 11v6M9 14h6" stroke-linecap="round"></path>
+        </svg>
+      </div>
+      <h2 class="empty-state-title">No folders yet</h2>
+      <p class="empty-state-desc">You haven't created any folders yet. Folders let you organize your favorite anime, manga, and movies into custom lists like "Summer Favorites", "Studio Ghibli", or "Plan to Watch Next".</p>
+      <button type="button" class="btn-auth btn-create-first-folder" id="btnOpenNewFolderModalEmpty">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        <span>Add Your First Folder</span>
+      </button>
+    </div>
+  {% endif %}
+</main>
+
+<!-- Create Folder Modal -->
+<div class="custom-modal-backdrop" id="newFolderModal" role="dialog" aria-modal="true" aria-labelledby="newFolderTitle" hidden>
+  <div class="custom-modal-dialog">
+    <div class="custom-modal-header">
+      <div class="modal-title-wrap">
+        <div class="modal-icon-badge">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path><path d="M12 11v6M9 14h6"/></svg>
+        </div>
+        <h2 id="newFolderTitle" class="custom-modal-title">Create New Folder</h2>
+      </div>
+      <button type="button" class="modal-close-btn" id="btnCloseNewFolderModal" aria-label="Close modal">✕</button>
+    </div>
+    <form method="post" action="{% url 'library:folder_list' %}" class="modal-folder-form" id="newFolderForm">
+      {% csrf_token %}
+      <div class="modal-form-group">
+        <label for="folderNameInput" class="modal-label">Folder Name <span class="required-star">*</span></label>
+        <input type="text" id="folderNameInput" name="name" class="modal-input" placeholder="e.g. Masterpieces, Top Shonen, Rewatch List" maxlength="60" required autofocus autocomplete="off">
+        <div class="char-hint"><span id="folderNameCharCount">0</span>/60</div>
+      </div>
+      <div class="modal-form-group">
+        <label for="folderDescInput" class="modal-label">Description <span class="optional-tag">(optional)</span></label>
+        <textarea id="folderDescInput" name="description" class="modal-textarea" placeholder="Add a short note about what belongs in this folder..." maxlength="200" rows="3"></textarea>
+        <div class="char-hint"><span id="folderDescCharCount">0</span>/200</div>
+      </div>
+      <div class="custom-modal-actions">
+        <button type="button" class="btn-secondary" id="btnCancelNewFolder">Cancel</button>
+        <button type="submit" class="btn-auth" id="btnSubmitNewFolder">Create Folder</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="{% static 'js/library/folders.js' %}?v={% now 'U' %}"></script>
+</body>
+</html>
