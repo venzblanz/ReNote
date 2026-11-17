@@ -32,6 +32,42 @@ document.addEventListener("click", (e) => {
   }
 });
 
+function initBackToTop() {
+  const btn = document.getElementById("backToTopBtn");
+  if (!btn || btn.dataset.initialized) return;
+  btn.dataset.initialized = "true";
+
+  let isTicking = false;
+  const toggleVisibility = () => {
+    const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
+    if (scrollY > 300) {
+      btn.classList.add("visible");
+    } else {
+      btn.classList.remove("visible");
+    }
+    isTicking = false;
+  };
+
+  window.addEventListener("scroll", () => {
+    if (!isTicking) {
+      window.requestAnimationFrame(toggleVisibility);
+      isTicking = true;
+    }
+  }, { passive: true });
+
+  btn.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  toggleVisibility();
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initBackToTop);
+} else {
+  initBackToTop();
+}
+
 (function initLibraryFilters() {
   const filterTabs = document.getElementById("filterTabs");
   const libraryGrid = document.getElementById("libraryGrid");

@@ -170,6 +170,13 @@
   {% endif %}
 </div>
 
+<button type="button" class="back-to-top-btn" id="backToTopBtn" aria-label="Back to top" title="Back to top">
+  <svg class="back-to-top-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 15l-6-6-6 6"/>
+  </svg>
+  <span>Back to top</span>
+</button>
+
 <script id="mediaGenresData" type="application/json">{{ media_genres_json|safe }}</script>
 
 <script src="{% static 'js/library/library.js' %}?v={% now 'U' %}"></script>

@@ -403,4 +403,35 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnCancelDeleteFolder) {
     btnCancelDeleteFolder.addEventListener('click', () => closeModal(deleteFolderModal));
   }
+
+  // ---------------------------------------------------------------------------
+  // 5. Back to Top Button
+  // ---------------------------------------------------------------------------
+  const backToTopBtn = document.getElementById('backToTopBtn');
+  if (backToTopBtn && !backToTopBtn.dataset.initialized) {
+    backToTopBtn.dataset.initialized = 'true';
+    let isTicking = false;
+    const toggleVisibility = () => {
+      const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
+      if (scrollY > 300) {
+        backToTopBtn.classList.add('visible');
+      } else {
+        backToTopBtn.classList.remove('visible');
+      }
+      isTicking = false;
+    };
+
+    window.addEventListener('scroll', () => {
+      if (!isTicking) {
+        window.requestAnimationFrame(toggleVisibility);
+        isTicking = true;
+      }
+    }, { passive: true });
+
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    toggleVisibility();
+  }
 });
