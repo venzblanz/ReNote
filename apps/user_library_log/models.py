@@ -12,6 +12,9 @@ class UserLibraryLog(models.Model):
     is_favorite = models.BooleanField(default=False)
     date_added = models.DateTimeField(auto_now_add=True)
 
+    updated_at = models.DateTimeField(auto_now=True)
+    is_deleted = models.BooleanField(default=False)
+
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['user', 'media'], name='unique_user_media')
@@ -25,6 +28,9 @@ class LibraryFolder(models.Model):
     name = models.CharField(max_length=60)
     description = models.CharField(max_length=200, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    updated_at = models.DateTimeField(auto_now=True)
+    is_deleted = models.BooleanField(default=False)
 
     class Meta:
         constraints = [
@@ -40,6 +46,9 @@ class FolderItem(models.Model):
     folder = models.ForeignKey(LibraryFolder, on_delete=models.CASCADE, related_name='items')
     library_log = models.ForeignKey(UserLibraryLog, on_delete=models.CASCADE, related_name='folder_items')
     added_at = models.DateTimeField(auto_now_add=True)
+
+    updated_at = models.DateTimeField(auto_now=True)
+    is_deleted = models.BooleanField(default=False)
 
     class Meta:
         constraints = [

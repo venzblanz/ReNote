@@ -36,7 +36,7 @@
   grid-template-columns: 1.15fr 0.85fr;
   max-width: auto;
   margin: 0 auto;
-  padding: 36px var(--gutter, 44px) 48px;
+  padding: clamp(40px, 6vw, 72px) var(--gutter) clamp(56px, 8vw, 96px);
   align-items: center;
   overflow: hidden;
 }
@@ -752,98 +752,76 @@ body.modal-open {
   transform: translateX(3px) scale(1.02);
 }
 
-@media (max-width: 900px) {
-  .dash-footer {
+@media (max-width: 640px) {
+  .library-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+  .picker-modal-backdrop {
+    padding: 16px 12px;
+    align-items: flex-start;
+  }
+  .picker-dialog {
+    padding: 22px 16px 20px;
+    border-radius: 22px;
+    margin: auto 0;
+    width: 100%;
+  }
+  .picker-dialog-header {
+    margin-bottom: 18px;
+    gap: 12px;
+  }
+  .dialog-title-group {
+    flex: 1;
+    min-width: 0;
+  }
+  .dialog-title-group h2 {
+    font-size: 1.25rem;
+    line-height: 1.25;
+    margin: 0 0 4px;
+    word-break: break-word;
+  }
+  .dialog-title-group p {
+    font-size: 0.8rem;
+    line-height: 1.35;
+  }
+  .dialog-close-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+  .picker-form-row {
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .picker-form-row select {
+    height: 44px;
+    font-size: 0.875rem;
+    padding: 0 14px;
+  }
+  .picker-roll-zone .btn-pill-primary {
+    height: 46px;
+    font-size: 0.95rem;
+  }
+  .pick-result-card {
     flex-direction: column;
-    align-items: center;
     text-align: center;
-    gap: 16px;
-    padding: 24px 16px;
-    width: 100%;
-    max-width: 100vw;
-    box-sizing: border-box;
-    overflow-x: hidden;
+    padding: 16px;
+    gap: 12px;
   }
-  .footer-left {
-    display: flex;
-    flex-wrap: wrap;
+  .pick-result-info {
+    text-align: center;
+  }
+  .pick-result-meta {
     justify-content: center;
-    align-items: center;
-    gap: 8px;
-    max-width: 100%;
-    box-sizing: border-box;
   }
-  .footer-brand,
-  .footer-github-link a {
-    margin: 0;
+  .pick-result-action {
+    width: 100%;
   }
-  .footer-links {
-    display: flex;
-    flex-wrap: wrap;
+  .btn-pick-open {
+    width: 100%;
     justify-content: center;
-    align-items: center;
-    gap: 12px 18px;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-}
-
-@media (max-width: 1080px) {
-  .hero-spotlight {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: auto;
-    padding: 36px 28px 48px;
-    gap: 32px;
-    overflow: hidden;
-  }
-  .spotlight-info {
-    order: 1;
-    max-width: 100%;
-    width: 100%;
-    position: relative;
-    z-index: 5;
-  }
-  .hero-moon-stage {
-    order: 2;
-    position: relative;
-    right: auto;
-    top: auto;
-    transform: none;
-    margin: 6px auto 10px;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-  }
-  .hero-moon-image {
-    width: clamp(260px, 46vw, 420px);
-    height: clamp(260px, 46vw, 420px);
-  }
-  .moon-halo-effect {
-    width: clamp(220px, 40vw, 360px);
-    height: clamp(220px, 40vw, 360px);
-  }
-  .spotlight-floating-dock {
-    order: 3;
-    position: relative;
-    right: auto;
-    bottom: auto;
-    width: 100%;
-    max-width: 440px;
-    margin: 0 auto;
-    align-items: center;
-  }
-  .dock-search-form {
-    width: 100%;
-  }
-  .dock-search-pill {
-    width: 100%;
-  }
-  .dash-layout-grid {
-    grid-template-columns: 1fr;
   }
 }
 
@@ -1068,6 +1046,101 @@ body.modal-open {
   .dash-panel {
     padding: 16px;
     border-radius: 16px;
+  }
+}
+
+@media (max-width: 900px) {
+  .dash-footer {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+    padding: 24px 16px;
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+  .footer-left {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  .footer-brand,
+  .footer-github-link a {
+    margin: 0;
+  }
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 12px 18px;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 1080px) {
+  .hero-spotlight {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: auto;
+    padding: 36px 28px 48px;
+    gap: 32px;
+    overflow: hidden;
+  }
+  .spotlight-info {
+    order: 1;
+    max-width: 100%;
+    width: 100%;
+    position: relative;
+    z-index: 5;
+  }
+  .hero-moon-stage {
+    order: 2;
+    position: relative;
+    right: auto;
+    top: auto;
+    transform: none;
+    margin: 6px auto 10px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .hero-moon-image {
+    width: clamp(260px, 46vw, 420px);
+    height: clamp(260px, 46vw, 420px);
+  }
+  .moon-halo-effect {
+    width: clamp(220px, 40vw, 360px);
+    height: clamp(220px, 40vw, 360px);
+  }
+  .spotlight-floating-dock {
+    order: 3;
+    position: relative;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    max-width: 440px;
+    margin: 0 auto;
+    align-items: center;
+  }
+  .dock-search-form {
+    width: 100%;
+  }
+  .dock-search-pill {
+    width: 100%;
+  }
+  .dash-layout-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1311,76 +1384,4 @@ body.modal-open {
 }
 .lb-title-link:hover {
   color: #C084FC;
-}
-@media (max-width: 640px) {
-  .library-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 10px !important;
-  }
-  .picker-modal-backdrop {
-    padding: 16px 12px;
-    align-items: flex-start;
-  }
-  .picker-dialog {
-    padding: 22px 16px 20px;
-    border-radius: 22px;
-    margin: auto 0;
-    width: 100%;
-  }
-  .picker-dialog-header {
-    margin-bottom: 18px;
-    gap: 12px;
-  }
-  .dialog-title-group {
-    flex: 1;
-    min-width: 0;
-  }
-  .dialog-title-group h2 {
-    font-size: 1.25rem;
-    line-height: 1.25;
-    margin: 0 0 4px;
-    word-break: break-word;
-  }
-  .dialog-title-group p {
-    font-size: 0.8rem;
-    line-height: 1.35;
-  }
-  .dialog-close-btn {
-    width: 34px;
-    height: 34px;
-    font-size: 1.2rem;
-    flex-shrink: 0;
-  }
-  .picker-form-row {
-    gap: 12px;
-    margin-bottom: 18px;
-  }
-  .picker-form-row select {
-    height: 44px;
-    font-size: 0.875rem;
-    padding: 0 14px;
-  }
-  .picker-roll-zone .btn-pill-primary {
-    height: 46px;
-    font-size: 0.95rem;
-  }
-  .pick-result-card {
-    flex-direction: column;
-    text-align: center;
-    padding: 16px;
-    gap: 12px;
-  }
-  .pick-result-info {
-    text-align: center;
-  }
-  .pick-result-meta {
-    justify-content: center;
-  }
-  .pick-result-action {
-    width: 100%;
-  }
-  .btn-pick-open {
-    width: 100%;
-    justify-content: center;
-  }
 }

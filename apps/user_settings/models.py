@@ -6,6 +6,8 @@ class UserSettings(models.Model):
     dark_mode = models.BooleanField(default=False)
     email_notification = models.BooleanField(default=True)
 
+    updated_at = models.DateTimeField(auto_now=True)
+
     class Meta:
         db_table = 'user_settings'
 

@@ -72,6 +72,9 @@
       <button type="button" class="settings-nav-item" data-section="profile">Profile</button>
       <button type="button" class="settings-nav-item" data-section="notifications">Notifications</button>
       <button type="button" class="settings-nav-item" data-section="privacy">Privacy</button>
+      {% if is_offline_client %}
+      <button type="button" class="settings-nav-item" data-section="sync">Cloud Sync</button>
+      {% endif %}
       <button type="button" class="settings-nav-item danger" data-section="danger">Danger zone</button>
     </nav>
     <form method="post" enctype="multipart/form-data" class="settings-content" id="settingsForm">
@@ -183,6 +186,23 @@
           </span>
         </label>
       </div>
+      {% if is_offline_client %}
+        <div class="settings-section" id="section-sync" data-section="sync">
+          <h2>Cloud Database Sync</h2>
+          <p class="section-desc">Synchronize your offline phone logs, folders, and titles with Cloud library.</p>
+          <div class="sync-card">
+            <div class="sync-card-info">
+              <strong>Syncing your titles locally and on the cloud</strong>
+              <p>Pushes offline edits made on your phone to the cloud, and pulls any new edits as well you add online</p>
+            </div>
+            <div class="sync-result-box" id="syncResultBox"></div>
+            <button type="button" class="btn-auth sync-btn" id="btnSyncNow" data-url="{% url 'user_settings:sync' %}">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+              <span id="btnSyncText">Sync through Cloud</span>
+            </button>
+          </div>
+        </div>
+      {% endif %}
       <div class="settings-section" id="section-danger" data-section="danger">
         <h2>Danger Zone</h2>
         <p class="section-desc">Manage account deactivation or permanent deletion.</p>

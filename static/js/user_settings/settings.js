@@ -182,3 +182,57 @@ if (deleteConfirmInput && confirmDeleteBtn) {
     confirmDeleteBtn.disabled = deleteConfirmInput.value.trim() !== "DELETE";
   });
 }
+
+const btnSyncNow = document.getElementById("btnSyncNow");
+const syncResultBox = document.getElementById("syncResultBox");
+const btnSyncText = document.getElementById("btnSyncText");
+
+if (btnSyncNow){
+  btnSyncNow.addEventListener("click", async () => {
+    const syncUrl = btnSyncNow.dataset.url;
+    const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]")?.value || "";
+
+    btnSyncNow.disabled = true;
+    if (btnSyncText) btnSyncText.textContent = "Syncing..."
+    if (syncResultBox) {
+      syncResultBox.style.display = "block";
+      syncResultBox.style.background = "rgba(168, 86, 247, 0.15)";
+      syncResultBox.style.color = "#E9D5FF"
+      syncResultBox.textContent = "Connecting to online database and Syncing data..."
+    }
+
+    try {
+      const response = await fetch(syncUrl, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrfToken,
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+
+      if(response.ok && data.success){
+        if(syncResultBox){
+          syncResultBox.style.background = "rgba(34, 197, 94, 0.15)";
+          syncResultBox.style.color = "#86EFAC";
+          syncResultBox.textContent = `${data.message || "Sync completed successfully!"}`;
+        }
+      }else{
+        if (syncResultBox) {
+          syncResultBox.style.background = "rgba(239, 68, 68, 0.15)";
+          syncResultBox.style.color = "#FCA5A5";
+          syncResultBox.textContent = `${data.error || "Failed to sync with online database."}`;
+        }
+      } 
+    } catch (err) {
+      if (syncResultBox) {
+        syncResultBox.style.background = "rgba(239, 68, 68, 0.15)";
+        syncResultBox.style.color = "#FCA5A5";
+        syncResultBox.textContent = "Network Error: Could not reach the database. Please check your internet connection.";
+      }
+    } finally {
+      btnSyncNow.disabled = false;
+      if(btnSyncText) btnSyncText.textContent = "Sync with Cloud";
+    }
+  });
+}

@@ -9,6 +9,9 @@ from apps.user_profile.models import Profile, AVAILABLE_AVATARS
 from apps.accounts.models import User
 from apps.user_library_log.models import UserLibraryLog
 from apps.library.views import MEDIA_GENRES
+from django.http import JsonResponse
+from django.conf import settings
+from apps.library.management.commands.sync_db import run_database_sync
 
 @login_required
 def settings_view(request):
@@ -107,6 +110,7 @@ def settings_view(request):
         'profile': profile,
         'favorite_genre': favorite_genre,
         'all_genres': all_genres,
+        'is_offline_client':getattr(settings, 'IS_OFFLINE_CLIENT', False),
     })
 
 @login_required
@@ -137,3 +141,20 @@ def delete_account_view(request):
             messages.error(request, 'You must type "DELETE" exactly to confirm account deletion.')
             return redirect('user_settings:settings')
     return redirect('user_settings:settings')
+
+@login_required
+def sync_database_view(request):
+    if request.method != 'POST':
+        return JsonResponse({
+            'success': False, 
+            'error': 'Method not allowed.'
+        }, status=405)
+    if not getattr(settings, 'IS_OFFLINE_CLIENT', False):
+        return JsonResponse({
+            'success': False,
+            'error': 'Cloud sync is only available on offline client instances.'
+        }, status=403)
+
+    result = run_database_sync()
+    status_code = 200 if result.get('success') else 500
+    return JsonResponse(result, status=status_code)

@@ -25,6 +25,8 @@ class Profile(models.Model):
     profile_image = models.CharField(max_length=100, default=DEFAULT_AVATAR, blank=True)
     data_privacy_consent = models.BooleanField(default=False)
 
+    updated_at = models.DateTimeField(auto_now=True)
+
     class Meta:
         db_table = 'user_profile'
 
