@@ -15,57 +15,36 @@
 </head>
 <body>
 
-<header class="dash-header">
-  <a href="{% url 'home:home' %}" class="dash-brand-block">
-    <img src="{% static 'images/renote_logo_icon.gif' %}" alt="ReNote" class="brand-logo-icon" width="38" height="38" style="width:38px;height:38px;min-width:38px;min-height:38px;object-fit:cover;border-radius:50%;flex-shrink:0;">
-    <span class="brand-name">ReNote</span>
-  </a>
-  <nav class="dash-nav-links">
-    <a href="{% url 'home:home' %}">Dashboard</a>
-    <a href="{% url 'home:home' %}#pickerModal">Pick for Me</a>
-    <a href="{% url 'library:list' %}">My Library</a>
-    <a href="{% url 'library:add' %}" class="nav-cta-add">+ Add Title</a>
-  </nav>
-  <div class="dash-user-controls">
-    <div class="profile-menu" id="profileMenu">
-      <button class="user-profile-pill" id="profileTrigger" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
-        <img src="{% static 'images/avatars/' %}{{ user_avatar }}" alt="{{ user.username }}" class="pill-avatar" onerror="this.onerror=null; this.src='{% static 'images/avatars/202156.png' %}';">
-        <span class="pill-username">{{ user.username|default:"AnimeFan" }}</span>
-        <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
-      </button>
-      <div class="profile-dropdown" id="profileDropdown">
-        <div class="profile-dropdown-header">
-          <img src="{% static 'images/avatars/' %}{{ user_avatar }}" alt="{{ user.username }}" class="avatar avatar-sm" onerror="this.onerror=null; this.src='{% static 'images/avatars/202156.png' %}';">
-          <div>
-            <div class="profile-dropdown-name">{{ user.username }}</div>
-            <div class="profile-dropdown-email">{{ user.email }}</div>
-          </div>
-        </div>
-        <a href="{% url 'user_profile:profile' %}" class="profile-dropdown-item active">
-          <span class="pd-icon pd-icon-profile"></span> Profile
-        </a>
-        <a href="{% url 'user_settings:settings' %}" class="profile-dropdown-item">
-          <span class="pd-icon pd-icon-settings"></span> Settings
-        </a>
-        <form method="post" action="{% url 'login:logout' %}" class="profile-dropdown-form">
-          {% csrf_token %}
-          <button type="submit" class="profile-dropdown-item profile-dropdown-logout">
-            <span class="pd-icon pd-icon-logout"></span> Logout
-          </button>
-        </form>
-      </div>
-    </div>
-  </div>
-</header>
+{% include 'shared/dash_header.html' with active_nav='profile' %}
 
 <header class="profile-header">
   <div class="profile-banner"></div>
   <div class="profile-header-content">
-    <img src="{% static 'images/avatars/' %}{{ user_avatar }}" alt="{{ user.username }}" class="profile-avatar-lg" id="profileAvatarLg" onerror="this.onerror=null; this.src='{% static 'images/avatars/202156.png' %}';">
+    <div class="profile-story-ring-lg">
+      <img src="{% static 'images/avatars/' %}{{ user_avatar }}" alt="{{ user.username }}" class="profile-avatar-lg" id="profileAvatarLg" onerror="this.onerror=null; this.src='{% static 'images/avatars/202156.png' %}';">
+    </div>
     <div class="profile-identity">
       <h1>{{ profile.profile_name|default:user.username }}</h1>
       <p class="profile-handle">@{{ user.username }} · Joined {{ user.date_created|date:"M Y"|default:"Recently" }}</p>
       <p class="profile-bio">{{ profile.bio|default:"No bio yet — tell other readers and watchers what you're into." }}</p>
+      <div class="profile-meta-counters">
+        <div class="counter-item">
+          <span class="counter-number">{{ total_titles }}</span>
+          <span class="counter-name">titles</span>
+        </div>
+        <div class="counter-item">
+          <span class="counter-number">{{ anime_count }}</span>
+          <span class="counter-name">anime</span>
+        </div>
+        <div class="counter-item">
+          <span class="counter-number">{{ manga_count }}</span>
+          <span class="counter-name">manga</span>
+        </div>
+        <div class="counter-item">
+          <span class="counter-number">{{ total_rewatches }}</span>
+          <span class="counter-name">rewatches</span>
+        </div>
+      </div>
     </div>
     <a href="{% url 'user_settings:settings' %}#profile" class="btn-auth btn-edit-profile">Edit profile</a>
   </div>
@@ -198,6 +177,8 @@
 </footer>
 
 <script src="{% static 'js/user_profile/profile.js' %}?v={% now 'U' %}"></script>
+
+{% include 'shared/mobile_nav.html' with active_nav='profile' %}
 
 </body>
 </html>

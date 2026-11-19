@@ -1,0 +1,78 @@
+{% load static %}
+<header class="dash-header">
+  <div class="dash-header-inner">
+    <a href="{% url 'home:home' %}" class="dash-brand-block" title="ReNote Home">
+      <div class="brand-logo-wrap">
+        <img src="{% static 'images/renote_logo_icon.gif' %}" alt="ReNote" class="brand-logo-icon" width="38" height="38" style="width:38px;height:38px;min-width:38px;min-height:38px;object-fit:cover;border-radius:50%;flex-shrink:0;">
+        <span class="brand-pulse-ring"></span>
+      </div>
+      <span class="brand-name">ReNote</span>
+    </a>
+
+    <nav class="dash-nav-links" aria-label="Main Navigation">
+      <a href="{% url 'home:home' %}" class="nav-link-pill {% if active_nav == 'home' %}active{% endif %}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="{% url 'home:home' %}#pickerModal" id="navRandomBtn" class="nav-link-pill {% if active_nav == 'pick' %}active{% endif %}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg>
+        <span>Pick for Me</span>
+      </a>
+      <a href="{% url 'library:list' %}" class="nav-link-pill {% if active_nav == 'library' %}active{% endif %}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+        <span>My Library</span>
+      </a>
+      <a href="{% url 'library:folder_list' %}" class="nav-link-pill {% if active_nav == 'folders' %}active{% endif %}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>
+        <span>Folders</span>
+      </a>
+      <a href="{% url 'library:add' %}" class="nav-cta-add {% if active_nav == 'add' %}active{% endif %}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span>Add Title</span>
+      </a>
+    </nav>
+
+    <div class="dash-user-controls">
+      <div class="profile-menu" id="profileMenu">
+        <button class="user-profile-pill" id="profileTrigger" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
+          <div class="avatar-ring-sm">
+            <img src="{% static 'images/avatars/' %}{{ user_avatar|default:'202156.png' }}" alt="{{ user.username }}" class="pill-avatar" onerror="this.onerror=null; this.src='{% static 'images/avatars/202156.png' %}';">
+          </div>
+          <span class="pill-username">{{ user.username|default:"AnimeFan" }}</span>
+          <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="profile-dropdown" id="profileDropdown">
+          <div class="profile-dropdown-header">
+            <div class="avatar-ring-md">
+              <img src="{% static 'images/avatars/' %}{{ user_avatar|default:'202156.png' }}" alt="{{ user.username }}" class="avatar avatar-sm" onerror="this.onerror=null; this.src='{% static 'images/avatars/202156.png' %}';">
+            </div>
+            <div class="profile-dropdown-user-info">
+              <div class="profile-dropdown-name">{{ user.username }}</div>
+              <div class="profile-dropdown-email">{{ user.email|default:"" }}</div>
+            </div>
+          </div>
+          <div class="profile-dropdown-divider"></div>
+          <a href="{% url 'user_profile:profile' %}" class="profile-dropdown-item {% if active_nav == 'profile' %}active{% endif %}">
+            <span class="pd-icon pd-icon-profile"></span> Profile
+          </a>
+          <a href="{% url 'library:list' %}" class="profile-dropdown-item {% if active_nav == 'library' %}active{% endif %}">
+            <span class="pd-icon pd-icon-library"></span> Library
+          </a>
+          <a href="{% url 'library:folder_list' %}" class="profile-dropdown-item {% if active_nav == 'folders' %}active{% endif %}">
+            <span class="pd-icon pd-icon-folder"></span> Folders
+          </a>
+          <a href="{% url 'user_settings:settings' %}" class="profile-dropdown-item {% if active_nav == 'settings' %}active{% endif %}">
+            <span class="pd-icon pd-icon-settings"></span> Settings
+          </a>
+          <div class="profile-dropdown-divider"></div>
+          <form method="post" action="{% url 'login:logout' %}" class="profile-dropdown-form">
+            {% csrf_token %}
+            <button type="submit" class="profile-dropdown-item profile-dropdown-logout">
+              <span class="pd-icon pd-icon-logout"></span> Logout
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

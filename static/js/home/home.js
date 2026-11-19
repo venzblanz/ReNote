@@ -170,7 +170,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  const mobileDockPickerBtn = document.getElementById("mobileDockPickerBtn");
   if (navRandomBtn) navRandomBtn.addEventListener("click", (e) => { e.preventDefault(); openModal(); });
+  if (mobileDockPickerBtn) mobileDockPickerBtn.addEventListener("click", (e) => { e.preventDefault(); openModal(); });
   if (heroPickBtn) heroPickBtn.addEventListener("click", openModal);
   if (closePickerBtn) closePickerBtn.addEventListener("click", closeModal);
 

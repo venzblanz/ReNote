@@ -1,0 +1,45 @@
+{% load static %}
+<nav class="mobile-bottom-dock" aria-label="Mobile Navigation">
+  <div class="dock-backdrop-blur"></div>
+  <div class="dock-items-grid">
+    <a href="{% url 'home:home' %}" class="dock-item {% if active_nav == 'home' %}active{% endif %}">
+      <div class="dock-icon-wrap">
+        <svg class="dock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <span class="dock-label">Home</span>
+      <span class="dock-active-dot"></span>
+    </a>
+
+    <a href="{% url 'library:list' %}" class="dock-item {% if active_nav == 'library' %}active{% endif %}">
+      <div class="dock-icon-wrap">
+        <svg class="dock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+      </div>
+      <span class="dock-label">Library</span>
+      <span class="dock-active-dot"></span>
+    </a>
+
+    <a href="{% url 'library:add' %}" class="dock-item dock-item-center {% if active_nav == 'add' %}active{% endif %}" title="Add Title">
+      <div class="dock-center-action">
+        <svg class="dock-icon-center" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </div>
+    </a>
+
+    <a href="{% url 'home:home' %}#pickerModal" id="mobileDockPickerBtn" class="dock-item dock-picker-btn {% if active_nav == 'pick' %}active{% endif %}">
+      <div class="dock-icon-wrap">
+        <svg class="dock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg>
+      </div>
+      <span class="dock-label">Pick</span>
+      <span class="dock-active-dot"></span>
+    </a>
+
+    <a href="{% url 'user_profile:profile' %}" class="dock-item {% if active_nav == 'profile' %}active{% endif %}">
+      <div class="dock-icon-wrap dock-avatar-wrap">
+        <div class="dock-story-ring {% if active_nav == 'profile' %}story-active{% endif %}">
+          <img src="{% static 'images/avatars/' %}{{ user_avatar|default:'202156.png' }}" alt="{{ user.username }}" class="dock-avatar-img" onerror="this.onerror=null; this.src='{% static 'images/avatars/202156.png' %}';">
+        </div>
+      </div>
+      <span class="dock-label">Profile</span>
+      <span class="dock-active-dot"></span>
+    </a>
+  </div>
+</nav>

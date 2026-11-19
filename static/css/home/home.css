@@ -909,7 +909,7 @@ body.modal-open {
     z-index: 1;
     pointer-events: none;
     opacity: 0.28;
-    max-width: 140px;
+    max-width: auto;
     overflow: hidden;
   }
   .hero-moon-image {
