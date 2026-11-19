@@ -111,7 +111,7 @@ def run_database_sync():
         # In local but not in remote so push to supa
         if l_log and not r_log:
             if r_user and r_med:
-                UserLibraryLog.objects.using('supabase').create(
+                r_log = UserLibraryLog.objects.using('supabase').create(
                     user = r_user,
                     media = r_med,
                     personal_rate = l_log.personal_rate,
@@ -121,13 +121,14 @@ def run_database_sync():
                     is_favorite = l_log.is_favorite,
                     is_deleted = l_log.is_deleted,
                 )
+                remote_logs[key] = r_log
                 stats['logs_synced'] += 1
                 stats['pushed'] += 1
 
         # In remote but not in local so pull from supa
         elif r_log and not l_log:
             if l_user and l_med:
-                UserLibraryLog.objects.using('default').create(
+                l_log = UserLibraryLog.objects.using('default').create(
                     user = l_user,
                     media = l_med,
                     personal_rate = r_log.personal_rate,
@@ -137,6 +138,7 @@ def run_database_sync():
                     is_favorite = r_log.is_favorite,
                     is_deleted = r_log.is_deleted,
                 )
+                local_logs[key] = l_log
                 stats['logs_synced'] += 1
                 stats['pulled'] += 1
 
@@ -165,11 +167,22 @@ def run_database_sync():
                     stats['logs_synced'] += 1
                     stats['pulled'] += 1
 
-    # Sync the folders and its items
+    # Sync the folders and Folder items
+    local_items = {}
+    for item in FolderItem.objects.using('default').select_related('folder__user', 'library_log__media').all():
+        key = (item.folder.user.username, item.folder.name, item.library_log.media.external_id, item.library_log.media.media_type)
+        local_items[key] = item
+
+    remote_items = {}
+    for item in FolderItem.objects.using('supabase').select_related('folder__user', 'library_log__media').all():
+        key = (item.folder.user.username, item.folder.name, item.library_log.media.external_id, item.library_log.media.media_type)
+        remote_items[key] = item
+    
     local_folders = {(f.user.username, f.name): f for f in LibraryFolder.objects.using('default').select_related('user').all()}
     remote_folders = {(f.user.username, f.name): f for f in LibraryFolder.objects.using('supabase').select_related('user').all()}
     all_folder_keys = set(local_folders.keys()).union(set(remote_folders.keys()))
-
+    all_items_keys = set(local_items.keys()).union(set(remote_items.keys()))
+    
     for key in all_folder_keys:
         l_f = local_folders.get(key)
         r_f = remote_folders.get(key)
@@ -180,24 +193,26 @@ def run_database_sync():
         # exists locally
         if l_f and not r_f:
             if r_user:
-                LibraryFolder.objects.using('supabase').create(
+                r_f = LibraryFolder.objects.using('supabase').create(
                     user = r_user,
                     name = l_f.name,
                     description = l_f.description,
                     is_deleted = l_f.is_deleted,
                 )
+                remote_folders[key] = r_f
                 stats['folders_synced'] += 1
                 stats['pushed'] += 1
 
         # exists on supa
         elif r_f and not l_f:
             if l_user:
-                LibraryFolder.objects.using('default').create(
+                l_f = LibraryFolder.objects.using('default').create(
                     user = l_user,
                     name = r_f.name,
                     description = r_f.description,
                     is_deleted = r_f.is_deleted
                 )
+                local_folders[key] = l_f
                 stats['folders_synced'] += 1
                 stats['pulled'] += 1
 
@@ -217,7 +232,43 @@ def run_database_sync():
                     stats['folders_synced'] += 1
                     stats['pushed'] += 1
 
-     # Sync Profile
+    for key in all_items_keys:
+        l_item = local_items.get(key)
+        r_item = remote_items.get(key)
+        username, folder_name, ext_id, mtype = key
+
+        r_folder = remote_folders.get((username, folder_name))
+        l_folder = local_folders.get((username, folder_name))
+        r_log = remote_logs.get((username, ext_id, mtype))
+        l_log = local_logs.get((username, ext_id, mtype))
+
+        if l_item and not r_item:
+            if r_folder and r_log:
+                FolderItem.objects.using('supabase').create(
+                    folder = r_folder,
+                    library_log = r_log,
+                    is_deleted = l_item.is_deleted,
+                )
+                stats['pushed'] += 1
+        elif r_item and not l_item:
+            if l_folder and l_log:
+                FolderItem.objects.using('default').create(
+                    folder = l_folder,
+                    library_log = l_log,
+                    is_deleted = r_item.is_deleted,
+                )
+                stats['pulled'] += 1
+        elif r_item and l_item:
+            if l_item.updated_at > r_item.updated_at:
+                r_item.is_deleted = l_item.is_deleted
+                r_item.save(using='supabase')
+                stats['pushed'] += 1
+            elif r_item.updated_at > l_item.updated_at:
+                l_item.is_deleted = r_item.is_deleted
+                l_item.save(using='default')
+                stats['pulled'] += 1
+            
+    # Sync Profile
     remote_profiles = {p.user.username: p for p in Profile.objects.using('supabase').select_related('user').all()}
     local_profiles = {p.user.username: p for p in Profile.objects.using('default').select_related('user').all()}
     all_profiles = set(remote_profiles.keys()).union(set(local_profiles.keys()))
