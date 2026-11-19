@@ -8,6 +8,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ folder.name }} — Folders — ReNote</title>
   {% include 'shared/seo_meta.html' with meta_title=folder.name|add:" — Folders — ReNote" noindex=True %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/shared/base.css' %}?v={% now 'U' %}">
   <link rel="stylesheet" href="{% static 'css/library/library.css' %}?v={% now 'U' %}">
   <link rel="stylesheet" href="{% static 'css/library/folders.css' %}?v={% now 'U' %}">
@@ -22,52 +25,81 @@
       data-remove-url="{% url 'library:folder_remove_items' folder.id %}"
       data-csrf="{{ csrf_token }}">
 
-  <!-- Top Navigation -->
+  <!-- Top Navigation / Breadcrumbs -->
   <div class="folders-top-nav">
     <a href="{% url 'library:folder_list' %}" class="btn-back-link">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-      <span>Back to Folders</span>
+      <span>Collections</span>
     </a>
     <div class="folders-breadcrumbs">
-      <a href="{% url 'home:home' %}">Home</a> &nbsp;/&nbsp;
-      <a href="{% url 'library:list' %}">Library</a> &nbsp;/&nbsp;
-      <a href="{% url 'library:folder_list' %}">Folders</a> &nbsp;/&nbsp;
+      <a href="{% url 'home:home' %}">Home</a>
+      <span class="bc-sep">/</span>
+      <a href="{% url 'library:list' %}">Library</a>
+      <span class="bc-sep">/</span>
+      <a href="{% url 'library:folder_list' %}">Folders</a>
+      <span class="bc-sep">/</span>
       <span>{{ folder.name }}</span>
     </div>
   </div>
 
-  <!-- Folder Details Header -->
-  <div class="library-header folder-detail-header">
-    <div class="folder-header-info">
-      <div class="folder-title-tag-row">
-        <h1 class="page-title folder-view-title" id="folderTitleHeading">{{ folder.name }}</h1>
-        <span class="folder-badge-count" id="folderItemsCountBadge">{{ items|length }} title{{ items|length|pluralize }}</span>
-      </div>
-      {% if folder.description %}
-        <p class="folder-view-description">{{ folder.description }}</p>
+  <!-- Cinematic Collection Banner (Instagram / Spotify Playlist Style) -->
+  <div class="folder-hero-banner">
+    <div class="folder-hero-cover-wrap">
+      {% if items %}
+        <div class="folder-hero-collage count-{{ items|slice:':4'|length }}">
+          {% for item in items|slice:":4" %}
+            <div class="folder-hero-thumb">
+              {% if item.library_log.media.media_image %}
+                <img src="{{ item.library_log.media.media_image }}" alt="{{ item.library_log.media.media_title }}" loading="lazy" onerror="this.onerror=null; this.src='{% static 'images/hero_character_purple.jpg' %}';">
+              {% else %}
+                <div class="preview-placeholder">★</div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="folder-hero-empty-cover">
+          <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+            <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
+          </svg>
+        </div>
       {% endif %}
     </div>
 
-    <!-- Header Actions (Top part of page) -->
-    <div class="library-header-actions folder-header-actions">
-      <button type="button" class="btn-secondary btn-action-add-titles" id="btnOpenAddTitlesModal" title="Add titles from your library into this folder">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-        <span>Add Titles</span>
-      </button>
+    <div class="folder-hero-details">
+      <div class="folder-hero-tag-row">
+        <span class="collection-pill-tag">COLLECTION</span>
+        <span class="folder-badge-count" id="folderItemsCountBadge">{{ items|length }} title{{ items|length|pluralize }}</span>
+      </div>
 
-      {% if items %}
-        <button type="button" class="btn-secondary btn-action-edit" id="btnToggleEditMode" title="Select titles to remove from this folder">
-          <svg class="edit-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 20h9"></path>
-            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-          </svg>
-          <span id="btnEditLabel">Edit</span>
-        </button>
+      <h1 class="page-title folder-view-title" id="folderTitleHeading">{{ folder.name }}</h1>
+
+      {% if folder.description %}
+        <p class="folder-view-description">{{ folder.description }}</p>
+      {% else %}
+        <p class="folder-view-description folder-desc-muted">Personal collection of saved anime, manga, and movies.</p>
       {% endif %}
 
-      <button type="button" class="btn-danger btn-icon-only" id="btnOpenDeleteFolderModal" title="Delete this folder" aria-label="Delete folder">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-      </button>
+      <div class="folder-hero-actions">
+        <button type="button" class="btn-auth btn-action-add-titles" id="btnOpenAddTitlesModal" title="Add titles from library">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          <span>Add Titles</span>
+        </button>
+
+        {% if items %}
+          <button type="button" class="btn-secondary btn-action-edit" id="btnToggleEditMode" title="Select titles to remove">
+            <svg class="edit-icon-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 20h9"></path>
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+            </svg>
+            <span id="btnEditLabel">Edit</span>
+          </button>
+        {% endif %}
+
+        <button type="button" class="btn-icon-danger" id="btnOpenDeleteFolderModal" title="Delete folder" aria-label="Delete folder">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -82,7 +114,7 @@
     </div>
     <div class="toolbar-right">
       <button type="button" class="btn-danger btn-delete-bulk" id="btnDeleteSelected" disabled>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
         <span>Delete Selected</span>
       </button>
       <button type="button" class="btn-secondary btn-exit-edit-mode" id="btnExitEditMode">Done</button>
@@ -98,7 +130,7 @@
     </div>
   {% endif %}
 
-  <!-- Folder Titles Grid -->
+  <!-- Folder Titles Grid (Mobile-First 2-Column Responsive) -->
   {% if items %}
     <div class="library-grid folder-items-grid" id="folderItemsGrid">
       {% for item in items %}
@@ -120,7 +152,7 @@
 
           <a href="{% url 'library:detail' item.library_log.media.id %}?back={{ request.path }}" class="cover card-cover-link" title="View details for {{ item.library_log.media.media_title }}">
             {% if item.library_log.media.media_image %}
-              <img src="{{ item.library_log.media.media_image }}" alt="{{ item.library_log.media.media_title }}" loading="lazy" onerror="this.onerror=null; this.src='{% static 'images/moon.png' %}';">
+              <img src="{{ item.library_log.media.media_image }}" alt="{{ item.library_log.media.media_title }}" loading="lazy" onerror="this.onerror=null; this.src='{% static 'images/hero_character_purple.jpg' %}';">
             {% else %}
               <div class="cover-placeholder">{{ item.library_log.media.media_title }}</div>
             {% endif %}
@@ -152,15 +184,15 @@
     <!-- Hidden fallback empty state in case user deletes all titles inside folder -->
     <div class="folders-empty-state folder-detail-empty-state" id="folderDynamicEmptyState" style="display: none;">
       <div class="empty-folder-glow-icon">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
           <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
           <path d="M12 11v6M9 14h6" stroke-linecap="round"></path>
         </svg>
       </div>
-      <h2 class="empty-state-title">This folder is empty</h2>
+      <h2 class="empty-state-title">This Collection is Empty</h2>
       <p class="empty-state-desc">You haven't added any titles to "{{ folder.name }}" yet. Pick from your library to group them here.</p>
       <button type="button" class="btn-auth btn-add-titles-trigger" id="btnOpenAddTitlesModalEmpty">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
         <span>Add Titles from Library</span>
       </button>
     </div>
@@ -168,30 +200,28 @@
   {% else %}
     <div class="folders-empty-state folder-detail-empty-state" id="folderStaticEmptyState">
       <div class="empty-folder-glow-icon">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
           <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
           <path d="M12 11v6M9 14h6" stroke-linecap="round"></path>
         </svg>
       </div>
-      <h2 class="empty-state-title">This folder is empty</h2>
+      <h2 class="empty-state-title">This Collection is Empty</h2>
       <p class="empty-state-desc">Organize your anime, manga, and movies by adding them from your personal library.</p>
       <button type="button" class="btn-auth btn-add-titles-trigger" id="btnOpenAddTitlesModalEmpty">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
         <span>Add Titles from Library</span>
       </button>
     </div>
   {% endif %}
 </main>
 
-<!-- Add Titles Modal -->
+<!-- Add Titles Modal / Bottom Sheet -->
 <div class="custom-modal-backdrop" id="addTitlesModal" role="dialog" aria-modal="true" aria-labelledby="addTitlesModalTitle" hidden>
   <div class="custom-modal-dialog add-titles-dialog">
+    <div class="sheet-drag-handle" aria-hidden="true"></div>
     <div class="custom-modal-header">
       <div class="modal-title-wrap">
-        <div class="modal-icon-badge">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-        </div>
-        <h2 id="addTitlesModalTitle" class="custom-modal-title">Add Titles to {{ folder.name }}</h2>
+        <h2 id="addTitlesModalTitle" class="custom-modal-title">Add to {{ folder.name }}</h2>
       </div>
       <button type="button" class="modal-close-btn" id="btnCloseAddTitlesModal" aria-label="Close modal">✕</button>
     </div>
@@ -200,7 +230,7 @@
       {% csrf_token %}
       <div class="modal-search-bar-wrap">
         <svg class="modal-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <input type="text" id="addTitlesSearchInput" class="modal-search-input" placeholder="Search your library titles..." autocomplete="off">
+        <input type="text" id="addTitlesSearchInput" class="modal-search-input" placeholder="Search your library titles…" autocomplete="off">
         <button type="button" class="modal-search-clear" id="btnAddTitlesSearchClear" aria-label="Clear search" hidden>✕</button>
       </div>
 
@@ -218,7 +248,7 @@
               </span>
               <div class="available-thumb">
                 {% if log.media.media_image %}
-                  <img src="{{ log.media.media_image }}" alt="{{ log.media.media_title }}" loading="lazy" onerror="this.onerror=null; this.src='{% static 'images/moon.png' %}';">
+                  <img src="{{ log.media.media_image }}" alt="{{ log.media.media_title }}" loading="lazy" onerror="this.onerror=null; this.src='{% static 'images/hero_character_purple.jpg' %}';">
                 {% else %}
                   <div class="preview-placeholder">★</div>
                 {% endif %}
@@ -243,7 +273,7 @@
         </div>
       {% else %}
         <div class="modal-empty-available">
-          <p>All titles in your library are already in this folder!</p>
+          <p>All titles in your library are already in this collection!</p>
           <a href="{% url 'library:add' %}" class="btn-auth btn-sm">Add New Title to Library</a>
         </div>
         <div class="custom-modal-actions">
@@ -257,18 +287,16 @@
 <!-- Delete Folder Confirmation Modal -->
 <div class="custom-modal-backdrop" id="deleteFolderModal" role="dialog" aria-modal="true" aria-labelledby="deleteFolderModalTitle" hidden>
   <div class="custom-modal-dialog modal-dialog-confirm">
+    <div class="sheet-drag-handle" aria-hidden="true"></div>
     <div class="custom-modal-header">
       <div class="modal-title-wrap">
-        <div class="modal-icon-badge danger-badge">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-        </div>
-        <h2 id="deleteFolderModalTitle" class="custom-modal-title">Delete Folder</h2>
+        <h2 id="deleteFolderModalTitle" class="custom-modal-title">Delete Collection</h2>
       </div>
       <button type="button" class="modal-close-btn" id="btnCloseDeleteFolderModal" aria-label="Close modal">✕</button>
     </div>
     <div class="modal-body-confirm">
-      <p>Are you sure you want to delete the folder <strong>"{{ folder.name }}"</strong>?</p>
-      <p class="confirm-subnote">None of the titles will be removed from your main library; only this folder organization will be deleted.</p>
+      <p>Are you sure you want to delete <strong>"{{ folder.name }}"</strong>?</p>
+      <p class="confirm-subnote">None of the titles will be removed from your main library; only this collection will be deleted.</p>
     </div>
     <form method="post" action="{% url 'library:folder_delete' folder.id %}" class="modal-delete-folder-form">
       {% csrf_token %}
