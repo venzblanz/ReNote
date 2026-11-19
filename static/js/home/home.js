@@ -1,54 +1,28 @@
-
 document.addEventListener("DOMContentLoaded", () => {
-  
   const spotlights = [
-    {
-      title: "ReNote",
-      jpTitle: "月夜のメディアカタログ (Celestial Moon Collection)",
-      desc: "Every story that moves you deserves a place in the night sky. ReNote reflects your journey through fiction, giving you a personal sanctuary to record, track, and relive the anime, manga, novels, and films that left their mark.",
-      image: "/static/images/moon.png",
-      rating: "5.0",
-      genres: ["Anime", "Manga", "Movie", "Novel"],
-      tagline: "Manage your collection seamlessly — cached media info means zero repeated API calls.",
-      creator: "Cached in media_catalog",
-      stars: "Community & You",
-      sliderNum: "01"
-    },
     {
       title: "Solo Leveling",
       jpTitle: "Ore dake Reberuappu na Ken",
-      desc: "In a world where hunters must battle deadly monsters to protect humanity, Sung Jin-woo, an underdog hunter ridiculed as the weakest of all mankind, awakens to an extraordinary system that unlocks an infinite path to level up alone into the supreme Shadow Monarch.",
+      desc: "In a world where hunters battle deadly monsters, Sung Jin-woo awakens to an extraordinary system that unlocks an infinite path to level up alone into the supreme Shadow Monarch.",
       image: "/static/images/hero_character_purple.jpg",
       rating: "4.9",
-      genres: ["Animation", "Action", "Adventure", "Dark Fantasy"],
-      tagline: "From the weakest hunter in the world to the supreme Shadow Monarch reigning over darkness.",
-      creator: "Chugong / DUBU (REDICE Studio)",
-      stars: "Taito Ban, Genta Nakamura, Reina Ueda",
-      sliderNum: "02"
+      genres: ["Animation", "Action", "Dark Fantasy"]
     },
     {
       title: "Jujutsu Kaisen",
-      jpTitle: "",
-      desc: "A boy swallows a cursed talisman - the finger of a demon - and becomes cursed himself. Enter Satoru Gojo, the strongest jujutsu sorcerer in modern history, who bends space itself with Infinity and obliterates threats with Hollow Purple.",
+      jpTitle: "Jujutsu Kaisen",
+      desc: "A boy swallows a cursed talisman and becomes cursed himself. Enter Satoru Gojo, the strongest jujutsu sorcerer in modern history, who bends space with Infinity and Hollow Purple.",
       image: "/static/images/gojo_purple.jpg",
       rating: "4.8",
-      genres: ["Animation", "Action", "Supernatural", "Shounen"],
-      tagline: "Throughout heaven and earth, I alone am the honored one.",
-      creator: "Gege Akutami (Studio MAPPA)",
-      stars: "Yuichi Nakamura, Junya Enoki, Yuma Uchida",
-      sliderNum: "03"
+      genres: ["Animation", "Action", "Supernatural"]
     },
     {
       title: "Naruto",
-      jpTitle: "",
-      desc: "Naruto Uzumaki is a shinobi of Konohagakure's Uzumaki clan. Shrouded in blazing purple sage chakra and the power of the Nine-Tails, he fought through isolation to achieve his dream of becoming Hokage and saving the ninja world.",
+      jpTitle: "Naruto Shippuden",
+      desc: "Naruto Uzumaki is a shinobi of the Uzumaki clan. Shrouded in blazing purple sage chakra and the Nine-Tails, he fought through isolation to achieve his dream of becoming Hokage.",
       image: "/static/images/naruto_purple.jpg",
       rating: "4.7",
-      genres: ["Animation", "Action", "Adventure", "Martial Arts"],
-      tagline: "I never go back on my word — that is my ninja way!",
-      creator: "Masashi Kishimoto (Studio Pierrot)",
-      stars: "Junko Takeuchi, Noriaki Sugiyama, Chie Nakamura",
-      sliderNum: "04"
+      genres: ["Animation", "Action", "Adventure"]
     }
   ];
 
@@ -58,23 +32,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const spotlightJp = document.getElementById("spotlightJp");
   const spotlightDesc = document.getElementById("spotlightDesc");
   const heroMoonImg = document.getElementById("heroMoonImg");
-  const spotlightRating = document.getElementById("spotlightRating");
   const spotlightGenres = document.getElementById("spotlightGenres");
-  const spotlightTagline = document.getElementById("spotlightTagline");
-  const spotlightCreator = document.getElementById("spotlightCreator");
-  const spotlightStars = document.getElementById("spotlightStars");
-  const sliderNum = document.getElementById("sliderNum");
-  const sliderPip = document.getElementById("sliderPip");
-  const dockCards = document.querySelectorAll(".dock-card");
+  const storyPips = document.querySelectorAll(".story-pip");
+  const spotlightPrevBtn = document.getElementById("spotlightPrevBtn");
+  const spotlightNextBtn = document.getElementById("spotlightNextBtn");
 
   function setSpotlight(idx) {
-    if (idx < 0 || idx >= spotlights.length) return;
+    if (idx < 0) idx = spotlights.length - 1;
+    if (idx >= spotlights.length) idx = 0;
     currentSpotlightIdx = idx;
     const data = spotlights[idx];
 
     if (heroMoonImg) {
-      heroMoonImg.style.opacity = "0";
-      heroMoonImg.style.transform = "scale(0.94)";
+      heroMoonImg.style.opacity = "0.4";
+      heroMoonImg.style.transform = "scale(1.02)";
     }
 
     setTimeout(() => {
@@ -82,71 +53,37 @@ document.addEventListener("DOMContentLoaded", () => {
       if (spotlightJp) spotlightJp.textContent = data.jpTitle;
       if (spotlightDesc) spotlightDesc.textContent = data.desc;
       if (heroMoonImg) heroMoonImg.src = data.image;
-      if (spotlightRating) spotlightRating.textContent = data.rating;
-      if (spotlightTagline) spotlightTagline.textContent = data.tagline;
-      if (spotlightCreator) spotlightCreator.textContent = data.creator;
-      if (spotlightStars) spotlightStars.textContent = data.stars;
-      if (sliderNum) sliderNum.textContent = data.sliderNum;
 
       if (spotlightGenres) {
         spotlightGenres.innerHTML = data.genres.map(g => `<span class="genre-pill">${g}</span>`).join("");
       }
 
-      if (sliderPip) {
-        sliderPip.style.top = `${idx * 16}px`;
-      }
-
-      dockCards.forEach((c, i) => c.classList.toggle("active", i === idx));
+      storyPips.forEach((pip, i) => {
+        pip.classList.toggle("active", i === idx);
+      });
 
       if (heroMoonImg) {
         heroMoonImg.style.opacity = "1";
         heroMoonImg.style.transform = "scale(1)";
       }
-    }, 180);
+    }, 150);
   }
 
-  dockCards.forEach((card, idx) => {
-    card.addEventListener("click", () => {
+  storyPips.forEach((pip) => {
+    pip.addEventListener("click", () => {
+      const idx = parseInt(pip.dataset.index, 10);
       setSpotlight(idx);
     });
   });
 
-  const profileMenu = document.getElementById("profileMenu");
-  const profileTrigger = document.getElementById("profileTrigger");
-
-  if (profileTrigger && profileMenu) {
-    profileTrigger.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const isOpen = profileMenu.classList.toggle("open");
-      profileTrigger.setAttribute("aria-expanded", isOpen);
-    });
-
-    document.addEventListener("click", (e) => {
-      if (!profileMenu.contains(e.target)) {
-        profileMenu.classList.remove("open");
-        profileTrigger.setAttribute("aria-expanded", "false");
-      }
-    });
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        profileMenu.classList.remove("open");
-        profileTrigger.setAttribute("aria-expanded", "false");
-      }
-    });
+  if (spotlightPrevBtn) {
+    spotlightPrevBtn.addEventListener("click", () => setSpotlight(currentSpotlightIdx - 1));
+  }
+  if (spotlightNextBtn) {
+    spotlightNextBtn.addEventListener("click", () => setSpotlight(currentSpotlightIdx + 1));
   }
 
-  const rateBtn = document.getElementById("rateBtn");
-  const rateLabel = document.getElementById("rateLabel");
-  let userRated = false;
-  if (rateBtn) {
-    rateBtn.addEventListener("click", () => {
-      userRated = !userRated;
-      if (rateLabel) rateLabel.textContent = userRated ? "5.0 ★ Rated" : "Rate";
-      rateBtn.style.color = userRated ? "#FCD34D" : "#D8B4FE";
-    });
-  }
-
+  // Interactive Chooser Modal & Bottom Sheet
   const pickerModal = document.getElementById("pickerModal");
   const navRandomBtn = document.getElementById("navRandomBtn");
   const heroPickBtn = document.getElementById("heroPickBtn");
@@ -155,6 +92,26 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalPickResult = document.getElementById("modalPickResult");
   const modalFilterType = document.getElementById("modalFilterType");
   const modalFilterStatus = document.getElementById("modalFilterStatus");
+  const mobileDockPickerBtn = document.getElementById("mobileDockPickerBtn");
+
+  // Segmented chips for format & status
+  const formatChips = document.querySelectorAll("#formatChips .filter-chip");
+  formatChips.forEach((chip) => {
+    chip.addEventListener("click", () => {
+      formatChips.forEach(c => c.classList.remove("active"));
+      chip.classList.add("active");
+      if (modalFilterType) modalFilterType.value = chip.dataset.val;
+    });
+  });
+
+  const statusChips = document.querySelectorAll("#statusChips .filter-chip");
+  statusChips.forEach((chip) => {
+    chip.addEventListener("click", () => {
+      statusChips.forEach(c => c.classList.remove("active"));
+      chip.classList.add("active");
+      if (modalFilterStatus) modalFilterStatus.value = chip.dataset.val;
+    });
+  });
 
   function openModal() {
     if (pickerModal) {
@@ -163,6 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (modalPickResult) modalPickResult.textContent = "";
     }
   }
+
   function closeModal() {
     if (pickerModal) {
       pickerModal.classList.remove("open");
@@ -170,7 +128,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  const mobileDockPickerBtn = document.getElementById("mobileDockPickerBtn");
   if (navRandomBtn) navRandomBtn.addEventListener("click", (e) => { e.preventDefault(); openModal(); });
   if (mobileDockPickerBtn) mobileDockPickerBtn.addEventListener("click", (e) => { e.preventDefault(); openModal(); });
   if (heroPickBtn) heroPickBtn.addEventListener("click", openModal);
@@ -235,9 +192,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (allUserItems.length === 0) {
         modalPickResult.innerHTML = `
-          <div style="padding: 12px 0;">
-            <p style="color: #F87171; margin: 0 0 8px; font-size: 1rem;">Your library is empty.</p>
-            <span style="font-size: 0.85rem; color: #D8B4FE;">Add titles from Search & Add Title first to roll a pick!</span>
+          <div class="pick-empty-notice">
+            <p class="pick-empty-text">Your library is currently empty.</p>
+            <span class="pick-empty-sub">Add titles from the catalog first to roll a pick!</span>
           </div>
         `;
         return;
@@ -254,9 +211,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (pool.length === 0) {
         modalPickResult.innerHTML = `
-          <div style="padding: 12px 0;">
-            <p style="color: #FCD34D; margin: 0 0 6px; font-size: 1rem;">No matching titles in your library.</p>
-            <span style="font-size: 0.85rem; color: #D8B4FE;">Try setting the filters to "All Formats" or "Any Status".</span>
+          <div class="pick-empty-notice">
+            <p class="pick-empty-text">No matching titles found in your library.</p>
+            <span class="pick-empty-sub">Try changing the format or status filters.</span>
           </div>
         `;
         return;
@@ -268,7 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       spinTimer = setInterval(() => {
         const temp = pool[Math.floor(Math.random() * pool.length)];
-        modalPickResult.textContent = `Rolling: ${temp.title} (${temp.type})...`;
+        modalPickResult.textContent = `Rolling: ${temp.title} (${temp.type})…`;
         ticks++;
         if (ticks > 8) {
           clearInterval(spinTimer);
@@ -279,10 +236,10 @@ document.addEventListener("DOMContentLoaded", () => {
           const detailUrl = chosen.url || "#";
 
           modalPickResult.innerHTML = `
-            <a href="${detailUrl}" class="pick-result-card" title="Click to view details for ${safeTitle}">
-              ${chosen.img ? `<img src="${chosen.img}" alt="${safeTitle}" class="pick-result-cover">` : '<div class="pick-result-cover placeholder">🎬</div>'}
+            <a href="${detailUrl}" class="pick-result-card" title="Open details for ${safeTitle}">
+              ${chosen.img ? `<img src="${chosen.img}" alt="${safeTitle}" class="pick-result-cover">` : '<div class="pick-result-cover placeholder">★</div>'}
               <div class="pick-result-info">
-                <span class="pick-result-badge">Tonight's Selected Pick</span>
+                <span class="pick-result-badge">SELECTED PICK</span>
                 <strong class="pick-result-title">${safeTitle}</strong>
                 <div class="pick-result-meta">
                   <span class="pick-result-type">${safeType}</span>
@@ -292,8 +249,8 @@ document.addEventListener("DOMContentLoaded", () => {
               </div>
               <div class="pick-result-action">
                 <span class="btn-pick-open">
-                  <span>View Details</span>
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <span>View</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </span>
               </div>
             </a>
@@ -303,6 +260,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Filter tabs for library overview on home
   const filterTabs = document.getElementById("filterTabs");
   const libraryGrid = document.getElementById("libraryGrid");
   const showAllRow = document.getElementById("showAllRow");
@@ -327,7 +285,6 @@ document.addEventListener("DOMContentLoaded", () => {
           card.style.display = "";
           visibleCount++;
         } else {
-          
           card.style.display = "none";
         }
       } else {

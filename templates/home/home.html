@@ -4,15 +4,15 @@
 <head>
   <link rel="icon" type="image/gif" href="{% static 'images/renote_logo_icon.gif' %}">
   <link rel="apple-touch-icon" href="{% static 'images/renote_logo_icon.gif' %}">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ReNote — Anime Media Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReNote — Anime Media Dashboard</title>
   {% include 'shared/seo_meta.html' with meta_title="ReNote — Anime Media Tracker" meta_description="Track everything you watch, read, and rewatch — all in one celestial dark dashboard." %}
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{% static 'css/shared/base.css' %}?v={% now 'U' %}">
-<link rel="stylesheet" href="{% static 'css/home/home.css' %}?v={% now 'U' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/shared/base.css' %}?v={% now 'U' %}">
+  <link rel="stylesheet" href="{% static 'css/home/home.css' %}?v={% now 'U' %}">
 </head>
 <body class="dash-body">
 
@@ -20,55 +20,69 @@
 
 <div class="dash-canvas">
 
+  <!-- Mobile-First App Hero Section -->
   <section class="hero-spotlight">
-    <div class="hero-ambient" aria-hidden="true">
-      <div class="hero-orb-a"></div>
-      <div class="hero-orb-b"></div>
-    </div>
-    <div class="spotlight-info">
-      <div class="hero-eyebrow-row">
-        <span class="hero-live-dot"></span>
-        <span class="hero-eyebrow-text">Your personal media tracker</span>
+    <!-- Featured Cinematic Spotlight Card -->
+    <div class="spotlight-card" id="spotlightCard">
+      <div class="spotlight-media-backdrop">
+        <img src="{% static 'images/hero_character_purple.jpg' %}" alt="Featured Spotlight" class="spotlight-bg-img" id="heroMoonImg">
+        <div class="spotlight-scrim"></div>
       </div>
-      <h1 class="spotlight-title" id="spotlightTitle">ReNote</h1>
-      <p class="spotlight-jp-title" id="spotlightJp">Celestial Moon Collection</p>
-      <p class="spotlight-synopsis" id="spotlightDesc">
-        Every story that moves you deserves a place in the night sky. ReNote reflects your journey through fiction, giving you a personal sanctuary to record, track, and relive the anime, manga, novels, and films that left their mark.
-      </p>
-      <div class="hero-stats-band">
-        <div class="hstat">
-          <span class="hstat-num" id="spotlightCollectionCount">{{ total_count }}</span>
-          <span class="hstat-label">Titles</span>
+
+      <div class="spotlight-top-bar">
+        <div class="story-progress-indicators" id="storyProgressIndicators" aria-label="Slide indicators">
+          <button type="button" class="story-pip active" data-index="0" aria-label="Slide 1"></button>
+          <button type="button" class="story-pip" data-index="1" aria-label="Slide 2"></button>
+          <button type="button" class="story-pip" data-index="2" aria-label="Slide 3"></button>
         </div>
-        <div class="hstat-sep"></div>
-        <div class="hstat">
-          <span class="hstat-num" id="spotlightFavorites">{{ favorites_count|default:0 }}</span>
-          <span class="hstat-label">Favorites</span>
-        </div>
-        <div class="hstat-sep"></div>
-        <div class="hstat">
-          <span class="hstat-num" id="spotlightRewatchTotal">{{ rewatched_media_count }}</span>
-          <span class="hstat-label">Rewatched</span>
+        <span class="spotlight-live-tag">SPOTLIGHT</span>
+      </div>
+
+      <div class="spotlight-content">
+        <p class="spotlight-jp-title" id="spotlightJp">Ore dake Reberuappu na Ken</p>
+        <h1 class="spotlight-title" id="spotlightTitle">Solo Leveling</h1>
+        <p class="spotlight-synopsis" id="spotlightDesc">In a world where hunters must battle deadly monsters, Sung Jin-woo awakens to an extraordinary system that unlocks an infinite path to level up alone into the supreme Shadow Monarch.</p>
+        <div class="genre-pills-row" id="spotlightGenres">
+          <span class="genre-pill">Animation</span>
+          <span class="genre-pill">Action</span>
+          <span class="genre-pill">Dark Fantasy</span>
         </div>
       </div>
-      <div class="genre-pills-row" id="spotlightGenres">
-        <span class="genre-pill">Anime</span>
-        <span class="genre-pill">Manga</span>
-        <span class="genre-pill">Movie</span>
-        <span class="genre-pill">Novel</span>
+
+      <div class="spotlight-nav-controls">
+        <button type="button" class="spotlight-arrow-btn" id="spotlightPrevBtn" aria-label="Previous title">‹</button>
+        <button type="button" class="spotlight-arrow-btn" id="spotlightNextBtn" aria-label="Next title">›</button>
       </div>
-    </div>
-    <div class="spotlight-floating-dock">
-      <form method="get" action="{% url 'library:add' %}" class="dock-search-form">
-        <div class="dock-search-pill">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          <input type="text" name="q" placeholder="Search catalog..." class="dock-search-input">
-        </div>
-      </form>
     </div>
 
+    <!-- Instagram-Style Stats Strip -->
+    <div class="dash-stats-dock">
+      <div class="stat-dock-item">
+        <span class="stat-dock-val" id="spotlightCollectionCount">{{ total_count }}</span>
+        <span class="stat-dock-lbl">TITLES</span>
+      </div>
+      <div class="stat-dock-divider"></div>
+      <div class="stat-dock-item">
+        <span class="stat-dock-val" id="spotlightFavorites">{{ favorites_count|default:0 }}</span>
+        <span class="stat-dock-lbl">FAVORITES</span>
+      </div>
+      <div class="stat-dock-divider"></div>
+      <div class="stat-dock-item">
+        <span class="stat-dock-val" id="spotlightRewatchTotal">{{ rewatched_media_count }}</span>
+        <span class="stat-dock-lbl">REWATCHES</span>
+      </div>
+    </div>
+
+    <!-- YouTube/Instagram App Search Bar -->
+    <form method="get" action="{% url 'library:add' %}" class="dock-search-form">
+      <div class="dock-search-pill">
+        <svg class="dock-search-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" name="q" placeholder="Search catalog or add title…" class="dock-search-input" autocomplete="off">
+      </div>
+    </form>
   </section>
 
+  <!-- Library Overview Section -->
   <section class="dash-library-section" id="librarySection">
     <div class="section-header-row">
       <div>
@@ -83,6 +97,7 @@
         <button type="button" class="tab-pill chip-pill" data-filter="novel">Novel</button>
       </div>
     </div>
+
     <div class="dash-layout-grid">
       <div class="library-content-area">
         {% if logs %}
@@ -91,7 +106,7 @@
               <div class="media-card" data-type="{{ log.media.media_type|lower }}" data-detail-url="{% url 'library:detail' log.media.id %}">
                 <a href="{% url 'library:detail' log.media.id %}" class="cover card-cover-link" title="View details for {{ log.media.media_title }}">
                   {% if log.media.media_image %}
-                    <img src="{{ log.media.media_image }}" alt="{{ log.media.media_title }}" onerror="this.onerror=null; this.src='{% static 'images/moon.png' %}';">
+                    <img src="{{ log.media.media_image }}" alt="{{ log.media.media_title }}" onerror="this.onerror=null; this.src='{% static 'images/hero_character_purple.jpg' %}';">
                   {% else %}
                     <div class="cover-placeholder">{{ log.media.media_title }}</div>
                   {% endif %}
@@ -127,10 +142,10 @@
         {% else %}
           <div class="empty-library-state">
             <div class="empty-icon-orb">
-              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#C084FC" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#C084FC" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
             </div>
             <h3 class="empty-title">Your library is currently empty</h3>
-            <p class="empty-sub">Anything you add from the catalog is saved straight to your collection with its cover image intact, keeping your archive fast, reliable, and ready whenever you open it.</p>
+            <p class="empty-sub">Search and add anime, manga, and movies from the catalog to build your collection.</p>
             <a href="{% url 'library:add' %}" class="btn-pill-primary empty-add-cta">Search &amp; Add Title</a>
           </div>
         {% endif %}
@@ -187,16 +202,14 @@
             <p class="panel-empty-text">No rewatched titles logged yet.</p>
           {% endif %}
         </div>
-
       </aside>
     </div>
-
   </section>
 
   <footer class="dash-footer">
     <div class="footer-left">
       <span>© 2026 </span>
-      <span class="footer-brand"> ReNote</span>
+      <span class="footer-brand">ReNote</span>
       <span class="footer-version">v2.0.0</span>
       <span class="footer-copy">Decide what to watch next. Made for myself 💗</span>
       <span class="footer-github-link"><a href="https://github.com/venzblanz" target="_blank" rel="noopener noreferrer">venzblanz</a></span>
@@ -213,58 +226,68 @@
   </footer>
 </div>
 
+<!-- Social App Style Interactive Chooser (Bottom Sheet on Mobile, Centered Glass Sheet on Desktop) -->
 <div class="picker-modal-backdrop" id="pickerModal">
-  <div class="picker-dialog">
-    <div class="picker-dialog-header">
-      <div class="picker-dialog-top">
-        <div class="picker-dice-icon" aria-hidden="true">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="2" y="2" width="20" height="20" rx="4"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="8.5" cy="15.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>
-        </div>
-        <div class="dialog-title-group">
-          <span class="dialog-badge">Interactive Chooser</span>
-          <h2>Decide What to Watch or Read Next</h2>
-          <p>Roll a random selection from your actual library collection.</p>
-        </div>
+  <div class="picker-sheet" role="dialog" aria-modal="true" aria-labelledby="pickerSheetTitle">
+    <div class="sheet-drag-handle" aria-hidden="true"></div>
+
+    <div class="picker-sheet-header">
+      <div class="sheet-header-text">
+        <span class="sheet-eyebrow">Interactive Chooser</span>
+        <h2 class="sheet-title" id="pickerSheetTitle">Roll What to Watch</h2>
+        <p class="sheet-sub">Spin a random title from your saved collection</p>
       </div>
-      <button type="button" class="dialog-close-btn" id="closePickerBtn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      <button type="button" class="sheet-close-btn" id="closePickerBtn" aria-label="Close chooser">✕</button>
+    </div>
+
+    <!-- Format Segmented Filter Chips -->
+    <div class="picker-chips-section">
+      <label class="picker-section-label">Format</label>
+      <div class="picker-filter-chips" id="formatChips">
+        <button type="button" class="filter-chip active" data-val="all">All Formats</button>
+        <button type="button" class="filter-chip" data-val="anime">Anime</button>
+        <button type="button" class="filter-chip" data-val="manga">Manga</button>
+        <button type="button" class="filter-chip" data-val="movie">Movie</button>
+        <button type="button" class="filter-chip" data-val="novel">Novel</button>
+      </div>
+      <select id="modalFilterType" hidden>
+        <option value="all" selected>All</option>
+        <option value="anime">Anime</option>
+        <option value="manga">Manga</option>
+        <option value="movie">Movie</option>
+        <option value="novel">Novel</option>
+      </select>
+    </div>
+
+    <!-- Status Segmented Filter Chips -->
+    <div class="picker-chips-section">
+      <label class="picker-section-label">Status</label>
+      <div class="picker-filter-chips" id="statusChips">
+        <button type="button" class="filter-chip active" data-val="all">Any Status</button>
+        <button type="button" class="filter-chip" data-val="plan to watch">Planning</button>
+        <button type="button" class="filter-chip" data-val="watching">Watching</button>
+        <button type="button" class="filter-chip" data-val="completed">Completed</button>
+      </div>
+      <select id="modalFilterStatus" hidden>
+        <option value="all" selected>All</option>
+        <option value="plan to watch">Plan</option>
+        <option value="watching">Watching</option>
+        <option value="completed">Completed</option>
+      </select>
+      <select id="modalSource" hidden>
+        <option value="library" selected>Library</option>
+      </select>
+    </div>
+
+    <!-- Action Button -->
+    <div class="picker-sheet-actions">
+      <button type="button" class="btn-roll-pick" id="spinPickBtn">
+        <span>Roll Title</span>
       </button>
     </div>
-    <div class="picker-form-row">
-      <div class="field">
-        <label for="modalFilterType">Filter by Format</label>
-        <select id="modalFilterType">
-          <option value="all">All Formats</option>
-          <option value="anime">Anime</option>
-          <option value="manga">Manga</option>
-          <option value="movie">Movie</option>
-          <option value="novel">Novel</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="modalFilterStatus">Filter by Status</label>
-        <select id="modalFilterStatus">
-          <option value="all">Any Status</option>
-          <option value="plan to watch">Plan to Watch / Read</option>
-          <option value="watching">Watching / Reading</option>
-          <option value="completed">Completed</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="modalSource">Pool Source</label>
-        <select id="modalSource">
-          <option value="library">Your Library ({{ total_count }} titles)</option>
-        </select>
-      </div>
-    </div>
-    <div class="picker-roll-zone">
-      <button type="button" class="picker-spin-btn" id="spinPickBtn">
-        <svg class="picker-spin-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
-        <span>Pick for Me</span>
-      </button>
-      <div class="pick-live-result" id="modalPickResult">
-      </div>
-    </div>
+
+    <!-- Result Card Output Area -->
+    <div class="pick-live-result" id="modalPickResult"></div>
   </div>
 </div>
 

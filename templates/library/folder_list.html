@@ -8,6 +8,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your Folders — ReNote</title>
   {% include 'shared/seo_meta.html' with meta_title="Your Folders — ReNote" noindex=True %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/shared/base.css' %}?v={% now 'U' %}">
   <link rel="stylesheet" href="{% static 'css/library/library.css' %}?v={% now 'U' %}">
   <link rel="stylesheet" href="{% static 'css/library/folders.css' %}?v={% now 'U' %}">
@@ -17,27 +20,34 @@
 {% include 'shared/dash_header.html' with active_nav='folders' %}
 
 <main class="library-shell folders-shell">
+  <!-- Instagram-Style Top Bar -->
   <div class="folders-top-nav">
     <a href="{% url 'library:list' %}" class="btn-back-link">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-      <span>Back to Library</span>
+      <span>Library</span>
     </a>
     <div class="folders-breadcrumbs">
-      <a href="{% url 'home:home' %}">Home</a> &nbsp;/&nbsp;
-      <a href="{% url 'library:list' %}">Library</a> &nbsp;/&nbsp;
+      <a href="{% url 'home:home' %}">Home</a>
+      <span class="bc-sep">/</span>
+      <a href="{% url 'library:list' %}">Library</a>
+      <span class="bc-sep">/</span>
       <span>Folders</span>
     </div>
   </div>
 
-  <div class="library-header folders-header">
+  <!-- Header with Title & Action -->
+  <div class="folders-page-header">
     <div class="folders-header-text">
-      <h1 class="page-title">Your Folders</h1>
-      <p class="page-subtitle">Organize your anime, manga, and movies into custom collections.</p>
+      <div class="folders-heading-row">
+        <h1 class="page-title">Collections</h1>
+        <span class="folders-count-badge">{{ folders|length }} Folder{{ folders|length|pluralize }}</span>
+      </div>
+      <p class="page-subtitle">Organize your anime, manga, and movies into custom watchlists.</p>
     </div>
-    <div class="library-header-actions">
-      <button type="button" class="btn-auth" id="btnOpenNewFolderModal">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-        <span>Add Folder</span>
+    <div class="folders-header-actions">
+      <button type="button" class="btn-auth btn-new-folder" id="btnOpenNewFolderModal">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        <span>New Folder</span>
       </button>
     </div>
   </div>
@@ -50,6 +60,7 @@
     </div>
   {% endif %}
 
+  <!-- Collections Grid (Instagram Saved Style) -->
   {% if folders %}
     <div class="folders-grid" id="foldersGrid">
       {% for folder in folders %}
@@ -60,7 +71,7 @@
                 {% for item in folder.preview_items|slice:":4" %}
                   <div class="folder-preview-thumb">
                     {% if item.library_log.media.media_image %}
-                      <img src="{{ item.library_log.media.media_image }}" alt="{{ item.library_log.media.media_title }}" loading="lazy" onerror="this.onerror=null; this.src='{% static 'images/moon.png' %}';">
+                      <img src="{{ item.library_log.media.media_image }}" alt="{{ item.library_log.media.media_title }}" loading="lazy" onerror="this.onerror=null; this.src='{% static 'images/hero_character_purple.jpg' %}';">
                     {% else %}
                       <div class="preview-placeholder">★</div>
                     {% endif %}
@@ -69,65 +80,58 @@
               </div>
             {% else %}
               <div class="folder-empty-preview">
-                <svg class="folder-svg-icon" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
-                </svg>
-                <span class="empty-folder-text">Empty Folder</span>
+                <div class="folder-empty-glyph">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                    <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
+                  </svg>
+                </div>
+                <span class="empty-folder-text">Empty Collection</span>
               </div>
             {% endif %}
+            <span class="folder-count-badge">
+              {{ folder.item_count }} title{{ folder.item_count|pluralize }}
+            </span>
           </a>
+
           <div class="folder-card-body">
-            <div class="folder-card-title-row">
-              <h2 class="folder-card-title">
-                <a href="{% url 'library:folder_detail' folder.id %}" class="folder-title-link" title="{{ folder.name }}">{{ folder.name }}</a>
-              </h2>
-            </div>
+            <h2 class="folder-card-title">
+              <a href="{% url 'library:folder_detail' folder.id %}" class="folder-title-link">{{ folder.name }}</a>
+            </h2>
             {% if folder.description %}
               <p class="folder-card-desc">{{ folder.description }}</p>
             {% else %}
-              <p class="folder-card-desc folder-desc-empty">No description provided.</p>
+              <p class="folder-card-desc folder-desc-empty">Custom collection</p>
             {% endif %}
-            <div class="folder-card-footer">
-              <span class="folder-count-badge">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path></svg>
-                {{ folder.item_count }} title{{ folder.item_count|pluralize }}
-              </span>
-              <a href="{% url 'library:folder_detail' folder.id %}" class="folder-open-link" title="Open {{ folder.name }}">
-                <span>View</span>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-              </a>
-            </div>
           </div>
         </div>
       {% endfor %}
     </div>
   {% else %}
+    <!-- Refined Empty State (Instagram Style) -->
     <div class="folders-empty-state" id="foldersEmptyState">
       <div class="empty-folder-glow-icon">
-        <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
           <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
           <path d="M12 11v6M9 14h6" stroke-linecap="round"></path>
         </svg>
       </div>
-      <h2 class="empty-state-title">No folders yet</h2>
-      <p class="empty-state-desc">You haven't created any folders yet. Folders let you organize your favorite anime, manga, and movies into custom lists like "Summer Favorites", "Studio Ghibli", or "Plan to Watch Next".</p>
+      <h2 class="empty-state-title">No Collections Yet</h2>
+      <p class="empty-state-desc">Organize your anime, manga, and movies into custom watchlists like "Favorites", "Rewatch List", or "Top Tier".</p>
       <button type="button" class="btn-auth btn-create-first-folder" id="btnOpenNewFolderModalEmpty">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-        <span>Add Your First Folder</span>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        <span>Create Your First Folder</span>
       </button>
     </div>
   {% endif %}
 </main>
 
-<!-- Create Folder Modal -->
+<!-- Create Folder Modal / Bottom Sheet -->
 <div class="custom-modal-backdrop" id="newFolderModal" role="dialog" aria-modal="true" aria-labelledby="newFolderTitle" hidden>
   <div class="custom-modal-dialog">
+    <div class="sheet-drag-handle" aria-hidden="true"></div>
     <div class="custom-modal-header">
       <div class="modal-title-wrap">
-        <div class="modal-icon-badge">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path><path d="M12 11v6M9 14h6"/></svg>
-        </div>
-        <h2 id="newFolderTitle" class="custom-modal-title">Create New Folder</h2>
+        <h2 id="newFolderTitle" class="custom-modal-title">New Collection</h2>
       </div>
       <button type="button" class="modal-close-btn" id="btnCloseNewFolderModal" aria-label="Close modal">✕</button>
     </div>
@@ -140,7 +144,7 @@
       </div>
       <div class="modal-form-group">
         <label for="folderDescInput" class="modal-label">Description <span class="optional-tag">(optional)</span></label>
-        <textarea id="folderDescInput" name="description" class="modal-textarea" placeholder="Add a short note about what belongs in this folder..." maxlength="200" rows="3"></textarea>
+        <textarea id="folderDescInput" name="description" class="modal-textarea" placeholder="Add a short note about this collection..." maxlength="200" rows="3"></textarea>
         <div class="char-hint"><span id="folderDescCharCount">0</span>/200</div>
       </div>
       <div class="custom-modal-actions">
