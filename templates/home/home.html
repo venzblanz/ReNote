@@ -21,47 +21,34 @@
 <div class="dash-canvas">
 
   <section class="hero-spotlight">
-    <div class="hero-moon-stage" id="heroMoonStage">
-      <div class="moon-halo-effect"></div>
-      <img src="{% static 'images/moon.png' %}" alt="Celestial Moon" class="hero-moon-image" id="heroMoonImg">
+    <div class="hero-ambient" aria-hidden="true">
+      <div class="hero-orb-a"></div>
+      <div class="hero-orb-b"></div>
     </div>
     <div class="spotlight-info">
+      <div class="hero-eyebrow-row">
+        <span class="hero-live-dot"></span>
+        <span class="hero-eyebrow-text">Your personal media tracker</span>
+      </div>
       <h1 class="spotlight-title" id="spotlightTitle">ReNote</h1>
       <p class="spotlight-jp-title" id="spotlightJp">Celestial Moon Collection</p>
       <p class="spotlight-synopsis" id="spotlightDesc">
         Every story that moves you deserves a place in the night sky. ReNote reflects your journey through fiction, giving you a personal sanctuary to record, track, and relive the anime, manga, novels, and films that left their mark.
       </p>
-      <div class="spotlight-cta-row">
-        <button type="button" class="btn-pill-primary" id="heroPickBtn">
-          <span>Pick for Me</span>
-        </button>
-        <a href="{% url 'library:add' %}" class="btn-pill-ghost">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-          <span>Add title</span>
-        </a>
-      </div>
-      <div class="spotlight-stats-row">
-        <div class="stat-col">
-          <span class="stat-col-label">YOUR COLLECTION</span>
-          <div class="stat-col-val">
-            <span class="val-num" id="spotlightCollectionCount">{{ total_count }}</span>
-            <span style="font-size: 0.8125rem; color: #D8B4FE;">titles</span>
-          </div>
+      <div class="hero-stats-band">
+        <div class="hstat">
+          <span class="hstat-num" id="spotlightCollectionCount">{{ total_count }}</span>
+          <span class="hstat-label">Titles</span>
         </div>
-        <div class="stat-col">
-          <span class="stat-col-label">FAVORITES</span>
-          <div class="stat-col-val">
-            <span class="heart-icon-badge" style="color: #EC4899; font-size: 1.15rem; line-height: 1; margin-right: 4px;">♥</span>
-            <span class="val-num" id="spotlightFavorites">{{ favorites_count|default:0 }}</span>
-            <span style="font-size: 0.8125rem; color: #D8B4FE; margin-left: 4px;">titles</span>
-          </div>
+        <div class="hstat-sep"></div>
+        <div class="hstat">
+          <span class="hstat-num" id="spotlightFavorites">{{ favorites_count|default:0 }}</span>
+          <span class="hstat-label">Favorites</span>
         </div>
-        <div class="stat-col">
-          <span class="stat-col-label">REWATCHES</span>
-          <div class="stat-col-val">
-            <span class="trend-icon"> </span>
-            <span id="spotlightRewatchTotal">{{ rewatched_media_count }}</span>
-          </div>
+        <div class="hstat-sep"></div>
+        <div class="hstat">
+          <span class="hstat-num" id="spotlightRewatchTotal">{{ rewatched_media_count }}</span>
+          <span class="hstat-label">Rewatched</span>
         </div>
       </div>
       <div class="genre-pills-row" id="spotlightGenres">
@@ -144,7 +131,7 @@
             </div>
             <h3 class="empty-title">Your library is currently empty</h3>
             <p class="empty-sub">Anything you add from the catalog is saved straight to your collection with its cover image intact, keeping your archive fast, reliable, and ready whenever you open it.</p>
-            <a href="{% url 'library:add' %}" class="btn-pill-primary empty-add-cta">Search & Add Title</a>
+            <a href="{% url 'library:add' %}" class="btn-pill-primary empty-add-cta">Search &amp; Add Title</a>
           </div>
         {% endif %}
       </div>
@@ -160,7 +147,7 @@
                 <div><span class="dot purple-400"></span> Manga ({{ manga_pct }}%)</div>
                 <div><span class="dot purple-300"></span> Movies ({{ movie_pct }}%)</div>
                 {% if novel_count > 0 %}
-                  <div><span class="dot" style="background: #E9D5FF;"></span> Novels ({{ novel_pct }}%)</div>
+                  <div><span class="dot dot-novel"></span> Novels ({{ novel_pct }}%)</div>
                 {% endif %}
               </div>
             </div>
@@ -210,7 +197,7 @@
     <div class="footer-left">
       <span>© 2026 </span>
       <span class="footer-brand"> ReNote</span>
-      <span class="footer-version" style="font-size: 0.75rem; padding: 2px 8px; border-radius: 999px; background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.3); color: #D8B4FE; font-weight: 600; margin: 0 4px;">v2.0.0</span>
+      <span class="footer-version">v2.0.0</span>
       <span class="footer-copy">Decide what to watch next. Made for myself 💗</span>
       <span class="footer-github-link"><a href="https://github.com/venzblanz" target="_blank" rel="noopener noreferrer">venzblanz</a></span>
     </div>
@@ -229,12 +216,19 @@
 <div class="picker-modal-backdrop" id="pickerModal">
   <div class="picker-dialog">
     <div class="picker-dialog-header">
-      <div class="dialog-title-group">
-        <span class="dialog-badge">Interactive Chooser</span>
-        <h2>Decide What to Watch or Read Next</h2>
-        <p>Roll a random selection from your actual library collection.</p>
+      <div class="picker-dialog-top">
+        <div class="picker-dice-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="2" y="2" width="20" height="20" rx="4"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="8.5" cy="15.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>
+        </div>
+        <div class="dialog-title-group">
+          <span class="dialog-badge">Interactive Chooser</span>
+          <h2>Decide What to Watch or Read Next</h2>
+          <p>Roll a random selection from your actual library collection.</p>
+        </div>
       </div>
-      <button type="button" class="dialog-close-btn" id="closePickerBtn">&times;</button>
+      <button type="button" class="dialog-close-btn" id="closePickerBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
     </div>
     <div class="picker-form-row">
       <div class="field">
@@ -264,7 +258,8 @@
       </div>
     </div>
     <div class="picker-roll-zone">
-      <button type="button" class="btn-pill-primary" id="spinPickBtn">
+      <button type="button" class="picker-spin-btn" id="spinPickBtn">
+        <svg class="picker-spin-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
         <span>Pick for Me</span>
       </button>
       <div class="pick-live-result" id="modalPickResult">
