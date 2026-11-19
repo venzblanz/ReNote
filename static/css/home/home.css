@@ -34,7 +34,7 @@
    ============================================================================= */
 .hero-brand-section {
   position: relative;
-  max-width: 1120px;
+  max-width: auto;
   margin: 0 auto;
   padding: clamp(14px, 2.5vw, 28px) var(--gutter) clamp(18px, 3vw, 32px);
   display: flex;
@@ -98,7 +98,7 @@
   line-height: 1.05;
   letter-spacing: -0.035em;
   color: #fff;
-  margin: 0 0 4px;
+  margin: 0 0 24px;
   text-shadow: 0 2px 24px rgba(168, 85, 247, 0.3);
 }
 
@@ -629,7 +629,7 @@ body.modal-open {
 
 .section-header-row,
 .dash-layout-grid {
-  max-width: 1120px;
+  max-width: auto;
   margin-left: auto;
   margin-right: auto;
   padding-left: var(--gutter, 44px);
