@@ -50,7 +50,6 @@ def home_view(request):
         pct = round((count / total_count) * 100) if total_count > 0 else 0
         top_genres.append({'name': gname, 'count': count, 'percent': pct})
 
-    # Leaderboard: items with rewatches (or recent titles if none rewatched yet)
     rewatch_logs = [log for log in user_logs if (log.rewatch_count or 0) > 0]
     rewatched_media_count = len(rewatch_logs)
     favorites_count = sum(1 for log in user_logs if log.is_favorite)

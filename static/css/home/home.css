@@ -1,4 +1,3 @@
-
 .dash-body {
   margin: 0;
   min-height: 100dvh;
@@ -29,9 +28,6 @@
   position: relative;
 }
 
-/* =============================================================================
-   Enhanced ReNote Brand Hero (Mobile-First Social App System)
-   ============================================================================= */
 .hero-brand-section {
   position: relative;
   max-width: auto;
@@ -187,9 +183,6 @@
   background: rgba(255, 255, 255, 0.08);
 }
 
-/* =============================================================================
-   Search Bar (Mobile App Style)
-   ============================================================================= */
 .dock-search-form {
   margin: 0;
   width: 100%;
@@ -241,9 +234,6 @@
   color: rgba(255, 255, 255, 0.38);
 }
 
-/* =============================================================================
-   Interactive Chooser (Social App Bottom Sheet / Modal)
-   ============================================================================= */
 body.modal-open {
   overflow: hidden !important;
   touch-action: none;
@@ -274,7 +264,6 @@ body.modal-open {
   transition-delay: 0s;
 }
 
-/* Bottom Sheet Container */
 .picker-sheet {
   width: 100%;
   max-width: 520px;
@@ -380,7 +369,6 @@ body.modal-open {
   color: #fff;
 }
 
-/* Filter Chips (Instagram / YouTube Style) */
 .picker-chips-section {
   margin-bottom: 16px;
 }
@@ -466,7 +454,6 @@ body.modal-open {
   transform: scale(0.98);
 }
 
-/* Pick Result Area */
 .pick-live-result {
   min-height: 44px;
   width: 100%;
@@ -508,7 +495,6 @@ body.modal-open {
   color: #D8B4FE;
 }
 
-/* Result Card (Social App Mini Player / Post Card) */
 .pick-result-card {
   display: flex;
   align-items: center;
@@ -618,9 +604,6 @@ body.modal-open {
   box-shadow: 0 4px 10px rgba(124, 58, 237, 0.4);
 }
 
-/* =============================================================================
-   Library Overview Section
-   ============================================================================= */
 .dash-library-section {
   padding: 36px 0 56px;
   border-top: 1px solid rgba(168, 85, 247, 0.1);
@@ -848,9 +831,6 @@ body.modal-open {
   font-size: 0.75rem;
 }
 
-/* =============================================================================
-   Library Grid & Cards
-   ============================================================================= */
 .library-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -1117,9 +1097,6 @@ body.modal-open {
   color: var(--faint);
 }
 
-/* =============================================================================
-   Footer
-   ============================================================================= */
 .dash-footer {
   display: flex;
   align-items: center;
@@ -1176,9 +1153,6 @@ body.modal-open {
   color: #C084FC;
 }
 
-/* =============================================================================
-   Mobile Responsiveness (Strict Phone Friendliness)
-   ============================================================================= */
 @media (max-width: 768px) {
   .hero-spotlight {
     padding: 12px 14px 18px;

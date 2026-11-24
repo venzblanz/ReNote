@@ -420,7 +420,6 @@ def update_library_log_view(request, media_id):
     is_reading = (media.media_type or '').strip().lower() in ('manga', 'novel', 'light novel')
     default_status = 'plan to read' if is_reading else 'plan to watch'
 
-    # Auto-create entry if performing an action on a catalog title
     if not user_log:
         user_log = UserLibraryLog.objects.create(
             user=request.user,
@@ -496,10 +495,6 @@ def update_library_log_view(request, media_id):
         'is_favorite': user_log.is_favorite,
     })
 
-
-# =============================================================================
-# Folder Management Views
-# =============================================================================
 
 @login_required
 def folder_list_view(request):

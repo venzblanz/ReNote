@@ -22,7 +22,6 @@ def settings_view(request):
         user = request.user
         updated_any = False
 
-        # 1. Update Username
         new_username = request.POST.get('username', '').strip()
         if new_username and new_username != user.username:
             if User.objects.filter(username__iexact=new_username).exclude(pk=user.pk).exists():
@@ -31,7 +30,6 @@ def settings_view(request):
             user.username = new_username
             updated_any = True
 
-        # 2. Update Email
         new_email = request.POST.get('email', '').strip()
         if new_email and new_email != user.email:
             try:
@@ -46,7 +44,6 @@ def settings_view(request):
             user.email = new_email
             updated_any = True
 
-        # 3. Password Change (if attempted)
         current_pw = request.POST.get('current_password', '')
         new_pw = request.POST.get('new_password', '')
         confirm_pw = request.POST.get('confirm_password', '')
@@ -70,7 +67,6 @@ def settings_view(request):
         elif updated_any:
             user.save()
 
-        # 4. Profile Updates
         profile.profile_name = request.POST.get('profile_name', '').strip()
         profile.bio = request.POST.get('bio', '').strip()[:200]
         profile.data_privacy_consent = request.POST.get('data_privacy_consent') == 'on'
@@ -79,7 +75,6 @@ def settings_view(request):
             profile.profile_image = selected_avatar
         profile.save()
 
-        # 5. User Settings Updates
         settings_obj.dark_mode = request.POST.get('dark_mode') == 'on'
         settings_obj.email_notification = request.POST.get('email_notification') == 'on'
         settings_obj.save()
@@ -87,7 +82,6 @@ def settings_view(request):
         messages.success(request, 'Settings saved successfully!')
         return redirect('user_settings:settings')
 
-    # Compute top genre for display/reference
     user_logs = UserLibraryLog.objects.filter(user=request.user).select_related('media')
     genre_counts = {}
     for log in user_logs:

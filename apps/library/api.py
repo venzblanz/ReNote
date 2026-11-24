@@ -12,7 +12,7 @@ from urllib3.util import Retry
 logger = logging.getLogger(__name__)
 
 USER_AGENT = "ReNote/1.0 (+https://renote.app; anime-media-tracker)"
-DEFAULT_TIMEOUT = (3.0, 5.0)  # (connect_timeout, read_timeout) in seconds
+DEFAULT_TIMEOUT = (3.0, 5.0)
 
 def _get_http_session():
     """Create a persistent requests session configured with connection pooling and retries."""
@@ -261,7 +261,6 @@ def search_free_movies(query, genre=None):
     seen_ids = set()
     genre_clean = genre.strip() if genre and genre.strip().lower() != "all" else None
 
-    # 1. IMDb Modern Suggestion Search (when query is given)
     if query and query.strip():
         try:
             q_clean = re.sub(r'[^a-zA-Z0-9\s]', '', query).strip().lower()
@@ -303,7 +302,6 @@ def search_free_movies(query, genre=None):
         except Exception as e:
             logger.warning("IMDb suggestion search failed: %s", e)
 
-    # 2. AniList Anime Movies
     try:
         gql_query = """
         query ($search: String, $genre: String) {
@@ -403,7 +401,6 @@ def search_open_library(query, genre=None):
     results = []
     genre_clean = genre.strip() if genre and genre.strip().lower() != "all" else None
 
-    # If query is empty but genre is specified, query Open Library subject endpoint
     if (not query or not query.strip()) and genre_clean:
         try:
             subj = genre_clean.lower().replace(" ", "_")
@@ -506,7 +503,6 @@ def search_media(query="", media_type="anime", genre=None):
     if not q and not g:
         return []
 
-    # Safe cache key generation using SHA256 hash to support non-ASCII characters
     query_hash = hashlib.sha256(f"{q}|{g.lower()}".encode("utf-8")).hexdigest()
     cache_key = f"renote:search:{mtype}:{query_hash}"
 
@@ -517,7 +513,6 @@ def search_media(query="", media_type="anime", genre=None):
     results = []
     try:
         if mtype in ("anime", "manga"):
-            # Cascade: AniList -> Kitsu -> Jikan -> Local DB
             try:
                 results = search_anilist(q, mtype, genre=g)
             except Exception as e:
@@ -546,13 +541,11 @@ def search_media(query="", media_type="anime", genre=None):
     except Exception as e:
         logger.error("Unexpected search error for %s '%s': %s", mtype, q, e, exc_info=True)
 
-    # If external APIs were unreachable or returned nothing, search local database catalog
     if not results:
         local_results = search_local_catalog(q, mtype, genre=g)
         if local_results:
             results = local_results
 
-    # Cache valid results for 1 hour (3600s); empty results for 60s
     ttl = 3600 if results else 60
     cache.set(cache_key, results, timeout=ttl)
     return results

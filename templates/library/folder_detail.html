@@ -25,7 +25,6 @@
       data-remove-url="{% url 'library:folder_remove_items' folder.id %}"
       data-csrf="{{ csrf_token }}">
 
-  <!-- Top Navigation / Breadcrumbs -->
   <div class="folders-top-nav">
     <a href="{% url 'library:folder_list' %}" class="btn-back-link">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
@@ -42,7 +41,6 @@
     </div>
   </div>
 
-  <!-- Cinematic Collection Banner (Instagram / Spotify Playlist Style) -->
   <div class="folder-hero-banner">
     <div class="folder-hero-cover-wrap">
       {% if items %}
@@ -103,7 +101,6 @@
     </div>
   </div>
 
-  <!-- Multi-select Action Bar (Shown when Edit mode is active) -->
   <div class="multi-select-toolbar" id="multiSelectToolbar" hidden>
     <div class="toolbar-left">
       <div class="toolbar-selection-indicator">
@@ -121,7 +118,6 @@
     </div>
   </div>
 
-  <!-- Messages -->
   {% if messages %}
     <div class="folders-messages-container">
       {% for message in messages %}
@@ -130,7 +126,6 @@
     </div>
   {% endif %}
 
-  <!-- Folder Titles Grid (Mobile-First 2-Column Responsive) -->
   {% if items %}
     <div class="library-grid folder-items-grid" id="folderItemsGrid">
       {% for item in items %}
@@ -141,7 +136,6 @@
              data-type="{{ item.library_log.media.media_type|lower }}"
              data-status="{{ item.library_log.status|lower }}">
 
-          <!-- Checkbox overlay for multi-select edit mode -->
           <div class="card-select-overlay" aria-hidden="true">
             <span class="custom-card-checkbox">
               <svg class="check-svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -181,7 +175,6 @@
       {% endfor %}
     </div>
 
-    <!-- Hidden fallback empty state in case user deletes all titles inside folder -->
     <div class="folders-empty-state folder-detail-empty-state" id="folderDynamicEmptyState" style="display: none;">
       <div class="empty-folder-glow-icon">
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
@@ -215,7 +208,6 @@
   {% endif %}
 </main>
 
-<!-- Add Titles Modal / Bottom Sheet -->
 <div class="custom-modal-backdrop" id="addTitlesModal" role="dialog" aria-modal="true" aria-labelledby="addTitlesModalTitle" hidden>
   <div class="custom-modal-dialog add-titles-dialog">
     <div class="sheet-drag-handle" aria-hidden="true"></div>
@@ -284,7 +276,6 @@
   </div>
 </div>
 
-<!-- Delete Folder Confirmation Modal -->
 <div class="custom-modal-backdrop" id="deleteFolderModal" role="dialog" aria-modal="true" aria-labelledby="deleteFolderModalTitle" hidden>
   <div class="custom-modal-dialog modal-dialog-confirm">
     <div class="sheet-drag-handle" aria-hidden="true"></div>

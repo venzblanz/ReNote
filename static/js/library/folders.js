@@ -1,12 +1,4 @@
-/**
- * ReNote Folders & Multi-Select Management
- * Handles folder creation, title addition, selection mode, and bulk deletion.
- */
-
 document.addEventListener('DOMContentLoaded', () => {
-  // ---------------------------------------------------------------------------
-  // Modal Utilities
-  // ---------------------------------------------------------------------------
   function openModal(modalEl) {
     if (!modalEl) return;
     modalEl.removeAttribute('hidden');
@@ -23,7 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.remove('modal-open');
   }
 
-  // Close modals on Escape key or clicking outside dialog
   document.querySelectorAll('.custom-modal-backdrop').forEach((backdrop) => {
     backdrop.addEventListener('click', (e) => {
       if (e.target === backdrop) {
@@ -40,9 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // ---------------------------------------------------------------------------
-  // 1. Create New Folder Modal & Form
-  // ---------------------------------------------------------------------------
   const newFolderModal = document.getElementById('newFolderModal');
   const btnOpenNewFolder = document.getElementById('btnOpenNewFolderModal');
   const btnOpenNewFolderEmpty = document.getElementById('btnOpenNewFolderModalEmpty');
@@ -66,7 +54,6 @@ document.addEventListener('DOMContentLoaded', () => {
     btnCancelNewFolder.addEventListener('click', () => closeModal(newFolderModal));
   }
 
-  // Character counters
   if (folderNameInput && folderNameCharCount) {
     folderNameInput.addEventListener('input', () => {
       folderNameCharCount.textContent = folderNameInput.value.length;
@@ -78,9 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ---------------------------------------------------------------------------
-  // 2. Folder Detail: Multi-Select Mode & Bulk Removal
-  // ---------------------------------------------------------------------------
   const folderMain = document.getElementById('folderDetailMain');
   const folderItemsGrid = document.getElementById('folderItemsGrid');
   const btnToggleEditMode = document.getElementById('btnToggleEditMode');
@@ -142,7 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const label = document.getElementById('btnEditLabel');
         if (label) label.textContent = 'Edit';
       }
-      // Clear all selected states when exiting
       folderItemsGrid.querySelectorAll('.folder-item-card.is-selected').forEach((card) => {
         card.classList.remove('is-selected');
       });
@@ -162,7 +145,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Handle card click inside folder items grid
   if (folderItemsGrid) {
     folderItemsGrid.addEventListener('click', (e) => {
       if (!isEditMode) return;
@@ -170,7 +152,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const card = e.target.closest('.folder-item-card');
       if (!card) return;
 
-      // Prevent navigating link in edit mode
       e.preventDefault();
       e.stopPropagation();
 
@@ -179,7 +160,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Select All / Deselect All
   if (btnToggleSelectAll && folderItemsGrid) {
     btnToggleSelectAll.addEventListener('click', () => {
       const cards = Array.from(folderItemsGrid.querySelectorAll('.folder-item-card'));
@@ -196,7 +176,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Bulk Delete Action ("Delete all at once")
   if (btnDeleteSelected && folderMain) {
     btnDeleteSelected.addEventListener('click', async () => {
       const selectedCards = Array.from(folderItemsGrid.querySelectorAll('.folder-item-card.is-selected'));
@@ -230,7 +209,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await response.json();
 
         if (response.ok && data.success) {
-          // Animate and remove cards
           selectedCards.forEach((card) => {
             card.classList.add('item-removing');
           });
@@ -238,7 +216,6 @@ document.addEventListener('DOMContentLoaded', () => {
           setTimeout(() => {
             selectedCards.forEach((card) => card.remove());
 
-            // Recalculate remaining cards
             const remainingCards = folderItemsGrid.querySelectorAll('.folder-item-card');
             const remainingCount = remainingCards.length;
 
@@ -270,9 +247,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ---------------------------------------------------------------------------
-  // 3. Add Titles to Folder Modal
-  // ---------------------------------------------------------------------------
   const addTitlesModal = document.getElementById('addTitlesModal');
   const btnOpenAddTitlesModal = document.getElementById('btnOpenAddTitlesModal');
   const btnOpenAddTitlesModalEmpty = document.getElementById('btnOpenAddTitlesModalEmpty');
@@ -311,7 +285,6 @@ document.addEventListener('DOMContentLoaded', () => {
     btnSubmitAddTitles.disabled = count === 0;
     btnSubmitAddTitles.textContent = count > 0 ? `Add Selected (${count})` : 'Add Selected (0)';
 
-    // Update parent item styles
     availableTitlesList.querySelectorAll('.available-title-item').forEach((item) => {
       const cb = item.querySelector('.available-checkbox');
       if (cb && cb.checked) {
@@ -330,7 +303,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Filter titles inside Add Titles Modal
   if (addTitlesSearchInput && availableTitlesList) {
     addTitlesSearchInput.addEventListener('input', () => {
       const query = addTitlesSearchInput.value.trim().toLowerCase();
@@ -367,7 +339,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Select all visible items in Add Titles Modal
   if (btnModalSelectAllAvailable && availableTitlesList) {
     btnModalSelectAllAvailable.addEventListener('click', () => {
       const visibleCheckboxes = Array.from(availableTitlesList.querySelectorAll('.available-title-item'))
@@ -386,9 +357,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ---------------------------------------------------------------------------
-  // 4. Delete Folder Confirmation Modal
-  // ---------------------------------------------------------------------------
   const deleteFolderModal = document.getElementById('deleteFolderModal');
   const btnOpenDeleteFolderModal = document.getElementById('btnOpenDeleteFolderModal');
   const btnCloseDeleteFolderModal = document.getElementById('btnCloseDeleteFolderModal');
@@ -404,9 +372,6 @@ document.addEventListener('DOMContentLoaded', () => {
     btnCancelDeleteFolder.addEventListener('click', () => closeModal(deleteFolderModal));
   }
 
-  // ---------------------------------------------------------------------------
-  // 5. Back to Top Button
-  // ---------------------------------------------------------------------------
   const backToTopBtn = document.getElementById('backToTopBtn');
   if (backToTopBtn && !backToTopBtn.dataset.initialized) {
     backToTopBtn.dataset.initialized = 'true';

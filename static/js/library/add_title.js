@@ -504,7 +504,6 @@
     searchClearBtn.hidden = false;
   }
 
-  // Back to Top Button
   const backToTopBtn = document.getElementById('backToTopBtn');
   if (backToTopBtn && !backToTopBtn.dataset.initialized) {
     backToTopBtn.dataset.initialized = 'true';

@@ -52,7 +52,6 @@ def profile_view(request):
                 if cleaned_g:
                     genre_counts[cleaned_g] = genre_counts.get(cleaned_g, 0) + 1
 
-    # Favorite genre based on which genre the user has the most in the list
     if genre_counts:
         top_genres_sorted = sorted(genre_counts.items(), key=lambda x: x[1], reverse=True)
         favorite_genre = top_genres_sorted[0][0]
@@ -63,7 +62,6 @@ def profile_view(request):
         favorite_genre_count = 0
         top_genres = []
 
-    # Favorite items (is_favorite == True, or top rated >= 4 stars)
     favorite_logs = [log for log in user_logs if log.is_favorite]
     if not favorite_logs:
         favorite_logs = [log for log in user_logs if (log.personal_rate or 0) >= 4]

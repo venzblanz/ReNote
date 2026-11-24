@@ -30,7 +30,6 @@ def run_database_sync():
         'folders_synced': 0,
     }
 
-    # Sync Users muna
     remote_users = {u.username: u for u in User.objects.using('supabase').all()}
     local_users = {u.username: u for u in User.objects.using('default').all()}
 
@@ -47,11 +46,9 @@ def run_database_sync():
             local_users[username] = l_user
             stats['pulled'] += 1
 
-    # Sync Medias dayon IM GETTING BRAIN FUCKED!
     remote_media = {(m.external_id, m.media_type): m for m in Media.objects.using('supabase').all()}
     local_media = {(m.external_id, m.media_type): m for m in Media.objects.using('default').all()}
 
-    # Pull from supa to local SQLite
     for key, r_media in remote_media.items():
         if key not in local_media:
             l_media = Media.objects.using('default').create(
@@ -68,7 +65,6 @@ def run_database_sync():
             stats['media_synced'] += 1
             stats['pulled'] += 1
 
-    # Push from Local to supa
     for key, l_med in local_media.items():
         if key not in remote_media:
             r_med = Media.objects.using('supabase').create(
@@ -85,7 +81,6 @@ def run_database_sync():
             stats['media_synced'] += 1
             stats['pushed'] += 1
 
-    # Sync each User's Library
     local_logs = {}
     for log in UserLibraryLog.objects.using('default').select_related('user', 'media').all():
         key = (log.user.username, log.media.external_id, log.media.media_type)
@@ -108,7 +103,6 @@ def run_database_sync():
         l_med = local_media.get((ext_id, mtype))
         r_med = remote_media.get((ext_id, mtype))
 
-        # In local but not in remote so push to supa
         if l_log and not r_log:
             if r_user and r_med:
                 r_log = UserLibraryLog.objects.using('supabase').create(
@@ -125,7 +119,6 @@ def run_database_sync():
                 stats['logs_synced'] += 1
                 stats['pushed'] += 1
 
-        # In remote but not in local so pull from supa
         elif r_log and not l_log:
             if l_user and l_med:
                 l_log = UserLibraryLog.objects.using('default').create(
@@ -142,10 +135,8 @@ def run_database_sync():
                 stats['logs_synced'] += 1
                 stats['pulled'] += 1
 
-        # exists in both, check time diff then update
         elif l_log and r_log:
             if l_log.updated_at > r_log.updated_at:
-                # if ang local log is more recent, update remote log
                 if l_log.updated_at > r_log.updated_at:
                     r_log.personal_rate = l_log.personal_rate
                     r_log.status = l_log.status
@@ -167,7 +158,6 @@ def run_database_sync():
                     stats['logs_synced'] += 1
                     stats['pulled'] += 1
 
-    # Sync the folders and Folder items
     local_items = {}
     for item in FolderItem.objects.using('default').select_related('folder__user', 'library_log__media').all():
         key = (item.folder.user.username, item.folder.name, item.library_log.media.external_id, item.library_log.media.media_type)
@@ -190,7 +180,6 @@ def run_database_sync():
         l_user = local_users.get(username)
         r_user = remote_users.get(username)
 
-        # exists locally
         if l_f and not r_f:
             if r_user:
                 r_f = LibraryFolder.objects.using('supabase').create(
@@ -203,7 +192,6 @@ def run_database_sync():
                 stats['folders_synced'] += 1
                 stats['pushed'] += 1
 
-        # exists on supa
         elif r_f and not l_f:
             if l_user:
                 l_f = LibraryFolder.objects.using('default').create(
@@ -216,7 +204,6 @@ def run_database_sync():
                 stats['folders_synced'] += 1
                 stats['pulled'] += 1
 
-        # exists on both so update
         elif r_f and l_f:
             if l_f.updated_at and r_f.updated_at:
                 if r_f.updated_at > l_f.updated_at:
@@ -268,7 +255,6 @@ def run_database_sync():
                 l_item.save(using='default')
                 stats['pulled'] += 1
             
-    # Sync Profile
     remote_profiles = {p.user.username: p for p in Profile.objects.using('supabase').select_related('user').all()}
     local_profiles = {p.user.username: p for p in Profile.objects.using('default').select_related('user').all()}
     all_profiles = set(remote_profiles.keys()).union(set(local_profiles.keys()))
@@ -315,7 +301,6 @@ def run_database_sync():
                 r_prof.save(using='supabase')
                 stats['pushed'] += 1
 
-    # Sync Settings
     remote_settings = {s.user.username: s for s in UserSettings.objects.using('supabase').select_related('user').all()}
     local_settings = {s.user.username: s for s in UserSettings.objects.using('default').select_related('user').all()}
     all_settings = set(remote_settings.keys()).union(set(local_settings.keys()))

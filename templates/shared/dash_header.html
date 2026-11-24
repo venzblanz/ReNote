@@ -34,7 +34,7 @@
 
     <div class="dash-user-controls">
       <div class="profile-menu" id="profileMenu">
-        <button class="user-profile-pill" id="profileTrigger" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
+        <button type="button" class="user-profile-pill" id="profileTrigger" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
           <div class="avatar-ring-sm">
             <img src="{% static 'images/avatars/' %}{{ user_avatar|default:'202156.png' }}" alt="{{ user.username }}" class="pill-avatar" onerror="this.onerror=null; this.src='{% static 'images/avatars/202156.png' %}';">
           </div>
@@ -76,3 +76,50 @@
     </div>
   </div>
 </header>
+
+<script>
+(function initDashProfileMenu() {
+  function setupProfileMenu() {
+    const profileMenu = document.getElementById("profileMenu");
+    const profileTrigger = document.getElementById("profileTrigger");
+    if (!profileMenu || !profileTrigger) return;
+    if (profileTrigger.dataset.profileBound === "true") return;
+    profileTrigger.dataset.profileBound = "true";
+
+    function toggleMenu(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      const isOpen = profileMenu.classList.toggle("open");
+      profileTrigger.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    }
+
+    function closeMenu() {
+      if (profileMenu.classList.contains("open")) {
+        profileMenu.classList.remove("open");
+        profileTrigger.setAttribute("aria-expanded", "false");
+      }
+    }
+
+    profileTrigger.addEventListener("click", toggleMenu);
+
+    document.addEventListener("click", (e) => {
+      if (!profileMenu.contains(e.target)) {
+        closeMenu();
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        closeMenu();
+      }
+    });
+  }
+
+  setupProfileMenu();
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupProfileMenu);
+  }
+})();
+</script>

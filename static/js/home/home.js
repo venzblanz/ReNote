@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Interactive Chooser Modal & Bottom Sheet
   const pickerModal = document.getElementById("pickerModal");
   const navRandomBtn = document.getElementById("navRandomBtn");
   const heroPickBtn = document.getElementById("heroPickBtn");
@@ -10,7 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalFilterStatus = document.getElementById("modalFilterStatus");
   const mobileDockPickerBtn = document.getElementById("mobileDockPickerBtn");
 
-  // Segmented chips for format & status
   const formatChips = document.querySelectorAll("#formatChips .filter-chip");
   formatChips.forEach((chip) => {
     chip.addEventListener("click", () => {
@@ -176,7 +174,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Filter tabs for library overview on home
   const filterTabs = document.getElementById("filterTabs");
   const libraryGrid = document.getElementById("libraryGrid");
   const showAllRow = document.getElementById("showAllRow");
