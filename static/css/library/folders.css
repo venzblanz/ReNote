@@ -6,7 +6,7 @@
 }
 
 .folders-shell {
-  max-width: 1120px;
+  max-width: auto;
   margin: 0 auto;
   padding: clamp(14px, 2.5vw, 32px) var(--gutter) clamp(40px, 6vw, 80px);
 }
