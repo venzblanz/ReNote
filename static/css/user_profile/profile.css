@@ -292,6 +292,12 @@
   transform: translateX(3px);
 }
 
+.profile-folders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 260px));
+  gap: 20px;
+}
+
 .favorites-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));

@@ -11,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/shared/base.css' %}?v={% now 'U' %}">
+<link rel="stylesheet" href="{% static 'css/library/folders.css' %}?v={% now 'U' %}">
 <link rel="stylesheet" href="{% static 'css/user_profile/profile.css' %}?v={% now 'U' %}">
 </head>
 <body>
@@ -87,39 +88,56 @@
     <div class="favorites-section">
       <div class="section-header-row">
         <div>
-          <h2 class="section-title">Favorite & Top Picks</h2>
-          <p class="section-subtitle">Titles marked as favorite or rated highest in your collection</p>
+          <h2 class="section-title">Collections</h2>
+          <p class="section-subtitle">Featured collections and favorite titles in your sanctuary</p>
         </div>
-        <a href="{% url 'library:list' %}" class="view-all-link">Open My Library →</a>
+        <a href="{% url 'library:folder_list' %}" class="view-all-link">View All Folders →</a>
       </div>
-      {% if favorite_logs %}
-        <div class="favorites-grid">
-          {% for log in favorite_logs %}
-            <a href="{% url 'library:detail' log.media.id %}" class="fav-card" title="View {{ log.media.media_title }}">
-              <div class="fav-cover">
-                {% if log.media.media_image %}
-                  <img src="{{ log.media.media_image }}" alt="{{ log.media.media_title }}" loading="lazy" onerror="this.onerror=null; this.src='{% static 'images/moon.png' %}';">
-                {% else %}
-                  <div class="cover-placeholder">{{ log.media.media_title }}</div>
-                {% endif %}
-                <span class="fav-badge">{% if log.is_favorite %}★ Fav{% elif log.personal_rate %}★ {{ log.personal_rate }}/5{% else %}{{ log.media.media_type|title }}{% endif %}</span>
-              </div>
-              <div class="fav-info">
-                <h4 class="fav-title">{{ log.media.media_title }}</h4>
-                <div class="fav-meta">
-                  <span class="fav-type">{{ log.media.media_type|title }}</span>
-                  {% if log.rewatch_count %}
-                    <span class="fav-rewatch">{{ log.rewatch_count }} rewatch{{ log.rewatch_count|pluralize }}</span>
-                  {% endif %}
+      {% if favorites_folder %}
+        <div class="profile-folders-grid">
+          <div class="folder-card folder-card-favorites" data-folder-id="{{ favorites_folder.id }}">
+            <a href="{% url 'library:folder_detail' favorites_folder.id %}" class="folder-card-preview" title="Open {{ favorites_folder.name }}">
+              {% if favorites_folder.preview_items %}
+                <div class="folder-preview-collage count-{{ favorites_folder.preview_items|slice:':4'|length }}">
+                  {% for item in favorites_folder.preview_items|slice:":4" %}
+                    <div class="folder-preview-thumb">
+                      {% if item.library_log.media.media_image %}
+                        <img src="{{ item.library_log.media.media_image }}" alt="{{ item.library_log.media.media_title }}" loading="lazy" onerror="this.onerror=null; this.src='{% static 'images/hero_character_purple.jpg' %}';">
+                      {% else %}
+                        <div class="preview-placeholder">★</div>
+                      {% endif %}
+                    </div>
+                  {% endfor %}
                 </div>
-              </div>
+              {% else %}
+                <div class="folder-empty-preview favorites-empty-preview">
+                  <div class="folder-empty-glyph">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  </div>
+                  <span class="empty-folder-text">No Favorites Yet</span>
+                </div>
+              {% endif %}
+              <span class="folder-count-badge">
+                {{ favorites_count }} title{{ favorites_count|pluralize }}
+              </span>
             </a>
-          {% endfor %}
+
+            <div class="folder-card-body">
+              <h2 class="folder-card-title">
+                <a href="{% url 'library:folder_detail' favorites_folder.id %}" class="folder-title-link">
+                  ★ {{ favorites_folder.name }}
+                </a>
+              </h2>
+              <p class="folder-card-desc">{{ favorites_folder.description|default:"Your favorited anime, manga, and movies." }}</p>
+            </div>
+          </div>
         </div>
       {% else %}
         <div class="profile-empty-panel">
-          <p>No favorites starred yet. Open any title in your library and click <strong>★ Favorite</strong> to showcase it here!</p>
-          <a href="{% url 'library:list' %}" class="btn-auth btn-sm">Go to Library</a>
+          <p>No collections yet. Open your library to organize your titles into folders!</p>
+          <a href="{% url 'library:folder_list' %}" class="btn-auth btn-sm">Explore Folders</a>
         </div>
       {% endif %}
     </div>

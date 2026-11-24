@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db.models import Prefetch
 from .models import Profile, AVAILABLE_AVATARS
-from apps.user_library_log.models import UserLibraryLog
+from apps.user_library_log.models import UserLibraryLog, LibraryFolder, FolderItem
+from apps.library.views import get_or_create_favorites_folder
 
 @login_required
 def profile_view(request):
@@ -62,9 +64,20 @@ def profile_view(request):
         favorite_genre_count = 0
         top_genres = []
 
-    favorite_logs = [log for log in user_logs if log.is_favorite]
-    if not favorite_logs:
-        favorite_logs = [log for log in user_logs if (log.personal_rate or 0) >= 4]
+    favorites_folder = get_or_create_favorites_folder(request.user)
+    favorites_folder = (
+        LibraryFolder.objects
+        .filter(id=favorites_folder.id)
+        .prefetch_related(
+            Prefetch(
+                'items',
+                queryset=FolderItem.objects.select_related('library_log__media').order_by('-added_at'),
+                to_attr='preview_items',
+            )
+        )
+        .first()
+    )
+    favorites_count = favorites_folder.items.count() if favorites_folder else 0
 
     recent_activity = user_logs[:6]
 
@@ -79,7 +92,8 @@ def profile_view(request):
         'favorite_genre': favorite_genre,
         'favorite_genre_count': favorite_genre_count,
         'top_genres': top_genres,
-        'favorite_logs': favorite_logs[:6],
+        'favorites_folder': favorites_folder,
+        'favorites_count': favorites_count,
         'recent_activity': recent_activity,
     }
     return render(request, 'user_profile/profile.html', context)
