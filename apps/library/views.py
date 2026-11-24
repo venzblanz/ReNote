@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
-from django.db.models import Count, Prefetch
+from django.db.models import Count, Prefetch, Case, When, Value, IntegerField
 from apps.media_catalog.models import Media
 from apps.user_library_log.models import UserLibraryLog, LibraryFolder, FolderItem
 from .api import search_media
@@ -289,11 +289,42 @@ def _get_safe_library_back_url(request, raw_url=None):
     return candidate
 
 def _build_detail_redirect_url(media_id, back_url):
-    """Preserve ?back=... across POST redirects on media_detail_view."""
     detail_url = reverse('library:detail', kwargs={'media_id': media_id})
     if back_url and back_url != reverse('library:list'):
         return f"{detail_url}?{urlencode({'back': back_url})}"
     return detail_url
+
+def get_or_create_favorites_folder(user):
+    fav_folder, _ = LibraryFolder.objects.get_or_create(
+        user=user,
+        name='Favorites',
+        defaults={'description': 'Your favorited anime, manga, and movies.'}
+    )
+    fav_logs = UserLibraryLog.objects.filter(user=user, is_favorite=True)
+    fav_log_ids = set(fav_logs.values_list('id', flat=True))
+
+    existing_items = FolderItem.objects.filter(folder=fav_folder)
+    existing_log_ids = set(existing_items.values_list('library_log_id', flat=True))
+
+    missing_log_ids = fav_log_ids - existing_log_ids
+    if missing_log_ids:
+        FolderItem.objects.bulk_create([
+            FolderItem(folder=fav_folder, library_log_id=lid)
+            for lid in missing_log_ids
+        ])
+
+    extra_log_ids = existing_log_ids - fav_log_ids
+    if extra_log_ids:
+        FolderItem.objects.filter(folder=fav_folder, library_log_id__in=extra_log_ids).delete()
+
+    return fav_folder
+
+def _sync_user_log_to_favorites_folder(user_log):
+    fav_folder = get_or_create_favorites_folder(user_log.user)
+    if user_log.is_favorite:
+        FolderItem.objects.get_or_create(folder=fav_folder, library_log=user_log)
+    else:
+        FolderItem.objects.filter(folder=fav_folder, library_log=user_log).delete()
 
 @login_required
 def media_detail_view(request, media_id):
@@ -376,6 +407,7 @@ def media_detail_view(request, media_id):
             user_log.media_note = request.POST.get('media_note', '').strip()
             user_log.is_favorite = ('is_favorite' in request.POST)
             user_log.save()
+            _sync_user_log_to_favorites_folder(user_log)
             messages.success(request, f'Updated your log for "{media.media_title}".')
             return redirect(_build_detail_redirect_url(media.id, back_url))
 
@@ -430,6 +462,7 @@ def update_library_log_view(request, media_id):
     if action == 'toggle_favorite':
         user_log.is_favorite = not user_log.is_favorite
         user_log.save(update_fields=['is_favorite'])
+        _sync_user_log_to_favorites_folder(user_log)
 
     elif action == 'set_status':
         new_status = (data.get('status') or '').strip().lower()
@@ -483,6 +516,8 @@ def update_library_log_view(request, media_id):
             fav = data.get('is_favorite')
             user_log.is_favorite = (fav is True or str(fav).lower() in ('true', '1'))
         user_log.save()
+        if 'is_favorite' in data:
+            _sync_user_log_to_favorites_folder(user_log)
 
     return JsonResponse({
         'success': True,
@@ -498,6 +533,8 @@ def update_library_log_view(request, media_id):
 
 @login_required
 def folder_list_view(request):
+    get_or_create_favorites_folder(request.user)
+
     if request.method == 'POST':
         name = request.POST.get('name', '').strip()
         description = request.POST.get('description', '').strip()[:200]
@@ -510,7 +547,7 @@ def folder_list_view(request):
             messages.error(request, 'Folder name cannot exceed 60 characters.')
             return redirect('library:folder_list')
 
-        if LibraryFolder.objects.filter(user=request.user, name__iexact=name).exists():
+        if name.lower() == 'favorites' or LibraryFolder.objects.filter(user=request.user, name__iexact=name).exists():
             messages.error(request, f'A folder named "{name}" already exists.')
             return redirect('library:folder_list')
 
@@ -533,7 +570,14 @@ def folder_list_view(request):
                 to_attr='preview_items',
             )
         )
-        .order_by('-created_at')
+        .order_by(
+            Case(
+                When(name__iexact='favorites', then=Value(0)),
+                default=Value(1),
+                output_field=IntegerField(),
+            ),
+            '-created_at',
+        )
     )
 
     return render(request, 'library/folder_list.html', {
@@ -544,26 +588,51 @@ def folder_list_view(request):
 @login_required
 def folder_detail_view(request, folder_id):
     folder = get_object_or_404(LibraryFolder, id=folder_id, user=request.user)
+    is_favorites_folder = (folder.name.lower() == 'favorites')
+    if is_favorites_folder:
+        get_or_create_favorites_folder(request.user)
+
     items = list(folder.items.select_related('library_log__media').order_by('-added_at'))
-    existing_log_ids = [item.library_log_id for item in items]
-    available_logs = list(
-        UserLibraryLog.objects
-        .filter(user=request.user)
-        .exclude(id__in=existing_log_ids)
-        .select_related('media')
-        .order_by('media__media_title')
-    )
+
+    if is_favorites_folder:
+        existing_log_ids = [item.library_log_id for item in items]
+        available_logs = list(
+            UserLibraryLog.objects
+            .filter(user=request.user)
+            .exclude(id__in=existing_log_ids)
+            .select_related('media')
+            .order_by('media__media_title')
+        )
+    else:
+        other_custom_log_ids = set(
+            FolderItem.objects
+            .filter(folder__user=request.user)
+            .exclude(folder__name__iexact='favorites')
+            .values_list('library_log_id', flat=True)
+        )
+        available_logs = list(
+            UserLibraryLog.objects
+            .filter(user=request.user)
+            .exclude(id__in=other_custom_log_ids)
+            .select_related('media')
+            .order_by('media__media_title')
+        )
 
     return render(request, 'library/folder_detail.html', {
         'folder': folder,
         'items': items,
         'available_logs': available_logs,
+        'is_favorites_folder': is_favorites_folder,
     })
 
 
 @login_required
 def folder_delete_view(request, folder_id):
     folder = get_object_or_404(LibraryFolder, id=folder_id, user=request.user)
+    if folder.name.lower() == 'favorites':
+        messages.error(request, 'The Favorites collection is a default collection and cannot be deleted.')
+        return redirect('library:folder_list')
+
     if request.method == 'POST':
         name = folder.name
         folder.delete()
@@ -589,12 +658,31 @@ def folder_add_items_view(request, folder_id):
         else:
             log_ids = request.POST.getlist('log_ids')
 
-        logs_to_add = UserLibraryLog.objects.filter(user=request.user, id__in=log_ids)
-        added_count = 0
-        for log in logs_to_add:
-            _, created = FolderItem.objects.get_or_create(folder=folder, library_log=log)
-            if created:
-                added_count += 1
+        is_favorites_folder = (folder.name.lower() == 'favorites')
+        if is_favorites_folder:
+            logs_to_add = UserLibraryLog.objects.filter(user=request.user, id__in=log_ids)
+            added_count = 0
+            for log in logs_to_add:
+                _, created = FolderItem.objects.get_or_create(folder=folder, library_log=log)
+                if created:
+                    added_count += 1
+                if not log.is_favorite:
+                    log.is_favorite = True
+                    log.save(update_fields=['is_favorite'])
+        else:
+            other_custom_log_ids = set(
+                FolderItem.objects
+                .filter(folder__user=request.user)
+                .exclude(folder__name__iexact='favorites')
+                .values_list('library_log_id', flat=True)
+            )
+            valid_log_ids = [lid for lid in log_ids if str(lid).isdigit() and int(lid) not in other_custom_log_ids]
+            logs_to_add = UserLibraryLog.objects.filter(user=request.user, id__in=valid_log_ids)
+            added_count = 0
+            for log in logs_to_add:
+                _, created = FolderItem.objects.get_or_create(folder=folder, library_log=log)
+                if created:
+                    added_count += 1
 
         if is_json:
             return JsonResponse({'success': True, 'added_count': added_count})
@@ -627,7 +715,15 @@ def folder_remove_items_view(request, folder_id):
         else:
             item_ids = request.POST.getlist('item_ids')
 
-        deleted_count, _ = FolderItem.objects.filter(folder=folder, id__in=item_ids).delete()
+        items_to_delete = FolderItem.objects.filter(folder=folder, id__in=item_ids)
+        is_favorites_folder = (folder.name.lower() == 'favorites')
+        if is_favorites_folder:
+            removed_log_ids = list(items_to_delete.values_list('library_log_id', flat=True))
+            deleted_count, _ = items_to_delete.delete()
+            if removed_log_ids:
+                UserLibraryLog.objects.filter(id__in=removed_log_ids).update(is_favorite=False)
+        else:
+            deleted_count, _ = items_to_delete.delete()
 
         if is_ajax:
             return JsonResponse({'success': True, 'deleted_count': deleted_count})

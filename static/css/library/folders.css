@@ -1472,3 +1472,37 @@
     gap: 10px !important;
   }
 }
+
+.folder-empty-preview.favorites-empty-preview,
+.folder-hero-empty-cover.favorites-empty-preview {
+  background: radial-gradient(circle at 50% 40%, rgba(245, 158, 11, 0.18), transparent 70%), #14101e;
+  color: #fbbf24;
+}
+
+.folder-card-favorites:hover .folder-card-preview {
+  border-color: rgba(245, 158, 11, 0.5);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.6), 0 0 24px rgba(245, 158, 11, 0.25);
+}
+
+.folder-card-favorites .folder-title-link {
+  color: #fef08a;
+}
+
+.folder-card-favorites:hover .folder-title-link {
+  color: #fbbf24;
+}
+
+.badge-default-collection {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(245, 158, 11, 0.12);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}

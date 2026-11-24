@@ -58,10 +58,9 @@
     </div>
   {% endif %}
 
-  {% if folders %}
     <div class="folders-grid" id="foldersGrid">
       {% for folder in folders %}
-        <div class="folder-card" data-folder-id="{{ folder.id }}">
+        <div class="folder-card {% if folder.name|lower == 'favorites' %}folder-card-favorites{% endif %}" data-folder-id="{{ folder.id }}">
           <a href="{% url 'library:folder_detail' folder.id %}" class="folder-card-preview" title="Open {{ folder.name }}">
             {% if folder.preview_items %}
               <div class="folder-preview-collage count-{{ folder.preview_items|slice:':4'|length }}">
@@ -76,13 +75,19 @@
                 {% endfor %}
               </div>
             {% else %}
-              <div class="folder-empty-preview">
+              <div class="folder-empty-preview {% if folder.name|lower == 'favorites' %}favorites-empty-preview{% endif %}">
                 <div class="folder-empty-glyph">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
-                    <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
-                  </svg>
+                  {% if folder.name|lower == 'favorites' %}
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  {% else %}
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                      <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
+                    </svg>
+                  {% endif %}
                 </div>
-                <span class="empty-folder-text">Empty Collection</span>
+                <span class="empty-folder-text">{% if folder.name|lower == 'favorites' %}No Favorites Yet{% else %}Empty Collection{% endif %}</span>
               </div>
             {% endif %}
             <span class="folder-count-badge">
@@ -92,7 +97,9 @@
 
           <div class="folder-card-body">
             <h2 class="folder-card-title">
-              <a href="{% url 'library:folder_detail' folder.id %}" class="folder-title-link">{{ folder.name }}</a>
+              <a href="{% url 'library:folder_detail' folder.id %}" class="folder-title-link">
+                {% if folder.name|lower == 'favorites' %}★ {% endif %}{{ folder.name }}
+              </a>
             </h2>
             {% if folder.description %}
               <p class="folder-card-desc">{{ folder.description }}</p>
@@ -103,23 +110,7 @@
         </div>
       {% endfor %}
     </div>
-  {% else %}
-    <div class="folders-empty-state" id="foldersEmptyState">
-      <div class="empty-folder-glow-icon">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
-          <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
-          <path d="M12 11v6M9 14h6" stroke-linecap="round"></path>
-        </svg>
-      </div>
-      <h2 class="empty-state-title">No Collections Yet</h2>
-      <p class="empty-state-desc">Organize your anime, manga, and movies into custom watchlists like "Favorites", "Rewatch List", or "Top Tier".</p>
-      <button type="button" class="btn-auth btn-create-first-folder" id="btnOpenNewFolderModalEmpty">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-        <span>Create Your First Folder</span>
-      </button>
-    </div>
-  {% endif %}
-</main>
+  </main>
 
 <div class="custom-modal-backdrop" id="newFolderModal" role="dialog" aria-modal="true" aria-labelledby="newFolderTitle" hidden>
   <div class="custom-modal-dialog">

@@ -56,21 +56,31 @@
           {% endfor %}
         </div>
       {% else %}
-        <div class="folder-hero-empty-cover">
-          <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
-            <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
-          </svg>
+        <div class="folder-hero-empty-cover {% if is_favorites_folder %}favorites-empty-preview{% endif %}">
+          {% if is_favorites_folder %}
+            <svg width="42" height="42" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+          {% else %}
+            <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+              <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
+            </svg>
+          {% endif %}
         </div>
       {% endif %}
     </div>
 
     <div class="folder-hero-details">
       <div class="folder-hero-tag-row">
-        <span class="collection-pill-tag">COLLECTION</span>
+        {% if is_favorites_folder %}
+          <span class="badge-default-collection">★ Default Favorites</span>
+        {% else %}
+          <span class="collection-pill-tag">COLLECTION</span>
+        {% endif %}
         <span class="folder-badge-count" id="folderItemsCountBadge">{{ items|length }} title{{ items|length|pluralize }}</span>
       </div>
 
-      <h1 class="page-title folder-view-title" id="folderTitleHeading">{{ folder.name }}</h1>
+      <h1 class="page-title folder-view-title" id="folderTitleHeading">{% if is_favorites_folder %}★ {% endif %}{{ folder.name }}</h1>
 
       {% if folder.description %}
         <p class="folder-view-description">{{ folder.description }}</p>
@@ -94,9 +104,11 @@
           </button>
         {% endif %}
 
-        <button type="button" class="btn-icon-danger" id="btnOpenDeleteFolderModal" title="Delete folder" aria-label="Delete folder">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-        </button>
+        {% if not is_favorites_folder %}
+          <button type="button" class="btn-icon-danger" id="btnOpenDeleteFolderModal" title="Delete folder" aria-label="Delete folder">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </button>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -177,13 +189,17 @@
 
     <div class="folders-empty-state folder-detail-empty-state" id="folderDynamicEmptyState" style="display: none;">
       <div class="empty-folder-glow-icon">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
-          <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
-          <path d="M12 11v6M9 14h6" stroke-linecap="round"></path>
-        </svg>
+        {% if is_favorites_folder %}
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        {% else %}
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+            <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
+            <path d="M12 11v6M9 14h6" stroke-linecap="round"></path>
+          </svg>
+        {% endif %}
       </div>
-      <h2 class="empty-state-title">This Collection is Empty</h2>
-      <p class="empty-state-desc">You haven't added any titles to "{{ folder.name }}" yet. Pick from your library to group them here.</p>
+      <h2 class="empty-state-title">{% if is_favorites_folder %}No Favorites Yet{% else %}This Collection is Empty{% endif %}</h2>
+      <p class="empty-state-desc">{% if is_favorites_folder %}Star your favorite anime, manga, and movies in your library, or pick titles to add here.{% else %}You haven't added any titles to "{{ folder.name }}" yet. Pick from your library to group them here.{% endif %}</p>
       <button type="button" class="btn-auth btn-add-titles-trigger" id="btnOpenAddTitlesModalEmpty">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
         <span>Add Titles from Library</span>
@@ -193,13 +209,17 @@
   {% else %}
     <div class="folders-empty-state folder-detail-empty-state" id="folderStaticEmptyState">
       <div class="empty-folder-glow-icon">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
-          <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
-          <path d="M12 11v6M9 14h6" stroke-linecap="round"></path>
-        </svg>
+        {% if is_favorites_folder %}
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        {% else %}
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+            <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
+            <path d="M12 11v6M9 14h6" stroke-linecap="round"></path>
+          </svg>
+        {% endif %}
       </div>
-      <h2 class="empty-state-title">This Collection is Empty</h2>
-      <p class="empty-state-desc">Organize your anime, manga, and movies by adding them from your personal library.</p>
+      <h2 class="empty-state-title">{% if is_favorites_folder %}No Favorites Yet{% else %}This Collection is Empty{% endif %}</h2>
+      <p class="empty-state-desc">{% if is_favorites_folder %}Star your favorite anime, manga, and movies in your library, or pick titles to add here.{% else %}Organize your anime, manga, and movies by adding them from your personal library.{% endif %}</p>
       <button type="button" class="btn-auth btn-add-titles-trigger" id="btnOpenAddTitlesModalEmpty">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
         <span>Add Titles from Library</span>
@@ -276,6 +296,7 @@
   </div>
 </div>
 
+{% if not is_favorites_folder %}
 <div class="custom-modal-backdrop" id="deleteFolderModal" role="dialog" aria-modal="true" aria-labelledby="deleteFolderModalTitle" hidden>
   <div class="custom-modal-dialog modal-dialog-confirm">
     <div class="sheet-drag-handle" aria-hidden="true"></div>
@@ -298,6 +319,7 @@
     </form>
   </div>
 </div>
+{% endif %}
 
 <button type="button" class="back-to-top-btn" id="backToTopBtn" aria-label="Back to top" title="Back to top">
   <svg class="back-to-top-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
